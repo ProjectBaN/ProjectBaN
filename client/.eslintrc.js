@@ -4,7 +4,7 @@ module.exports = {
     browser: true,
     es6: true,
   },
-  extends: ['plugin:import/errors', 'plugin:import/warnings', 'plugin:prettier/recommended', 'prettier/react'],
+  extends: ['plugin:import/errors', 'plugin:import/warnings', 'plugin:prettier/recommended'],
   parserOptions: {
     ecmaVersion: 2018,
   },
