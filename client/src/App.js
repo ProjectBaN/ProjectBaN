@@ -1,17 +1,26 @@
 import React from 'react';
 import './App.css';
-import { useSelector, useDispatch } from 'react-redux';
-import { decrement, increment } from './redux/reducer/testSlice';
+import styled from 'styled-components';
+import { theme } from './styles/theme';
 
 function App() {
-  const count = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
+  const TestSize = styled.div`
+    background-color: red;
+
+    @media ${({ theme }) => theme.device.tablet} {
+      background-color: blue;
+    }
+    @media ${({ theme }) => theme.device.laptop} {
+      background-color: yellow;
+    }
+    @media ${({ theme }) => theme.device.desktop} {
+      background-color: green;
+    }
+  `;
 
   return (
     <div className="App">
-      <button onClick={() => dispatch(increment())}>+</button>
-      <span>{count}</span>
-      <button onClick={() => dispatch(decrement())}>-</button>
+      <TestSize>dsada</TestSize>
     </div>
   );
 }
