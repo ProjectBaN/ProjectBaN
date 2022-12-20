@@ -1,26 +1,15 @@
 import React from 'react';
 import './App.css';
 import styled from 'styled-components';
-import { theme } from './styles/theme';
+import { Routes, Route } from 'react-router-dom';
+import HomeMain from './pages/HomeMain';
 
 function App() {
-  const TestSize = styled.div`
-    background-color: red;
-
-    @media ${({ theme }) => theme.device.tablet} {
-      background-color: blue;
-    }
-    @media ${({ theme }) => theme.device.laptop} {
-      background-color: yellow;
-    }
-    @media ${({ theme }) => theme.device.desktop} {
-      background-color: green;
-    }
-  `;
-
   return (
     <div className="App">
-      <TestSize>dsada</TestSize>
+      <Routes>
+        <Route path="/" element={<HomeMain />}></Route>
+      </Routes>
     </div>
   );
 }
