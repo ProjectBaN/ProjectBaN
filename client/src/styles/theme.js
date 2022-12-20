@@ -38,8 +38,11 @@ const fontSize = {
   sm: '12px',
   md: '17px',
   lg: '22px',
+  xl: '25px',
 };
 
 export const theme = {
   device,
+  fontSize,
+  spacing,
 };
