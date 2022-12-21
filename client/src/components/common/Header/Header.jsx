@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import HeaderMenu from './HeaderMenu';
 import HeaderHomeLogo from './HeaderHomeLogo';
-import CategoryMenu from '../CategoryMenu';
+import CategoryMenu from './HeaderCategoryMenu';
 
 function Header() {
   const HeaderContainer = styled.header`

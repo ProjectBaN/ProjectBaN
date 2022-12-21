@@ -7,8 +7,12 @@ function HeaderMenu() {
   // `
   return (
     <div>
-      <Link to="/">Home</Link>
-      <Link to="/nail">Nail</Link>
+      <Link to="/">
+        <i className="fas fa-shopping-cart"></i>
+      </Link>
+      <Link to="/nail">
+        <i className="fa-regular fa-user"></i>
+      </Link>
     </div>
   );
 }
