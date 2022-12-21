@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import HeaderMenu from './HeaderMenu';
 import HeaderHomeLogo from './HeaderHomeLogo';
+import CategoryMenu from '../CategoryMenu';
 
 function Header() {
   const HeaderContainer = styled.header`
@@ -11,6 +12,7 @@ function Header() {
   return (
     <div>
       <HeaderContainer>
+        <CategoryMenu />
         <HeaderHomeLogo />
         <HeaderMenu />
       </HeaderContainer>
