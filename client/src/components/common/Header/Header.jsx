@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import HeaderButtonIcons from './HeaderButtonIcons';
 import HeaderHomeLogo from './HeaderHomeLogo';
 import HeaderCategoryMenu from './HeaderCategoryMenu';
+import HeaderSearchForm from './HeaderSearchForm';
 
 function Header() {
   const HeaderContainer = styled.header`
     width: 100%;
     display: flex;
   `;
+
   return (
     <div>
       <HeaderContainer>
@@ -16,6 +18,7 @@ function Header() {
         <HeaderHomeLogo />
         <HeaderButtonIcons />
       </HeaderContainer>
+      <HeaderSearchForm />
     </div>
   );
 }
