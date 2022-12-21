@@ -6,6 +6,7 @@ const device = {
 
 const spacing = {
   sm: '10px',
+  m: '20px',
 };
 const container = {
   common: '1200px',

@@ -1,20 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import EventBannerSlide from '../../../asset/images/HeaderEventBanner.jpg';
-
+const EventBannerContainer = styled.div`
+  width: 100%;
+  height: 50px;
+  position: relative;
+  overflow: hidden;
+  img {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0%);
+  }
+`;
 function HeaderEventBanner() {
-  const EventBannerContainer = styled.div`
-    width: 100%;
-    height: 50px;
-    position: relative;
-    overflow: hidden;
-    img {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translate(-50%, 0%);
-    }
-  `;
   return (
     <EventBannerContainer>
       <img src={EventBannerSlide} alt="" />
