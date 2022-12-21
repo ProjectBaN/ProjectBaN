@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import HeaderMenu from './HeaderMenu';
+import HeaderButtonIcons from './HeaderButtonIcons';
 import HeaderHomeLogo from './HeaderHomeLogo';
-import CategoryMenu from './HeaderCategoryMenu';
+import HeaderCategoryMenu from './HeaderCategoryMenu';
 
 function Header() {
   const HeaderContainer = styled.header`
@@ -12,9 +12,9 @@ function Header() {
   return (
     <div>
       <HeaderContainer>
-        <CategoryMenu />
+        <HeaderCategoryMenu />
         <HeaderHomeLogo />
-        <HeaderMenu />
+        <HeaderButtonIcons />
       </HeaderContainer>
     </div>
   );

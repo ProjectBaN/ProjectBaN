@@ -1,20 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function HeaderMenu() {
-  // const navbar = styled.nav `
-  //   text
-  // `
+function HeaderButtonIcons() {
   return (
     <div>
-      <Link to="/">
+      <Link to="/shoppingcart">
         <i className="fas fa-shopping-cart"></i>
       </Link>
-      <Link to="/nail">
+      <Link to="/mypage">
         <i className="fa-regular fa-user"></i>
       </Link>
     </div>
   );
 }
 
-export default HeaderMenu;
+export default HeaderButtonIcons;
