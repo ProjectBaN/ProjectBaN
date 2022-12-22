@@ -3,12 +3,10 @@ import { Link } from 'react-router-dom';
 
 function HeaderCategoryMenu() {
   return (
-    <div className="text-xl">
-      <Link to="/category">
-        <i className="fas fa-bars mr-2"></i>
-        <span>카테고리</span>
-      </Link>
-    </div>
+    <Link to="/category" className="">
+      <i className="text-3xl fas fa-bars "></i>
+      <span className="text-xl font-bold">카테고리</span>
+    </Link>
   );
 }
 

@@ -9,7 +9,8 @@ module.exports = {
         lg: '22px',
       },
       width: {
-        pcContainer: '1550px',
+        pcContainer: '1200px',
+        pcSearchForm: '440px',
       },
     },
   },
