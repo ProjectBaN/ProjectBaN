@@ -3,6 +3,7 @@ import React from 'react';
 import HeaderHomeLogo from './HeaderHomeLogo';
 import HeaderSearchForm from './HeaderSearchForm';
 import HeaderSideMenu from './HeaderSideMenu';
+import HeaderCategoryMenu from './HeaderCategoryMenu';
 
 function Header() {
   return (
@@ -10,10 +11,9 @@ function Header() {
       <div className="flex justify-center items-center ">
         <HeaderHomeLogo />
         <HeaderSearchForm />
-      </div>
-      <div className="">
         <HeaderSideMenu />
       </div>
+      <HeaderCategoryMenu />
     </div>
   );
 }
