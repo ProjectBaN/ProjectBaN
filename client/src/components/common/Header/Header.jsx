@@ -1,9 +1,8 @@
 import React from 'react';
 
-import HeaderButtonIcons from './HeaderButtonIcons';
 import HeaderHomeLogo from './HeaderHomeLogo';
-import HeaderCategoryMenu from './HeaderCategoryMenu';
 import HeaderSearchForm from './HeaderSearchForm';
+import HeaderSideMenu from './HeaderSideMenu';
 
 function Header() {
   return (
@@ -11,6 +10,9 @@ function Header() {
       <div className="flex justify-center items-center ">
         <HeaderHomeLogo />
         <HeaderSearchForm />
+      </div>
+      <div className="">
+        <HeaderSideMenu />
       </div>
     </div>
   );
