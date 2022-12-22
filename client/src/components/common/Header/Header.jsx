@@ -4,6 +4,7 @@ import HeaderHomeLogo from './HeaderHomeLogo';
 import HeaderSearchForm from './HeaderSearchForm';
 import HeaderSideMenu from './HeaderSideMenu';
 import HeaderCategoryMenu from './HeaderCategoryMenu';
+import HeaderMenu from './HeaderMenu';
 
 function Header() {
   return (
@@ -13,7 +14,10 @@ function Header() {
         <HeaderSearchForm />
         <HeaderSideMenu />
       </div>
-      <HeaderCategoryMenu />
+      <div className="w-[620px] pt-6 flex gap-2 justify-start items-center m-auto ">
+        <HeaderCategoryMenu />
+        <HeaderMenu />
+      </div>
     </div>
   );
 }
