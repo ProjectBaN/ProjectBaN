@@ -7,11 +7,11 @@ import HeaderSearchForm from './HeaderSearchForm';
 
 function Header() {
   return (
-    <div>
-      <HeaderCategoryMenu />
-      <HeaderHomeLogo />
-      <HeaderButtonIcons />
-      <HeaderSearchForm />
+    <div className="w-pcContainer m-auto bg-red-300">
+      <div className="flex justify-center items-center ">
+        <HeaderHomeLogo />
+        <HeaderSearchForm />
+      </div>
     </div>
   );
 }
