@@ -1,10 +1,14 @@
 import React from 'react';
+import BestProductCard from '../../common/Body/BestProductCard';
 import EventBannerSlide from '../../EventBanner/EventBannerSlide';
 
 function HomeBody() {
   return (
-    <div className="flex flex-col  justify-center  w-full h-full ">
+    <div className="w-full">
       <EventBannerSlide />
+      <div className="flex w-pcContainer ml-auto mr-auto">
+        <BestProductCard />
+      </div>
     </div>
   );
 }

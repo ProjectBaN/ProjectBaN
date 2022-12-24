@@ -12,13 +12,13 @@ SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 function EventBannerSlide() {
   return (
-    <div>
+    <div className="">
       <Swiper
         spaceBetween={50}
         slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
-        autoplay={{ delay: 1000, disableOnInteraction: false }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
         onSlideChange={() => console.log('slide change')}
       >
         <SwiperSlide>
