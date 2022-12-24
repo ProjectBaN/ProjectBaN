@@ -1,7 +1,7 @@
 import React from 'react';
 
 function HomeBody() {
-  return <div className="body">hi</div>;
+  return <div className="w-full">hi</div>;
 }
 
 export default HomeBody;
