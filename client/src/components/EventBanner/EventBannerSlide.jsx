@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Navigation, Pagination } from 'swiper';
+import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 
 import testImage1 from '../../asset/images/EventBannerSlide1.jpg';
 import testImage2 from '../../asset/images/EventBannerSlide2.jpg';
@@ -8,16 +8,17 @@ import testImage3 from '../../asset/images/EventBannerSlide3.jpg';
 import 'swiper/swiper-bundle.min.css';
 import 'swiper/swiper.min.css';
 
-SwiperCore.use([Navigation, Pagination]);
+SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 function EventBannerSlide() {
   return (
-    <div className="">
+    <div>
       <Swiper
         spaceBetween={50}
         slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
+        autoplay={{ delay: 1000, disableOnInteraction: false }}
         onSlideChange={() => console.log('slide change')}
       >
         <SwiperSlide>
