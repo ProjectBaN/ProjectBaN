@@ -6,7 +6,13 @@ module.exports = {
   },
   extends: ['plugin:import/errors', 'plugin:import/warnings', 'plugin:prettier/recommended'],
   parserOptions: {
+    sourceType: 'module',
     ecmaVersion: 2018,
+    ecmaFeatures: {
+      jsx: true,
+      modules: true,
+      experimentalObjectRestSpread: true,
+    },
   },
   rules: {
     'prettier/prettier': [
