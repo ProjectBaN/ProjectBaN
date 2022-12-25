@@ -16,7 +16,7 @@ function BestProductCard() {
       <div className="flex flex-col mt-4">
         <p className="self-start text-2xl font-bold">베스트상품</p>
         <a href="" className="self-end  mb-4">
-          전체보기<i class="fa-solid fa-circle-arrow-right ml-1"></i>
+          전체보기<i className="fa-solid fa-circle-arrow-right ml-1"></i>
         </a>
       </div>
 
