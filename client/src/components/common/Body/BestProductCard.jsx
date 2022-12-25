@@ -3,12 +3,12 @@ import product1 from '../../../asset/images/product1.jpg';
 import product2 from '../../../asset/images/product2.jpg';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { Navigation, Pagination } from 'swiper';
+import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 
 import 'swiper/swiper-bundle.min.css';
 import 'swiper/swiper.min.css';
 
-SwiperCore.use([Navigation, Pagination]);
+SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 function BestProductCard() {
   return (
@@ -20,7 +20,13 @@ function BestProductCard() {
         </a>
       </div>
 
-      <Swiper spaceBetween={50} slidesPerView={1} navigation onSlideChange={() => console.log('slide change')}>
+      <Swiper
+        spaceBetween={50}
+        slidesPerView={1}
+        navigation
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        onSlideChange={() => console.log('slide change')}
+      >
         <SwiperSlide>
           <div className="flex flex-row gap-6 ">
             <div className="product1">
