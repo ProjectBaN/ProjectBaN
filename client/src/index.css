@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.card {
+  @apply shadow-lg border border-solid border-gray-200;
+}
+
 @font-face {
   font-family: 'Anton-Regular';
   src: url('./asset/font/Anton-Regular.ttf');

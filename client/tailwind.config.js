@@ -9,9 +9,9 @@ module.exports = {
     },
     extend: {
       spacing: {
-        sm: '12px',
-        md: '18px',
-        lg: '22px',
+        PCsm: '12px',
+        PCmd: '25px',
+        base: '45px',
       },
       width: {
         pcContainer: '1200px',

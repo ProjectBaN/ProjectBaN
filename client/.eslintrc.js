@@ -7,7 +7,8 @@ module.exports = {
   extends: ['plugin:import/errors', 'plugin:import/warnings', 'plugin:prettier/recommended'],
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2018,
+    ecmaVersion: 2020,
+    allowImportExportEverywhere: true,
     ecmaFeatures: {
       jsx: true,
       modules: true,

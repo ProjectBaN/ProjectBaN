@@ -29,12 +29,12 @@ function BestProductCard() {
       >
         <SwiperSlide>
           <div className="flex flex-row gap-6 ">
-            <div className="product1">
+            <div className="product1 card">
               <img src={product1} alt="" />
               <p className="text-sm">상품1</p>
               <p className="text-base font-bold">10,400원</p>
             </div>
-            <div className="product2">
+            <div className="product2 card">
               <img src={product1} alt="" />
 
               <p className="text-sm">상품2</p>
