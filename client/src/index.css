@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .card {
-  @apply shadow-lg border border-solid border-gray-200;
+  @apply shadow-customShadow border border-solid border-gray-200;
 }
 
 @font-face {

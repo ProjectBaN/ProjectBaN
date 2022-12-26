@@ -13,9 +13,9 @@ SwiperCore.use([Navigation, Pagination, Autoplay]);
 function BestProductCard() {
   return (
     <div className="w-full">
-      <div className="flex flex-col mt-4">
-        <p className="self-start text-2xl font-bold">베스트상품</p>
-        <a href="" className="self-end  mb-4">
+      <div className="flex flex-col mt-7">
+        <p className="self-start font-subtitle text-2xl font-bold">베스트상품</p>
+        <a href="" className="self-end  mb-2 font-subtitle">
           전체보기<i className="fa-solid fa-circle-arrow-right ml-1"></i>
         </a>
       </div>
@@ -28,33 +28,29 @@ function BestProductCard() {
         onSlideChange={() => console.log('slide change')}
       >
         <SwiperSlide>
-          <div className="flex flex-row gap-6 ">
+          <div className="flex flex-row gap-PCmd ">
             <div className="product1 card">
               <img src={product1} alt="" />
-              <p className="text-sm">상품1</p>
+              <p className="text-sm">상품1 </p>
               <p className="text-base font-bold">10,400원</p>
             </div>
             <div className="product2 card">
               <img src={product1} alt="" />
-
               <p className="text-sm">상품2</p>
               <p className="text-base font-bold">9,000원</p>
             </div>
-            <div className="product3">
+            <div className="product3 card">
               <img src={product1} alt="" />
-
               <p className="text-sm">상품3</p>
               <p className="text-base font-bold">12,000원</p>
             </div>
-            <div className="product4">
+            <div className="product4 card">
               <img src={product1} alt="" />
-
               <p className="text-sm">상품4</p>
               <p className="text-base font-bold">19,000원</p>
             </div>
-            <div className="product5">
+            <div className="product5 card">
               <img src={product1} alt="" />
-
               <p className="text-sm">상품5</p>
               <p className="text-base font-bold">20,000원</p>
             </div>
@@ -62,27 +58,27 @@ function BestProductCard() {
         </SwiperSlide>
         <SwiperSlide>
           <div className="flex flex-row gap-6 ">
-            <div className="product1">
+            <div className="product1 card ">
               <img src={product2} alt="" />
               <p className="text-sm">상품1</p>
               <p className="text-base font-bold">11,000원</p>
             </div>
-            <div className="product2">
+            <div className="product2 card">
               <img src={product2} alt="" />
               <p className="text-sm">상품2</p>
               <p className="text-base font-bold">14,000원</p>
             </div>
-            <div className="product3">
+            <div className="product3 card">
               <img src={product2} alt="" />
               <p className="text-sm">상품3</p>
               <p className="text-base font-bold">100,000원</p>
             </div>
-            <div className="product4">
+            <div className="product4 card">
               <img src={product2} alt="" />
               <p className="text-sm">상품4</p>
               <p className="text-base font-bold">101,000원</p>
             </div>
-            <div className="product5">
+            <div className="product5 card">
               <img src={product2} alt="" />
               <p className="text-sm">상품</p>
               <p className="text-base font-bold">102,000원</p>
