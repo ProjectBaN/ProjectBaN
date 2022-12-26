@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Anton-Regular';
+  src: url('./asset/font/Anton-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Cafe24Ssurround';
+  src: url('./asset/font/Cafe24Ssurround.ttf');
+}
+
+@font-face {
+  font-family: 'Cafe24SsurroundAir';
+  src: url('./asset/font/Cafe24SsurroundAir.ttf');
+}
