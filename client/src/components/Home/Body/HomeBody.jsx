@@ -1,13 +1,14 @@
 import React from 'react';
-import BestProductCard from '../../common/Body/BestProductCard';
-import EventBannerSlide from '../../EventBanner/EventBannerSlide';
+import BestProductCard from './BestProductCard';
+import EventBannerSlide from '../../common/EventBanner/EventBannerSlide';
+import BestProductContainer from '../Container/BestProductContainer';
 
 function HomeBody() {
   return (
     <div className="w-full mt-PCbase ">
       <EventBannerSlide />
       <div className="flex w-pcContainer ml-auto mr-auto">
-        <BestProductCard />
+        <BestProductContainer />
       </div>
     </div>
   );
