@@ -4,7 +4,7 @@ import EventBannerSlide from '../../EventBanner/EventBannerSlide';
 
 function HomeBody() {
   return (
-    <div className="w-full">
+    <div className="w-full mt-PCbase ">
       <EventBannerSlide />
       <div className="flex w-pcContainer ml-auto mr-auto">
         <BestProductCard />

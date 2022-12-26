@@ -11,7 +11,7 @@ module.exports = {
       spacing: {
         PCsm: '12px',
         PCmd: '25px',
-        base: '45px',
+        PCbase: '45px',
       },
       boxShadow: {
         customShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; ',

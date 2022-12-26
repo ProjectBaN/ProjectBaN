@@ -8,13 +8,13 @@ import HeaderMenu from './HeaderMenu';
 
 function Header() {
   return (
-    <div className="w-pcContainer ml-auto mr-auto mb-8  ">
-      <div className="flex gap-10 items-end pt-8">
+    <div className="flex flex-col  gap-PCmd w-pcContainer mx-auto mt-PCbase  ">
+      <div className="flex gap-PCmd items-end">
         <HeaderHomeLogo />
         <HeaderSearchForm />
         <HeaderSideMenu />
       </div>
-      <div className="flex gap-5 items-center pt-8">
+      <div className="flex gap-PCsm items-baseline">
         <HeaderCategoryMenu />
         <HeaderMenu />
       </div>

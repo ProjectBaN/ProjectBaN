@@ -13,9 +13,9 @@ SwiperCore.use([Navigation, Pagination, Autoplay]);
 function BestProductCard() {
   return (
     <div className="w-full">
-      <div className="flex flex-col mt-7">
+      <div className="flex flex-col gap-PCsm mt-PCbase">
         <p className="self-start font-subtitle text-2xl font-bold">베스트상품</p>
-        <a href="" className="self-end  mb-2 font-subtitle">
+        <a href="" className="self-end font-subtitle">
           전체보기<i className="fa-solid fa-circle-arrow-right ml-1"></i>
         </a>
       </div>
@@ -26,6 +26,7 @@ function BestProductCard() {
         navigation
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         onSlideChange={() => console.log('slide change')}
+        className="mt-PCsm"
       >
         <SwiperSlide>
           <div className="flex flex-row gap-PCmd ">
@@ -57,7 +58,7 @@ function BestProductCard() {
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="flex flex-row gap-6 ">
+          <div className="flex flex-row gap-PCmd ">
             <div className="product1 card ">
               <img src={product2} alt="" />
               <p className="text-sm">상품1</p>
