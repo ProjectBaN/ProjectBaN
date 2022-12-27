@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import HeaderDropDownMenu from './HeaderDropDownMenu';
+import HeaderDropDownMenu from '../Header/HeaderDropDownMenu';
 
-function HeaderCategoryMenu() {
+function CategoryMenu() {
   return (
     <div className="dropdown dropDown relative w-32 flex justify-center hover:bg-black hover:text-white">
       <i className="text-2xl fas fa-bars mr-PCsm  "></i>
@@ -13,4 +13,4 @@ function HeaderCategoryMenu() {
   );
 }
 
-export default HeaderCategoryMenu;
+export default CategoryMenu;

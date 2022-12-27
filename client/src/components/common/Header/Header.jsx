@@ -3,7 +3,7 @@ import React from 'react';
 import HeaderHomeLogo from './HeaderHomeLogo';
 import HeaderSearchForm from './HeaderSearchForm';
 import HeaderSideMenu from './HeaderSideMenu';
-import HeaderCategoryMenu from './HeaderCategoryMenu';
+import CategoryMenu from '../CategoryMenu/CategoryMenu';
 import HeaderMenu from './HeaderMenu';
 
 function Header() {
@@ -15,7 +15,7 @@ function Header() {
         <HeaderSideMenu />
       </div>
       <div className="flex gap-PCsm items-center ">
-        <HeaderCategoryMenu />
+        <CategoryMenu />
         <HeaderMenu />
       </div>
     </div>
