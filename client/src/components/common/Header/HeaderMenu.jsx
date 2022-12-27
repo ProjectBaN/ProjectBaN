@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function HeaderMenu() {
   return (
-    <div className="flex gap-PCsm text-base">
+    <div className="flex gap-PCsm text-base ">
       <Link to="/">네일</Link>
       <Link to="/">페디</Link>
       <Link to="/">큐티클</Link>

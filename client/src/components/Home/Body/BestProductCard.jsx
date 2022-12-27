@@ -1,6 +1,5 @@
 import React from 'react';
 function BestProductCard(props) {
-  console.log(props.imageProps);
   return (
     <div className="flex flex-col gap-PCsm card ">
       <img src={props.imageProps.imgurl} alt="" />

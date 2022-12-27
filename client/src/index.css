@@ -5,6 +5,12 @@
 .card {
   @apply shadow-customShadow rounded-sm border border-solid border-gray-200;
 }
+.dropDown:hover .dropDownMenu {
+  display: block;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
 
 @font-face {
   font-family: 'Anton-Regular';
