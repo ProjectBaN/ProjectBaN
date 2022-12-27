@@ -11,10 +11,11 @@ function BestProductCardList(props) {
     <div className="w-full">
       <div className="flex flex-col mt-PCbase">
         <p className="self-start font-subtitle text-2xl font-bold">베스트상품</p>
-        <div className="flex justify-end mb-PCsm">
+        <div className="flex justify-end items-center ">
           <a href="" className="font-subtitle">
-            전체보기<i className="fa-solid fa-circle-arrow-right ml-1"></i>
+            전체보기
           </a>
+          <i className="fa-solid fa-circle-arrow-right ml-1"></i>
         </div>
       </div>
 

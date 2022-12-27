@@ -5,8 +5,8 @@ import testImage1 from '../../../asset/images/EventBannerSlide1.jpg';
 import testImage2 from '../../../asset/images/EventBannerSlide2.jpg';
 import testImage3 from '../../../asset/images/EventBannerSlide3.jpg';
 
-import 'swiper/swiper-bundle.min.css';
-import 'swiper/swiper.min.css';
+import '../../../styles/swiper-bundle.min.css';
+import '../../../styles/swiper.min.css';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
