@@ -7,6 +7,10 @@ module.exports = {
       subtitle: ['Cafe24Ssurround'],
       contents: ['Cafe24SsurroundAir'],
     },
+    color: {
+      black: '#000000',
+      darkGray: '#474747',
+    },
     extend: {
       spacing: {
         PCsm: '12px',

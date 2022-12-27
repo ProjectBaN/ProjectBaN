@@ -4,8 +4,8 @@ function BestProductCard(props) {
   return (
     <div className="flex flex-col gap-PCsm card ">
       <img src={props.imageProps.imgurl} alt="" />
-      <p className="text-sm">{props.imageProps.names}</p>
-      <p className="text-base font-bold">{props.imageProps.price}</p>
+      <p className="p-PCsm text-sm ">{props.imageProps.names}</p>
+      <p className="p-PCsm text-base  font-bold">{props.imageProps.price}</p>
     </div>
   );
 }

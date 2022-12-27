@@ -12,7 +12,7 @@ SwiperCore.use([Navigation, Pagination, Autoplay]);
 
 function EventBannerSlide() {
   return (
-    <div className={` `}>
+    <div className={``}>
       <Swiper
         spaceBetween={50}
         slidesPerView={1}
