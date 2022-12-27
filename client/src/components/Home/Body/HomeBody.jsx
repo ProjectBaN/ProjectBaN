@@ -4,8 +4,11 @@ import BestProductContainer from '../Container/BestProductContainer';
 
 function HomeBody() {
   return (
-    <div className="w-full mt-PCbase ">
-      <EventBannerSlide />
+    <div className="w-full mt-PCbase  ">
+      {/* 컨테이너  배 경색 state setstate > 아래에 던지고 > next setstate > >*/}
+      <div className="">
+        <EventBannerSlide />
+      </div>
       <div className="flex w-pcContainer ml-auto mr-auto">
         <BestProductContainer />
       </div>

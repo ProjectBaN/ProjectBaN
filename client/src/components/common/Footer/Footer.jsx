@@ -4,7 +4,7 @@ import FooterAboutUs from './FooterAboutUs';
 
 function Footer() {
   return (
-    <div className="flex w-pcContainer ml-auto mr-auto">
+    <div className=" flex h-44 w-pcContainer bg-[#474747] ml-auto mr-auto relative ">
       <FooterAboutUs />
       <FooterCustomerCenter />
     </div>

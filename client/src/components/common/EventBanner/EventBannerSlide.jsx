@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 
@@ -5,8 +7,10 @@ import testImage1 from '../../../asset/images/EventBannerSlide1.jpg';
 import testImage2 from '../../../asset/images/EventBannerSlide2.jpg';
 import testImage3 from '../../../asset/images/EventBannerSlide3.jpg';
 
-import '../../../styles/swiper-bundle.min.css';
-import '../../../styles/swiper.min.css';
+import 'swiper/swiper.min.css';
+import 'swiper/swiper-bundle.min.css';
+
+import '../../../styles/swiperCustom.css';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 

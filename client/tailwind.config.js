@@ -13,6 +13,7 @@ module.exports = {
     },
     extend: {
       spacing: {
+        HeaderMarginBottomSpace: '-8px',
         PCsm: '12px',
         PCmd: '25px',
         PCbase: '45px',
