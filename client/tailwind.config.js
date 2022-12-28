@@ -21,17 +21,19 @@ module.exports = {
     extend: {
       spacing: {
         HeaderMarginBottomSpace: '-8px',
-        PCsm: '12px',
-        PCmd: '25px',
-        PCbase: '45px',
+        PcSm: '12px',
+        PcMd: '25px',
+        PcBase: '45px',
+        MbSm: '10px',
+        MbMedium: '25px',
       },
       boxShadow: {
         customShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; ',
         hoverShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       },
       width: {
-        pcContainer: '1200px',
-        pcSearchForm: '440px',
+        PcContainer: '1200px',
+        PcSearchForm: '440px',
       },
     },
   },
