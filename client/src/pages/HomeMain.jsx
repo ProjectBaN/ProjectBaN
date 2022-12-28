@@ -6,7 +6,7 @@ import HomeHeader from '../components/Home/Header/HomeHeader';
 
 function HomeMain() {
   return (
-    <div className=" mx-auto">
+    <div className="sm:w-screen">
       <HomeHeader />
       <HomeBody />
       <HomeFooter />
