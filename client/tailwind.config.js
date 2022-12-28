@@ -18,6 +18,9 @@ module.exports = {
       black: '#000000',
       darkGray: '#474747',
     },
+    maxWidth: {
+      signUpContainer: '480px',
+    },
     extend: {
       spacing: {
         HeaderMarginBottomSpace: '-8px',
@@ -32,8 +35,9 @@ module.exports = {
         hoverShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       },
       width: {
-        PcContainer: '1200px',
-        PcSearchForm: '440px',
+        pcContainer: '1200px',
+        pcSearchForm: '440px',
+        signUpContainer: '480px',
       },
     },
   },
