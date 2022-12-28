@@ -9,7 +9,7 @@ function HomeBody() {
       <div className="">
         <EventBannerSlide />
       </div>
-      <div className="flex w-pcContainer ml-auto mr-auto">
+      <div className="md:w-2/3 flex w-pcContainer ml-auto mr-auto">
         <BestProductContainer />
       </div>
     </div>
