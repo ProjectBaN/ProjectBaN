@@ -5,6 +5,13 @@
 .card {
   @apply shadow-customShadow rounded-sm border border-solid border-gray-200;
 }
+.xsContainer {
+  @apply xs:flex xs:flex-col xs:justify-center xs:items-center xs:mt-MbSm;
+}
+.smContainer {
+  @apply sm:flex sm:flex-row sm:gap-MbMedium;
+}
+
 .dropDown:hover .dropDownMenu {
   display: block;
   z-index: 5;

@@ -7,27 +7,29 @@ import HeaderMenu from './HeaderMenu';
 import HomeLogo from './HomeLogo';
 import HeaderEventBanner from './HeaderEventBanner';
 import HeaderButtonIcons from './HeaderButtonIcons';
+import CategoryModal from '../CategoryMenu/CategoryModal';
 
 function Header() {
   return (
-    <header class=" w-full ">
+    <header className=" w-full ">
       <HeaderEventBanner />
-      <div class="flex items-center justify-center mt-MbBase">
-        <div class="flex flex-row gap-MbMedium items-center md:flex flex-col ">
-          <HomeLogo />
-          <HeaderSearchForm />
-          <div class="flex justify-between items-center hidden md:hidden lg:block xl:block">
-            <HeaderSideMenu />
-          </div>
-          <div class="hidden md:block lg:hidden xl:hidden">
-            <HeaderButtonIcons />
-          </div>
+      <div className="mt-MbMedium ml-MbMedium ">
+        <CategoryModal />
+      </div>
+      <div className="xsContainer smContainer ">
+        <HomeLogo />
+        <HeaderSearchForm />
+        <div className=" hidden md:hidden lg:block xl:block">
+          <HeaderSideMenu />
+        </div>
+        <div className="hidden sm:block md:block lg:hidden xl:hidden">
+          <HeaderButtonIcons />
         </div>
       </div>
-      <div className="flex flex-col justify-center mt-MbSm gap-MbMedium md:flex-row items-center ">
-        <HeaderMenu />
-        <div className="md:block flex flex-row">
+      <div className="xs:flex xs:flex-row xs:justify-center xs:items-center xs:gap-MbMedium xs:mt-MbSm">
+        <div className="xs:hidden flex flex-row ">
           <CategoryMenu />
+          <HeaderMenu />
         </div>
       </div>
     </header>
