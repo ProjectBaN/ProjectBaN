@@ -1,57 +1,86 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../../../common/Modal';
 
+// 값 숨기기
 const joinTermList = [
-  '만 14세 이상입니다.',
-  '이용약관동의',
-  '개인정도 수집 및 동의',
-  '선택정보 수집및 동의',
-  '개인정보 유효기관 3년(미동의 시 1년)',
-  '이메일 마케팅동의',
+  {
+    id: 1,
+    title: '만 14세 이상입니다.',
+    required: true,
+    contents:
+      'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos dolorum natus dignissimos nemo qui modi delectus, quam omnis odio animi neque tempora, itaque ratione, quas reiciendis. Facere dolorem incidunt soluta ',
+  },
+  { id: 2, title: '이용약관동의', required: true },
+  { id: 3, title: '개인정도 수집 및 동의', required: true },
+  { id: 4, title: '선택정보 수집및 동의', required: false },
+  { id: 5, title: '개인정보 유효기관 3년(미동의 시 1년)', required: false },
+  { id: 6, title: '이메일 마케팅동의', required: false },
 ];
 
-const requireJoinTermList = ['만 14세 이상입니다.', '이용약관동의', '개인정도 수집 및 동의'];
+const joinTermRequiredList = joinTermList.filter((term) => term.required).map((term) => term.title);
+
+const joinTermTitleList = joinTermList.map((term) => term.title);
 
 function TermBody() {
-  const [termList, setTermList] = useState([]);
-
+  useEffect(() => {
+    allTermCheckSwitch();
+    return () => {};
+  });
+  const navigate = useNavigate();
+  const [termCheckList, setTermCheckList] = useState([]);
   const [allTermListCheck, setAllTermListCheck] = useState(false);
+  const [warmList, setWarmList] = useState([]);
 
-  const JoinSubmit = (event) => {
-    event.preventDefault();
-    // 현재리스트에서 필수 체크리스트만 뽑음
-    const requireCheckList = requireJoinTermList.filter((term) => termList.includes(term));
-    //  위리스트를 돌려 필수 체크리스트 중 없는것을 리스트로 뽑음
-    const nullCheckList = requireJoinTermList.filter((term) => !requireCheckList.includes(term));
-
-    if (nullCheckList.length !== 0) {
-      alert(nullCheckList + '를 입력해주세요');
-    } else {
-      alert('성공입니다.');
-    }
-  };
+  const [moDal, setMoDal] = useState(true);
+  const [moDalContents, setMoDalContents] = useState({ title: 'nn', contents: '내용' });
 
   const termCheck = (event) => {
     if (event.target.checked) {
-      console.log(event.target.value + '체크되었습니다.');
-      setTermList([...termList, event.target.value]);
+      setTermCheckList([...termCheckList, event.target.value]);
+      if (warmList.includes(event.target.value)) {
+        setWarmList(warmList.filter((term) => term !== event.target.value));
+      }
     } else {
-      console.log(event.target.value + '체크해제되었습니다.');
-      setTermList(termList.filter((term) => term !== event.target.value));
+      setTermCheckList(termCheckList.filter((term) => term !== event.target.value));
     }
-    console.log(event.target.checked);
   };
 
   const allTermCheck = (event) => {
     if (event.target.checked) {
-      console.log('모두체크되었습니다.');
+      setTermCheckList(joinTermTitleList);
       setAllTermListCheck(true);
-      setTermList([...joinTermList]);
+      setWarmList([]);
     } else {
-      console.log('모두체크해제되었습니다.');
       setAllTermListCheck(false);
-      setTermList([]);
+      setTermCheckList([]);
     }
-    console.log(event.target.checked);
+  };
+
+  const allTermCheckSwitch = () => {
+    if (termCheckList.length === joinTermList.length) {
+      setAllTermListCheck(true);
+    } else {
+      setAllTermListCheck(false);
+    }
+  };
+
+  const JoinSubmit = (event) => {
+    event.preventDefault();
+    const requiredCheckList = joinTermRequiredList.filter((term) => !termCheckList.includes(term));
+
+    if (requiredCheckList.length !== 0) {
+      alert(requiredCheckList + '를 체크하지 않으셨습니다.');
+      setWarmList(requiredCheckList);
+    } else {
+      const termCheckIdList = joinTermList.filter((term) => termCheckList.includes(term.title)).map((term) => term.id);
+      navigate('/signup/joinform', { state: termCheckIdList });
+    }
+  };
+
+  const modalSet = (title, contents) => {
+    setMoDalContents({ title, contents });
+    setMoDal(true);
   };
 
   return (
@@ -60,95 +89,65 @@ function TermBody() {
       <p className="text-3xl font-bold text-center">약관 동의</p>
 
       {/* form */}
-      <div>
+      <div className="w-full">
         <form action="" className="" onSubmit={JoinSubmit}>
-          <li>
+          <div className="h-20 flex items-center justify-start">
             <input
+              className="appearance-none bg-contain w-8 h-8 checked:bg-hero-pattern checked:bg-blue-600 checked:border-transparent border-2 border-solid border-black"
               type="checkbox"
               name=""
               id=""
               checked={allTermListCheck}
-              value={'모두동의'}
               onChange={allTermCheck}
             />
-            <label>모두 동의</label>
-          </li>
+            <p className="mx-PcSm">모두 동의</p>
+          </div>
 
-          <li>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              checked={termList.includes('만 14세 이상입니다.')}
-              value={'만 14세 이상입니다.'}
-              onChange={termCheck}
-            ></input>
-            <label>만 14세 이상입니다.</label>
-          </li>
+          {joinTermList.map((term) => {
+            return (
+              <li className="relative" key={term.id}>
+                <div className="flex h-20 items-center">
+                  <input
+                    className="appearance-none bg-contain w-8 h-8 checked:bg-hero-pattern checked:bg-blue-600 checked:border-transparent border-2 border-solid border-black"
+                    type="checkbox"
+                    id=""
+                    name=""
+                    checked={termCheckList.includes(term.title)}
+                    value={term.title}
+                    onChange={termCheck}
+                  />
 
-          <li>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              checked={termList.includes('이용약관동의')}
-              value={'이용약관동의'}
-              onChange={termCheck}
-            ></input>
-            <label>이용약관 동의</label>
-          </li>
+                  {term.required === true ? (
+                    <p className="mx-PcSm font-bold text-sm">{term.title}</p>
+                  ) : (
+                    <p className="mx-PcSm text-sm">{term.title}</p>
+                  )}
 
-          <li>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              checked={termList.includes('개인정도 수집 및 동의')}
-              value={'개인정도 수집 및 동의'}
-              onChange={termCheck}
-            ></input>
-            <label>개인정도 수집 및 동의</label>
-          </li>
+                  {term.required === true ? <p className="font-bold">(필수)</p> : <div>(선택)</div>}
 
-          <li>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              checked={termList.includes('선택정보 수집및 동의')}
-              value={'선택정보 수집및 동의'}
-              onChange={termCheck}
-            ></input>
-            <label>'선택정보 수집및 동의'</label>
-          </li>
+                  {term.contents && (
+                    <button
+                      className="absolute right-0 font-bold"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        modalSet(term.title, term.contents);
+                      }}
+                    >
+                      내용보기
+                    </button>
+                  )}
+                </div>
+                {warmList.includes(term.title) && <div className="text-red-500">필수 동의 입니다.</div>}
+              </li>
+            );
+          })}
 
-          <li>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              checked={termList.includes('이메일 마케팅동의')}
-              value={'이메일 마케팅동의'}
-              onChange={termCheck}
-            ></input>
-            <label>이메일 마케팅동의</label>
-          </li>
-
-          <li>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              checked={termList.includes('개인정보 유효기관 3년(미동의 시 1년)')}
-              value={'개인정보 유효기관 3년(미동의 시 1년)'}
-              onChange={termCheck}
-            ></input>
-            <label>개인정보 유효기관 3년(미동의 시 1년)</label>
-          </li>
-
-          <input type="submit" value={'서브밋'} />
+          <button className="w-full h-20   bg-black text-white" type="submit" value={'서브밋'}>
+            동의하고 시작하기
+          </button>
         </form>
       </div>
+      <Modal modal={moDal} setModal={setMoDal} title={moDalContents.title} contents={moDalContents.contents} />
     </main>
   );
 }
