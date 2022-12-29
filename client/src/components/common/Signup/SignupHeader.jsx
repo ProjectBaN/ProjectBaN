@@ -1,5 +1,5 @@
 import React from 'react';
-import HeaderHomeLogo from '../Header/HeaderHomeLogo';
+import HeaderHomeLogo from '../Header/HomeLogo';
 
 function SignupHeader() {
   return (

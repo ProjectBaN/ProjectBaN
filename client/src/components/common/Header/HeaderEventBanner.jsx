@@ -3,7 +3,7 @@ import EventBannerSlide from '../../../asset/images/HeaderEventBanner.jpg';
 
 function HeaderEventBanner() {
   return (
-    <div className="w-full ">
+    <div>
       <img src={EventBannerSlide} alt="" />
     </div>
   );

@@ -3,6 +3,7 @@ module.exports = {
   content: ['./src/**/*.{html,js,jsx}'],
   theme: {
     screens: {
+      xs: '540px',
       sm: '640px',
       md: '768px',
       lg: '1024px',
@@ -18,9 +19,7 @@ module.exports = {
       black: '#000000',
       darkGray: '#474747',
     },
-    maxWidth: {
-      signUpContainer: '480px',
-    },
+
     extend: {
       spacing: {
         HeaderMarginBottomSpace: '-8px',
@@ -29,6 +28,10 @@ module.exports = {
         PcBase: '45px',
         MbSm: '10px',
         MbMedium: '25px',
+        MbBase: '40px',
+      },
+      maxWidth: {
+        signUpContainer: '480px',
       },
       boxShadow: {
         customShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; ',
@@ -36,8 +39,10 @@ module.exports = {
       },
       width: {
         PcContainer: '1200px',
+        mbContainer: '768px',
         PcSearchForm: '440px',
-        MbSearchForm: '200px',
+        MbSearchForm: '320px',
+        Mb1SearchForm: '800px',
         signUpContainer: '480px',
       },
     },
