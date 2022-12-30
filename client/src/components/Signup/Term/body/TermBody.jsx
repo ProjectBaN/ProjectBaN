@@ -32,8 +32,8 @@ function TermBody() {
   const [allTermListCheck, setAllTermListCheck] = useState(false);
   const [warmList, setWarmList] = useState([]);
 
-  const [moDal, setMoDal] = useState(true);
-  const [moDalContents, setMoDalContents] = useState({ title: 'nn', contents: '내용' });
+  const [moDal, setMoDal] = useState(false);
+  const [moDalContents, setMoDalContents] = useState({ title: '', contents: '' });
 
   const termCheck = (event) => {
     if (event.target.checked) {

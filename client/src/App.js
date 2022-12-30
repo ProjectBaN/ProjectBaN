@@ -6,6 +6,7 @@ import Signup from './pages/Signup/Signup';
 import Term from './pages/Signup/Term';
 import HomeMain from './pages/HomeMain';
 import JoinForm from './pages/Signup/JoinForm';
+import SignupOk from './pages/Signup/SignupOk';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/signup" element={<Signup />}></Route>
         <Route path="/signup/term" element={<Term />}></Route>
         <Route path="/signup/joinform" element={<JoinForm />}></Route>
+        <Route path="/signup/ok" element={<SignupOk />}></Route>
       </Routes>
     </div>
   );
