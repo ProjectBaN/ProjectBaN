@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function HeaderMenu() {
   return (
-    <div className="flex flex-row font-contents font-bold gap-MbSm ">
+    <div className="w-72 flex flex-row font-contents font-bold gap-MbSm ">
       <Link to="/" className="">
         네일
       </Link>

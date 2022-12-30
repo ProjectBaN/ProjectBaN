@@ -11,7 +11,7 @@ import CategoryModal from '../CategoryMenu/CategoryModal';
 
 function Header() {
   return (
-    <header className="">
+    <header>
       <HeaderEventBanner />
       <div className=" md:flex md:justify-around md:mx-auto">
         <div className=" md:hidden absolute top-MbBase left-MbBase ">
@@ -20,7 +20,7 @@ function Header() {
         <div className="mbContainer md:flex md:flex-row md:items-center">
           <HomeLogo />
           <HeaderSearchForm />
-          <div className=" hidden md: md:block">
+          <div className=" hidden md:block">
             <HeaderSideMenu />
           </div>
           <div className="hidden  md:hidden lg:hidden xl:hidden">
@@ -28,7 +28,7 @@ function Header() {
           </div>
         </div>
       </div>
-      <div className="hidden md:flex md:gap-MbMedium md:items-center md:mt-MbMedium md:justify-center ">
+      <div className="hidden md:w-mbContainer md:mx-auto md:flex md:gap-MbMedium md:items-center md:mt-MbMedium md:justify-start">
         <CategoryMenu />
         <HeaderMenu />
       </div>

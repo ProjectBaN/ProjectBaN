@@ -45,7 +45,7 @@ module.exports = {
       },
       width: {
         PcContainer: '1200px',
-        mbContainer: '768px',
+        mbContainer: '764px',
         PcSearchForm: '440px',
         MbSearchForm: '320px',
         Mb1SearchForm: '800px',

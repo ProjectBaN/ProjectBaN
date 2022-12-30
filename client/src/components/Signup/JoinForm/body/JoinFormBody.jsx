@@ -182,7 +182,7 @@ function JoinFormBody() {
             value={input.name}
             onChange={OnChange}
             className={
-              `${warning.id ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '}` +
+              `${warning.name ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '}` +
               'w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none '
             }
             placeholder="성함을 입력하세요"
@@ -199,8 +199,9 @@ function JoinFormBody() {
             value={input.email}
             onChange={OnChange}
             className={
-              `${warning.id ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '}` +
-              'w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none '
+              `${
+                warning.email ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '
+              }` + 'w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none '
             }
             placeholder="이메일을 입력하세요(ex:aaaa@aaaa.aa)"
           ></input>
@@ -216,8 +217,9 @@ function JoinFormBody() {
             value={input.phone}
             onChange={OnChange}
             className={
-              `${warning.id ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '}` +
-              'w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none '
+              `${
+                warning.phone ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '
+              }` + 'w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none '
             }
             placeholder="휴대전화 번호를 입력하세요(-를빼고 입력해주세요)"
           ></input>

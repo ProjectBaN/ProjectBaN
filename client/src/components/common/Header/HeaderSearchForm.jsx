@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 function HeaderSearchForm() {
   return (
-    <div className="xs:mt-MbSm  flex items-center gap-MbSm ">
+    <div className="flex items-center gap-MbSm ">
       <input
         type="text"
         className="flex flex-col pl-MbSm w-MbSearchForm h-MbBase  bg-gray-200 "
