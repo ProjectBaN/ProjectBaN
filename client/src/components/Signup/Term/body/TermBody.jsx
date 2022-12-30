@@ -10,12 +10,13 @@ const joinTermList = [
     required: true,
     contents:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos dolorum natus dignissimos nemo qui modi delectus, quam omnis odio animi neque tempora, itaque ratione, quas reiciendis. Facere dolorem incidunt soluta ',
+    value: '14year',
   },
-  { id: 2, title: '이용약관동의', required: true },
-  { id: 3, title: '개인정도 수집 및 동의', required: true },
-  { id: 4, title: '선택정보 수집및 동의', required: false },
-  { id: 5, title: '개인정보 유효기관 3년(미동의 시 1년)', required: false },
-  { id: 6, title: '이메일 마케팅동의', required: false },
+  { id: 2, title: '이용약관동의', required: true, value: 'use' },
+  { id: 3, title: '개인정도 수집 및 동의', required: true, value: 'info' },
+  { id: 4, title: '선택정보 수집및 동의', required: false, value: 'choiceInfo' },
+  { id: 5, title: '개인정보 유효기관 3년(미동의 시 1년)', required: false, value: '3year' },
+  { id: 6, title: '이메일 마케팅동의', required: false, value: 'email' },
 ];
 
 const joinTermRequiredList = joinTermList.filter((term) => term.required).map((term) => term.title);
@@ -73,7 +74,10 @@ function TermBody() {
       alert(requiredCheckList + '를 체크하지 않으셨습니다.');
       setWarmList(requiredCheckList);
     } else {
-      const termCheckIdList = joinTermList.filter((term) => termCheckList.includes(term.title)).map((term) => term.id);
+      const termCheckIdList = joinTermList
+        .filter((term) => termCheckList.includes(term.title))
+        .map((term) => term.value);
+      console.log(termCheckIdList);
       navigate('/signup/joinform', { state: termCheckIdList });
     }
   };
