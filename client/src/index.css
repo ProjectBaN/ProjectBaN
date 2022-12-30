@@ -5,11 +5,11 @@
 .card {
   @apply shadow-customShadow rounded-sm border border-solid border-gray-200;
 }
-.xsContainer {
-  @apply xs:flex xs:flex-col xs:justify-center xs:items-center xs:mt-MbSm;
+.mdContainer {
+  @apply md:flex md:flex-col md:justify-center md:items-center;
 }
 .smContainer {
-  @apply sm:flex sm:flex-row sm:gap-MbMedium;
+  @apply sm:flex sm:flex-col sm:justify-center sm:items-center sm:gap-MbMedium sm:mt-MbMedium;
 }
 
 .dropDown:hover .dropDownMenu {

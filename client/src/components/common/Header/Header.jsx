@@ -11,23 +11,23 @@ import CategoryModal from '../CategoryMenu/CategoryModal';
 
 function Header() {
   return (
-    <header className=" w-full ">
+    <header className="w-full ">
       <HeaderEventBanner />
-      <div className="mt-MbMedium ml-MbMedium ">
+      <div className="p-3 md:hidden ">
         <CategoryModal />
       </div>
-      <div className="xsContainer smContainer ">
+      <div className="flex flex-col justify-center items-center gap-MbMedium mt-MbMedium md:flex md:flex-row">
         <HomeLogo />
         <HeaderSearchForm />
-        <div className=" hidden md:hidden lg:block xl:block">
+        <div className=" hidden md:block lg:block xl:block">
           <HeaderSideMenu />
         </div>
-        <div className="hidden sm:block md:block lg:hidden xl:hidden">
+        <div className="hidden  md:hidden lg:hidden xl:hidden">
           <HeaderButtonIcons />
         </div>
       </div>
-      <div className="xs:flex xs:flex-row xs:justify-center xs:items-center xs:gap-MbMedium xs:mt-MbSm">
-        <div className="xs:hidden flex flex-row ">
+      <div className="flex flex-row justify-center items-center gap-MbMedium mt-MbSm">
+        <div className="hidden flex flex-row items-center gap-MbMedium ">
           <CategoryMenu />
           <HeaderMenu />
         </div>

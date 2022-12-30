@@ -33,7 +33,7 @@ module.exports = {
         PcMd: '25px',
         PcBase: '45px',
         MbSm: '10px',
-        MbMedium: '25px',
+        MbMedium: '23px',
         MbBase: '40px',
       },
       maxWidth: {

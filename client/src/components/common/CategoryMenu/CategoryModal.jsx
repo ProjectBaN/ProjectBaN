@@ -8,7 +8,7 @@ function CategoryModal() {
     setModalOpen(true);
   };
   return (
-    <div>
+    <div className="absolute ">
       <button onClick={showModal}>
         <i className="text-2xl fas fa-bars mr-PCsm"></i>
       </button>
