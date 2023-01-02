@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function HeaderButtonIcons() {
   return (
-    <div className="flex flex-row   gap-MbMedium ">
+    <div className="flex flex-row gap-MbSm h-full">
       <Link to="/shoppingcart">
         <i className="fas fa-shopping-cart fa-xl"></i>
       </Link>

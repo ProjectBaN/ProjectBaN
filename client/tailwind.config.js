@@ -9,12 +9,10 @@ module.exports = {
   },
   theme: {
     screens: {
-      xs: '500px',
       sm: '640px',
       md: '768px',
       lg: '1024px',
       xl: '1280px',
-      '2xl': '1536px',
     },
     fontFamily: {
       title: ['Anton-Regular', 'sans-serif'],
@@ -32,12 +30,14 @@ module.exports = {
         PcSm: '12px',
         PcMd: '25px',
         PcBase: '45px',
-        MbSm: '10px',
-        MbMedium: '23px',
+        MbSm: '8px',
+        MbMedium: '16px',
+        MbLarge: '20px',
         MbBase: '40px',
       },
       maxWidth: {
         signUpContainer: '480px',
+        mbContainer: '450px',
       },
       boxShadow: {
         customShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; ',
@@ -45,10 +45,9 @@ module.exports = {
       },
       width: {
         PcContainer: '1200px',
-        mbContainer: '764px',
+        mbContainer: '450px',
         PcSearchForm: '440px',
-        MbSearchForm: '320px',
-        Mb1SearchForm: '800px',
+
         signUpContainer: '480px',
       },
       backgroundImage: {

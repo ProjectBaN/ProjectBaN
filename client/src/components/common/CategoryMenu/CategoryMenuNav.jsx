@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function CategoryMenuNav() {
   return (
-    <div className="w-full flex flex-col font-contents font-bold md:flex md:flex-row">
+    <div className="w-full flex flex-col font-contents font-bold">
       <Link to="/" className="pl-MbMedium h-MbBase flex items-center hover:bg-gray-200 text-lg">
         네일
       </Link>
