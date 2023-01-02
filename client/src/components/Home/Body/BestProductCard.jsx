@@ -1,10 +1,10 @@
 import React from 'react';
 function BestProductCard(props) {
   return (
-    <div className="flex flex-col gap-PCsm card ">
-      <img src={props.imageProps.imgurl} alt="" />
-      <p className="p-PCsm text-sm ">{props.imageProps.names}</p>
-      <p className="p-PCsm text-base  font-bold">{props.imageProps.price}</p>
+    <div className="w-full flex flex-col card">
+      <img src={props.imageProps.imgurl} alt="" className="max-w-full" />
+      <p className="">{props.imageProps.names}</p>
+      <p className="">{props.imageProps.price}</p>
     </div>
   );
 }
