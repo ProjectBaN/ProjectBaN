@@ -110,9 +110,9 @@ function JoinFormBody() {
   // 아이디 중복체크
   const blurTest = () => {};
   return (
-    <main className="max-w-signUpContainer m-auto mt-PcBase flex flex-col items-center">
-      <form className="w-full" action="">
-        <li className="mt-PcMd">
+    <main className="max-w-signUpContainer m-auto mt-MbBase flex flex-col items-center">
+      <form className="w-full px-2" action="">
+        <li className="mt-MbSm">
           <p className="font-bold">아이디</p>
           <input
             type="text"

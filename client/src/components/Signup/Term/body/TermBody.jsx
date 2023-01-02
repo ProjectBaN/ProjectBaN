@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../../common/Modal';
+import AllTermListCheck from './AllTermListCheck';
+import CheckList from './CheckList';
 
 // 값 숨기기
 const joinTermList = [
@@ -88,65 +90,28 @@ function TermBody() {
   };
 
   return (
-    <main className="max-w-signUpContainer m-auto mt-PCbase flex flex-col items-center">
+    <main className="max-w-signUpContainer  m-auto mt-PcSm flex flex-col items-center">
       {/* title */}
       <p className="text-3xl font-bold text-center">약관 동의</p>
 
       {/* form */}
       <div className="w-full">
-        <form action="" className="" onSubmit={JoinSubmit}>
-          <div className="h-20 flex items-center justify-start">
-            <input
-              className="appearance-none bg-contain w-8 h-8 checked:bg-hero-pattern checked:bg-blue-600 checked:border-transparent border-2 border-solid border-black"
-              type="checkbox"
-              name=""
-              id=""
-              checked={allTermListCheck}
-              onChange={allTermCheck}
-            />
-            <p className="mx-PcSm">모두 동의</p>
-          </div>
+        <form action="" className="px-2" onSubmit={JoinSubmit}>
+          <AllTermListCheck checked={allTermListCheck} onChange={allTermCheck} />
 
           {joinTermList.map((term) => {
             return (
-              <li className="relative" key={term.id}>
-                <div className="flex h-20 items-center">
-                  <input
-                    className="appearance-none bg-contain w-8 h-8 checked:bg-hero-pattern checked:bg-blue-600 checked:border-transparent border-2 border-solid border-black"
-                    type="checkbox"
-                    id=""
-                    name=""
-                    checked={termCheckList.includes(term.title)}
-                    value={term.title}
-                    onChange={termCheck}
-                  />
-
-                  {term.required === true ? (
-                    <p className="mx-PcSm font-bold text-sm">{term.title}</p>
-                  ) : (
-                    <p className="mx-PcSm text-sm">{term.title}</p>
-                  )}
-
-                  {term.required === true ? <p className="font-bold">(필수)</p> : <div>(선택)</div>}
-
-                  {term.contents && (
-                    <button
-                      className="absolute right-0 font-bold"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        modalSet(term.title, term.contents);
-                      }}
-                    >
-                      내용보기
-                    </button>
-                  )}
-                </div>
-                {warmList.includes(term.title) && <div className="text-red-500">필수 동의 입니다.</div>}
-              </li>
+              <CheckList
+                key={term.id}
+                term={term}
+                CheckList={termCheckList}
+                termCheck={termCheck}
+                warmList={warmList}
+              />
             );
           })}
 
-          <button className="w-full h-20   bg-black text-white" type="submit" value={'서브밋'}>
+          <button className="w-full h-20 bg-black text-white" type="submit" value={'서브밋'}>
             동의하고 시작하기
           </button>
         </form>
