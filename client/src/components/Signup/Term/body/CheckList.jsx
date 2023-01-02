@@ -1,6 +1,6 @@
 import React from 'react';
 
-function CheckList({ term, termCheck, CheckList, warmList }) {
+function CheckList({ term, termCheck, CheckList, warmList, modalSet }) {
   return (
     <li className="relative" key={term.id}>
       <div className="flex h-20 items-center">

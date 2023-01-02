@@ -107,6 +107,7 @@ function TermBody() {
                 CheckList={termCheckList}
                 termCheck={termCheck}
                 warmList={warmList}
+                modalSet={modalSet}
               />
             );
           })}
