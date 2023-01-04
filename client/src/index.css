@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .card {
-  @apply shadow-customShadow rounded-sm border border-solid border-gray-200;
+  @apply max-w-full shadow-customShadow rounded-sm border border-solid border-gray-200;
 }
 .mdContainer {
   @apply md:flex md:flex-col md:justify-center md:items-center;

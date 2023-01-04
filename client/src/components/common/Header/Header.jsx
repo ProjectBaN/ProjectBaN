@@ -13,16 +13,16 @@ function Header() {
   return (
     <header>
       <HeaderEventBanner />
-      <div className="mt-MbMedium px-PcSm flex justify-between items-center">
+      <div className="mt-MbMedium px-MbSm flex justify-between items-center">
         <CategoryModal />
         <HomeLogo />
         <HeaderButtonIcons />
       </div>
-      <div className="w-full mt-MbMedium  px-PcSm">
+      <div className="w-full mt-MbMedium  px-MbSm">
         <HeaderSearchForm />
       </div>
 
-      <div className="px-PcSm mt-MbMedium md:text-lg">
+      <div className="px-MbSm mt-MbMedium md:text-lg">
         <HeaderMenu />
       </div>
 

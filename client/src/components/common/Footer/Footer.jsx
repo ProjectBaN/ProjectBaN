@@ -5,7 +5,7 @@ import FooterCopyRight from './FooterCopyRight';
 
 function Footer() {
   return (
-    <div className="flex flex-col justify-center bg-[#474747] text-xs p-MbSm ">
+    <div className="flex flex-col justify-center  text-xs p-MbSm ">
       <FooterAboutUs />
       <div className="mt-MbSm">
         <FooterCopyRight />
