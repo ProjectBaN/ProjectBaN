@@ -5,13 +5,16 @@ import FooterCopyRight from './FooterCopyRight';
 
 function Footer() {
   return (
-    <div className="flex flex-col justify-center  text-xs p-MbSm ">
-      <FooterAboutUs />
-      <div className="mt-MbSm">
-        <FooterCopyRight />
+    <div className="lg:w-PcContainer md:mx-auto flex flex-col justify-center  text-xs p-MbSm ">
+      <div className="lg:1/3 lg:flex lg:justify-between md:1/2 md:flex md:justify-between">
+        <FooterAboutUs />
+        <div className="hidden  md:block lg:block lg:w-1/3 md:w-1/2  ">
+          <FooterCustomerCenter />
+        </div>
       </div>
-      <div className="hidden">
-        <FooterCustomerCenter />
+
+      <div className="lg:w-PcContainer lg:mx-auto  lg:flex lg:justify-start mt-MbMedium ">
+        <FooterCopyRight />
       </div>
     </div>
   );

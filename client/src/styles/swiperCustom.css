@@ -1,19 +1,23 @@
 span.swiper-pagination-bullet.swiper-pagination-bullet-active {
   background-color: black;
+
   opacity: 1;
 }
 
 .swiper-pagination-bullet {
   background-color: white;
-  width: 25px;
-  height: 25px;
+  width: 2vh;
+  height: 2vh;
   opacity: 0.6;
 }
 .swiper-button-prev {
-  font-size: 24px;
   color: #000;
 }
 
 .swiper-button-next {
   color: #000;
+}
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 7vh;
 }

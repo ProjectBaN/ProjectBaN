@@ -44,11 +44,13 @@ module.exports = {
         hoverShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
       },
       width: {
-        PcContainer: '1200px',
+        PcContainer: '840px',
         mbContainer: '450px',
         PcSearchForm: '440px',
-
         signUpContainer: '480px',
+      },
+      height: {
+        BannerSlideImage: '400px',
       },
       backgroundImage: {
         'hero-pattern':

@@ -13,25 +13,28 @@ function Header() {
   return (
     <header>
       <HeaderEventBanner />
-      <div className="mt-MbMedium px-MbSm flex justify-between items-center">
+      <div className="mt-MbMedium px-MbSm flex justify-between items-center lg:hidden ">
         <CategoryModal />
         <HomeLogo />
         <HeaderButtonIcons />
       </div>
-      <div className="w-full mt-MbMedium  px-MbSm">
-        <HeaderSearchForm />
+      <div className="lg:w-PcContainer lg:mx-auto lg:mt-PcBase">
+        <div className="hidden lg:block lg-w-full  lg:flex lg:justify-center lg:items-center  lg:gap-PcMd ">
+          <HomeLogo />
+          <div className="lg:w-PcSearchForm ">
+            <HeaderSearchForm />
+          </div>
+          <HeaderSideMenu />
+        </div>
       </div>
 
-      <div className="px-MbSm mt-MbMedium md:text-lg">
-        <HeaderMenu />
-      </div>
-
-      <div className="hidden">
-        <CategoryMenu />
-      </div>
-
-      <div className="hidden">
-        <HeaderSideMenu />
+      <div className="px-MbSm mt-MbMedium lg:w-PcContainer lg:mt-PcBase lg:mx-auto">
+        <div className="lg:w-full lg:flex lg:items-center  lg:gap-PcMd ">
+          <div className="hidden lg:block ">
+            <CategoryMenu />
+          </div>
+          <HeaderMenu />
+        </div>
       </div>
     </header>
   );

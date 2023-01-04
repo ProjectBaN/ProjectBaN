@@ -3,10 +3,6 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 
-import testImage1 from '../../../asset/images/EventBannerSlide1.jpg';
-import testImage2 from '../../../asset/images/EventBannerSlide2.jpg';
-import testImage3 from '../../../asset/images/EventBannerSlide3.jpg';
-
 import 'swiper/swiper.min.css';
 import 'swiper/swiper-bundle.min.css';
 
@@ -14,7 +10,8 @@ import '../../../styles/swiperCustom.css';
 
 SwiperCore.use([Navigation, Pagination, Autoplay]);
 
-function EventBannerSlide() {
+function EventBannerSlide(props) {
+  console.log(props.eventBannerSlideList);
   return (
     <div className={``}>
       <Swiper
@@ -25,15 +22,11 @@ function EventBannerSlide() {
         autoplay={{ delay: 4000, disableOnInteraction: false }}
         onSlideChange={() => console.log('slide change')}
       >
-        <SwiperSlide>
-          <img className="w-full" src={testImage1} alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img className="w-full" src={testImage2} alt="" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img className="w-full" src={testImage3} alt="" />
-        </SwiperSlide>
+        {props.eventBannerSlideList.map((eventBanner, index) => (
+          <SwiperSlide key={index} className=" ">
+            <img src={eventBanner.imgUrl} alt="" className="w-full lg:h-BannerSlideImage  mx-auto" />
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

@@ -1,16 +1,18 @@
 import React from 'react';
-import EventBannerSlide from '../../common/EventBanner/EventBannerSlide';
+import EventBannerContainer from '../../common/EventBannerContainer/EventBannerContainer';
 import BestProductContainer from '../Container/BestProductContainer';
 import ProductTabMenu from './ProductTabMenu';
 import QuickCategoryMenu from './QuickCategoryMenu';
 
 function HomeBody() {
   return (
-    <div className="py-MbSm ">
-      <EventBannerSlide />
-      <QuickCategoryMenu />
-      <ProductTabMenu />
-      <BestProductContainer />
+    <div className="lg:mt-PcBase ">
+      <EventBannerContainer />
+      <div className="lg:w-PcContainer mx-auto">
+        <QuickCategoryMenu />
+        <ProductTabMenu />
+        <BestProductContainer />
+      </div>
     </div>
   );
 }

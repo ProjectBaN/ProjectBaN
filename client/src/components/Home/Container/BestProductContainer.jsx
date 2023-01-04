@@ -4,7 +4,7 @@ function BestProductContainer() {
   const imageTest = [
     {
       imgUrl: '/images/product1.jpg',
-      productName: '노트북 플러스2 NT550XDA-K24AG SSD 256GB',
+      productName: '노트북 플러스 2! NT550XDA-K24AG SSD 256GB',
       productPrice: '651,570원',
       eventCoupon: '10% 쿠폰',
       cardSale: '카드 7%',
@@ -14,7 +14,7 @@ function BestProductContainer() {
     },
     {
       imgUrl: '/images/product2.jpg',
-      productName: '삼성전자 노트북 플러스2 NT550XDA-KC35W',
+      productName: '노트북 플러스2 NT550XDA-KC35W',
       productPrice: '1,050,000원',
       eventCoupon: '10% 쿠폰',
       cardSale: '카드 7%',
@@ -44,7 +44,7 @@ function BestProductContainer() {
     },
     {
       imgUrl: '/images/product5.jpg',
-      productName: '유튜버 극찬! 인기모음전 zd8 울트라맥스',
+      productName: '인기모음전 zd8 울트라맥스',
       productPrice: '31,190원',
       eventCoupon: '10% 쿠폰',
       cardSale: '카드 7%',
