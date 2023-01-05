@@ -107,7 +107,7 @@ module.exports = {
 2.  공통 css 값 정리완료
 3.  Redux State 및 기능 설계완료 구축대기(백엔드 테스트서버 테스트 중 )
 4.  현재 프론트 -> 디자인 jsx화(이승제) 및 기능설계 및 디버깅, 기능 구현대기(백엔드 테스트 서버 테스트중)(김병민)
-5.  백엔드 ->db(cafe24) & node 테스트완료 및 테스트 서버 배포 중
+5.  백엔드 ->db(cafe24) & node 테스트완료 및 테스트 서버 배포 준비중
     <br>
 
 ## **💎 Main(이승제)**
@@ -132,7 +132,7 @@ module.exports = {
 
 ### signup
 
-![](./reaemeAssets/signup%ED%8E%98%EC%9D%B4%EC%A7%80.png)
+![](./reaemeAssets/joinform.png)
 
 > 📜 설명 :
 
@@ -167,7 +167,7 @@ module.exports = {
 
 ### signup/joinform
 
-![](./reaemeAssets/joinform%ED%8E%98%EC%9D%B4%EC%A7%80.png)
+![](./reaemeAssets/joinform.png)
 
 > 📜 설명 :
 
