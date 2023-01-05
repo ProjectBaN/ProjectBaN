@@ -12,10 +12,10 @@ import BestProductCard from './BestProductCard';
 
 function BestProductCardList(props) {
   return (
-    <div className="w-full h-full mt-PcBase">
+    <div className="w-full h-full mt-MbLarge md:mt-MbLarge lg:mt-PcBase">
       <div className="flex flex-col lg:flex lg:flex-row lg:items-center lg:justify-between  mt-PCbase px-MbSm lg:px-0">
         <p className="flex  justify-center lg:justify-start font-subtitle text-xl font-bold ">베스트상품</p>
-        <a href="" className="flex self-end  items-center text-sm font-subtitle">
+        <a href="" className="flex self-end  items-center text-sm font-subtitle hidden lg:block">
           전체보기
           <i className="fa-solid fa-circle-arrow-right pl-MbSm "></i>
         </a>
@@ -35,7 +35,7 @@ function BestProductCardList(props) {
         ))}
       </Swiper>
 
-      <div className="w-full flex flex-row flex-wrap mt-MbMedium  gap-MbMedium text-xs px-MbSm lg:hidden md:w-full md:flex md:flex-wrap  ">
+      <div className="w-full flex flex-row flex-wrap mt-MbMedium gap-MbMedium text-xs px-MbSm lg:hidden md:flex-wrap  ">
         {props.imageProps.map((bestProduct, index) => (
           <BestProductCard key={index} imageProps={bestProduct} />
         ))}

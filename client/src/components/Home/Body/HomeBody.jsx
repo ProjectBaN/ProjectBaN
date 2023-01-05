@@ -3,14 +3,15 @@ import EventBannerContainer from '../../common/EventBannerContainer/EventBannerC
 import BestProductContainer from '../Container/BestProductContainer';
 import ProductTabMenu from './ProductTabMenu';
 import QuickCategoryMenu from './QuickCategoryMenu';
+import RecommendProductContainer from './RecommendProductContainer';
 
 function HomeBody() {
   return (
-    <div className="lg:mt-PcBase ">
+    <div className="mt-MbSm lg:mt-PcSm ">
       <EventBannerContainer />
       <div className="lg:w-PcContainer mx-auto">
         <QuickCategoryMenu />
-        <ProductTabMenu />
+        <RecommendProductContainer />
         <BestProductContainer />
       </div>
     </div>

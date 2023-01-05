@@ -10,14 +10,14 @@ span.swiper-pagination-bullet.swiper-pagination-bullet-active {
   height: 2vh;
   opacity: 0.6;
 }
-.swiper-button-prev {
-  color: #000;
-}
-
+.swiper-button-prev,
 .swiper-button-next {
   color: #000;
 }
-.swiper-button-next:after,
-.swiper-button-prev:after {
-  font-size: 7vh;
+
+@media (max-width: 640px) {
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 1.5em;
+  }
 }
