@@ -3,7 +3,20 @@
 @tailwind utilities;
 
 .card {
-  @apply shadow-lg border border-solid border-gray-200;
+  @apply max-w-full shadow-customShadow rounded-sm border border-solid border-gray-200;
+}
+.mdContainer {
+  @apply md:flex md:flex-col md:justify-center md:items-center;
+}
+.mbContainer {
+  @apply flex flex-col justify-center items-center gap-MbMedium mt-MbMedium;
+}
+
+.dropDown:hover .dropDownMenu {
+  display: block;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
 }
 
 @font-face {

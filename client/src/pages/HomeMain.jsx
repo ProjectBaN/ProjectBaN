@@ -6,7 +6,7 @@ import HomeHeader from '../components/Home/Header/HomeHeader';
 
 function HomeMain() {
   return (
-    <div>
+    <div className="">
       <HomeHeader />
       <HomeBody />
       <HomeFooter />

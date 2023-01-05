@@ -3,7 +3,7 @@ import Footer from '../../common/Footer/Footer';
 
 function HomeFooter() {
   return (
-    <div className="w-full mt-5 bg-[#474747] text-white">
+    <div className=" bg-[#474747] text-white mt-MbMedium">
       <Footer />
     </div>
   );

@@ -1,24 +1,39 @@
 import React from 'react';
 
-import HeaderHomeLogo from './HeaderHomeLogo';
 import HeaderSearchForm from './HeaderSearchForm';
 import HeaderSideMenu from './HeaderSideMenu';
-import HeaderCategoryMenu from './HeaderCategoryMenu';
+import CategoryMenu from '../CategoryMenu/CategoryMenu';
 import HeaderMenu from './HeaderMenu';
+import HomeLogo from './HomeLogo';
+import HeaderEventBanner from './HeaderEventBanner';
+import HeaderButtonIcons from './HeaderButtonIcons';
+import CategoryModal from '../CategoryMenu/CategoryModal';
 
 function Header() {
   return (
-    <div className="w-pcContainer ml-auto mr-auto mb-8  ">
-      <div className="flex gap-10 items-end pt-8">
-        <HeaderHomeLogo />
-        <HeaderSearchForm />
-        <HeaderSideMenu />
+    <header>
+      <HeaderEventBanner />
+      <div className="mt-MbMedium px-MbSm flex justify-between items-center">
+        <CategoryModal />
+        <HomeLogo />
+        <HeaderButtonIcons />
       </div>
-      <div className="flex gap-5 items-center pt-8">
-        <HeaderCategoryMenu />
+      <div className="w-full mt-MbMedium  px-MbSm">
+        <HeaderSearchForm />
+      </div>
+
+      <div className="px-MbSm mt-MbMedium md:text-lg">
         <HeaderMenu />
       </div>
-    </div>
+
+      <div className="hidden">
+        <CategoryMenu />
+      </div>
+
+      <div className="hidden">
+        <HeaderSideMenu />
+      </div>
+    </header>
   );
 }
 

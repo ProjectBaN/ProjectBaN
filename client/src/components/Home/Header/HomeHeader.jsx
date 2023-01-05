@@ -1,10 +1,8 @@
 import React from 'react';
 import Header from '../../common/Header/Header';
-import HeaderEventBanner from '../../common/Header/HeaderEventBanner';
 function HomeHeader() {
   return (
-    <div className="w-full">
-      <HeaderEventBanner />
+    <div className="">
       <Header />
     </div>
   );

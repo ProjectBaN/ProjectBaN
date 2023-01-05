@@ -2,9 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 function HeaderSearchForm() {
   return (
-    <div className="flex gap-2 items-center ">
-      <input type="text" className="w-pcSearchForm h-10 bg-gray-200 " placeholder="상품을 입력하세요" />
-      <Link to="/" className="">
+    <div className="flex items-center gap-MbSm w-full">
+      <input
+        type="text"
+        className="flex flex-col w-full pl-MbSm  h-MbBase  bg-gray-200 "
+        placeholder="상품을 입력하세요"
+      />
+      <Link to="/">
         <i className="fa-solid fa-magnifying-glass fa-xl "></i>
       </Link>
     </div>
