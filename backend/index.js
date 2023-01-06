@@ -3,13 +3,20 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
+const maria = require('./database/maria');
+
 const app = express();
 
-const maria = require('./database/maria');
+const userRouter = require('./routes/user');
+
 maria.connect();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/user", userRouter);
+
+
 
 app.listen(8000, console.log("server started"));
 
