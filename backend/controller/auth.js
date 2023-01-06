@@ -2,30 +2,48 @@ const maria = require("../database/maria");
 const bcrypt = require("bcrypt");
 
 const signUp = async (req, res) => {
-  if (!req.body.data) {
-    return res.status(401).send("값이없습니다.");
+  if (
+    !req.body.data ||
+    !req.body.data.id ||
+    !req.body.data.password ||
+    !req.body.data.name ||
+    !req.body.data.gender ||
+    !req.body.data.email ||
+    !req.body.data.phone ||
+    !req.body.data.addr ||
+    !req.body.data.age ||
+    !req.body.data.termAge ||
+    !req.body.data.termUse ||
+    !req.body.data.termInfo ||
+    !req.body.data.termEmailAd ||
+    !req.body.data.temPrivateUse ||
+    !req.body.data.termAppPush
+  ) {
+    return res.status(401).send("값이 없습니다.");
   }
 
   const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync("가나다", salt);
+  const hash = bcrypt.hashSync(req.body.data.password, salt);
 
+  const sql =
+    "insert into t_users(users_id, users_password, users_name, users_gender, users_email, users_phone, users_addr, users_age, users_term_required_14age, users_term_required_use, users_term_required_info, users_term_emailAd, users_term_use, users_term_appPush) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   maria.query(
-    "insert into t_users(users_id, users_password, users_name, users_gender, users_email, users_phone, users_addr, users_age, users_term_required_14age, users_term_required_use, users_term_required_info, users_term_emailAd, users_term_use, users_term_appPush) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+    sql,
     [
-      "김병민1",
+      req.body.data.id,
       hash,
-      "김",
-      "M",
-      "aaa@naver.com1",
-      "0104340",
-      "대구달서구",
-      "27",
-      "T",
-      "T",
-      "b",
-      "F",
-      "a",
-      "F",
+      req.body.data.name,
+      req.body.data.gender,
+      req.body.data.email,
+      req.body.data.phone,
+      req.body.data.addr,
+      req.body.data.age,
+      req.body.data.termAge,
+      req.body.data.termUse,
+      req.body.data.termInfo,
+      req.body.data.termEmailAd,
+      req.body.data.temPrivateUse,
+      req.body.data.termAppPush,
     ],
     (err, rows, fields) => {
       if (!err) {
@@ -43,9 +61,9 @@ const sign = async (req, res, next) => {
       const name = "가나다";
       if (!err) {
         const succ = bcrypt.compareSync(name, `` + rows[0].users_password);
-        res.send(rows);
+        res.send(succ);
       } else {
-        res.send(err);
+        res.send(succ);
       }
     }
   );
