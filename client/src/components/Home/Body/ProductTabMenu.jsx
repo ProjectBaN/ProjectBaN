@@ -3,15 +3,14 @@ import RecommendProductCard from './RecommendProductCard';
 
 function ProductTabMenu(props) {
   const [toggleState, setToggleState] = useState('');
+  const tabs = props.tabs;
 
-  console.log(props.recommendProductList);
-  const recommendProductLists = props.recommendProductList;
-  console.log(recommendProductLists);
+  console.log(tabs);
   const toggleTab = (index) => {
     setToggleState(index);
   };
   return (
-    <div className="w-full mt-MbLarge lg:mt-PcBase mt-MbLarge md:px-MbSm">
+    <div className="w-full flex flex-col mt-MbLarge lg:mt-PcBase mt-MbLarge md:px-MbSm">
       <div className="flex items-center justify-center lg:justify-start ">
         <p className="text-xl font-subtitle font-bold">추천상품</p>
       </div>
@@ -26,10 +25,11 @@ function ProductTabMenu(props) {
           </button>
         ))}
       </div>
-
-      <div>
-        <RecommendProductCard recommendProductList={recommendProductLists} toggle={toggleState} />
-      </div>
+      {tabs.map((contents, index) => (
+        <div className={toggleState === `${contents.tabName}` ? 'block w-full  mt-PcSm ' : 'hidden'} key={index}>
+          {toggleState === `${contents.tabName}` ? <RecommendProductCard tabs={contents} /> : ''}
+        </div>
+      ))}
     </div>
   );
 }
