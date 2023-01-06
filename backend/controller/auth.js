@@ -16,7 +16,7 @@ const signUp = async (req, res) => {
     !req.body.data.termUse ||
     !req.body.data.termInfo ||
     !req.body.data.termEmailAd ||
-    !req.body.data.temPrivateUse ||
+    !req.body.data.termPrivateUse ||
     !req.body.data.termAppPush
   ) {
     return res.status(401).send("값이 없습니다.");
@@ -42,28 +42,40 @@ const signUp = async (req, res) => {
       req.body.data.termUse,
       req.body.data.termInfo,
       req.body.data.termEmailAd,
-      req.body.data.temPrivateUse,
+      req.body.data.termPrivateUse,
       req.body.data.termAppPush,
     ],
     (err, rows, fields) => {
       if (!err) {
-        return res.send("secc");
+        return res.status(200).send("생성성공");
       } else {
-        return res.send(err);
+        return res.status(400).send("생성실패");
       }
     }
   );
 };
-const sign = async (req, res, next) => {
+
+// 로그인
+const signIn = async (req, res, next) => {
+  if (!req.body.data || !req.body.data.id) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
   maria.query(
-    "select users_password from t_users where users_id='김병민1'",
-    (err, rows, fields) => {
-      const name = "가나다";
+    "select users_password from t_users where (users_id)=(?)",
+    [req.body.data.id],
+    function (err, results) {
+      if (results.length === 0) {
+        return res.send("아이디가 없습니다.");
+      }
+      const pass = "가나다";
       if (!err) {
-        const succ = bcrypt.compareSync(name, `` + rows[0].users_password);
-        res.send(succ);
-      } else {
-        res.send(succ);
+        const succ = bcrypt.compareSync(pass, `` + results[0].users_password);
+        if (succ) {
+          return res.status(400).send("로그인성공");
+        } else {
+          return res.status(404).send("로그인실패");
+        }
       }
     }
   );
@@ -71,5 +83,5 @@ const sign = async (req, res, next) => {
 
 module.exports = {
   signUp,
-  sign,
+  signIn,
 };
