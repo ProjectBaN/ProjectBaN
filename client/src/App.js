@@ -7,6 +7,7 @@ import Term from './pages/Signup/Term';
 import HomeMain from './pages/HomeMain';
 import JoinForm from './pages/Signup/JoinForm';
 import SignupOk from './pages/Signup/SignupOk';
+import ProductSearch from './pages/ProductSearch/ProductSearch';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomeMain />}></Route>
         <Route path="/nail" element={<h2>네일</h2>}></Route>
+        <Route path="/search" element={<ProductSearch />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
         <Route path="/signup/term" element={<Term />}></Route>
         <Route path="/signup/joinform" element={<JoinForm />}></Route>

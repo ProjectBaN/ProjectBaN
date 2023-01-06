@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { register } from '../../../../redux/reducer/registerSlice';
 
 const idRegex = /^[0-9a-zA-Z]{3,12}$/;
 const nameRegex = /^[가-힣a-zA-Z]{2,10}$/;
@@ -9,6 +11,9 @@ const phoneRegex = /^01[0179][0-9]{7,8}$/;
 function JoinFormBody() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const testRedux = useSelector((state) => state.user.test);
 
   const [input, setInput] = useState({ id: '', password: '', passwordConfirm: '', name: '', email: '', phone: '' });
   const [warning, setWarning] = useState({ id: '', password: '', passwordConfirm: '', name: '', email: '', phone: '' });
@@ -104,7 +109,7 @@ function JoinFormBody() {
       return;
     } else {
       const state = { input, term: location.state };
-      console.log(state);
+      dispatch(register({ test: state }));
     }
   };
   // 아이디 중복체크
@@ -126,6 +131,7 @@ function JoinFormBody() {
             onChange={OnChange}
             onBlur={blurTest}
           ></input>
+          {testRedux.input?.id}
           {warning.id && <p className="mt-PcSm text-red-600">{warning.id}</p>}
           {submitWarning.id && <p className="mt-PcSm text-red-600">{submitWarning.id}</p>}
         </li>

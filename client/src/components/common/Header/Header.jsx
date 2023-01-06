@@ -19,12 +19,16 @@ function Header() {
         <HeaderButtonIcons />
       </div>
       <div className="lg:w-PcContainer lg:mx-auto lg:mt-PcBase">
-        <div className="hidden lg:block lg-w-full  lg:flex lg:justify-center lg:items-center  lg:gap-PcMd ">
-          <HomeLogo />
-          <div className="lg:w-PcSearchForm ">
+        <div className="lg:block lg-w-full  lg:flex lg:justify-center lg:items-center  lg:gap-PcMd ">
+          <div className="hidden lg:block">
+            <HomeLogo />
+          </div>
+          <div className="block lg:w-PcSearchForm px-MbSm ">
             <HeaderSearchForm />
           </div>
-          <HeaderSideMenu />
+          <div className="hidden lg:block">
+            <HeaderSideMenu />
+          </div>
         </div>
       </div>
 

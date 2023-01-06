@@ -1,7 +1,6 @@
 import React from 'react';
 import EventBannerContainer from '../../common/EventBannerContainer/EventBannerContainer';
 import BestProductContainer from '../Container/BestProductContainer';
-import ProductTabMenu from './ProductTabMenu';
 import QuickCategoryMenu from './QuickCategoryMenu';
 import RecommendProductContainer from './RecommendProductContainer';
 

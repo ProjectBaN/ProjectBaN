@@ -7,7 +7,7 @@ function HeaderMenu() {
       <li className="relative px-2">
         {/* after로 바꾸기 contents tailwind 확인 */}
         <NavLink
-          to=""
+          to="/"
           className={({ isActive }) =>
             'after:content-[""] after:border-solid after:border-b-2 after:border-black after:absolute after:left-0 after:top-2  after:w-full after:h-full  lg:after:contents'
           }
