@@ -37,7 +37,7 @@ module.exports = {
 ### ⚙️ prettier
 
 <aside>
-*️⃣ 기본 prettier 설정입니다.
+ 기본 prettier 설정입니다.
 
 </aside>
 
