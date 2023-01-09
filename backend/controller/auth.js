@@ -1,7 +1,13 @@
+require("dotenv").config();
+
 const maria = require("../database/maria");
 const bcrypt = require("bcrypt");
+const createError = require("../module/error");
+const jwt = require("jsonwebtoken");
 
-const signUp = async (req, res) => {
+require("dotenv").config();
+// 회원가입 데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
+const signUp = async (req, res, next) => {
   if (
     !req.body.data ||
     !req.body.data.id ||
@@ -49,32 +55,44 @@ const signUp = async (req, res) => {
       if (!err) {
         return res.status(200).send("생성성공");
       } else {
-        return res.status(400).send("생성실패");
+        next(err);
       }
     }
   );
 };
 
-// 로그인
+// 로그인데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
 const signIn = async (req, res, next) => {
-  if (!req.body.data || !req.body.data.id) {
+  const id = req.body.data.id;
+  const password = req.body.data.password;
+
+  if (!req.body.data || !id || !password) {
     return res.status(401).send("값이 없습니다.");
   }
 
   maria.query(
-    "select users_password from t_users where (users_id)=(?)",
-    [req.body.data.id],
+    "select * from t_users where (users_id)=(?)",
+    [id],
     function (err, results) {
       if (results.length === 0) {
         return res.send("아이디가 없습니다.");
       }
-      const pass = "가나다";
       if (!err) {
-        const succ = bcrypt.compareSync(pass, `` + results[0].users_password);
-        if (succ) {
-          return res.status(400).send("로그인성공");
+        const compare = bcrypt.compareSync(
+          password,
+          `` + results[0].users_password
+        );
+        if (compare) {
+          const token = jwt.sign({ id: results[0].users_id }, process.env.JWT);
+          const { users_password, ...others } = results[0];
+          return res
+            .cookie("access_token", token, {
+              httpOnly: true,
+            })
+            .status(200)
+            .json(others);
         } else {
-          return res.status(404).send("로그인실패");
+          next(createError(500, "아이디 또는 비밀번호가 없습니다."));
         }
       }
     }
