@@ -1,22 +1,58 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { register } from '../../../../redux/reducer/registerSlice';
+import GenderList from './GenderList';
 
 const idRegex = /^[0-9a-zA-Z]{3,12}$/;
 const nameRegex = /^[가-힣a-zA-Z]{2,10}$/;
 const emailRegex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
 const phoneRegex = /^01[0179][0-9]{7,8}$/;
 
+const genderList = [
+  {
+    idx: 0,
+    title: '남자',
+    value: 'M',
+  },
+  {
+    idx: 1,
+    title: '여자',
+    value: 'W',
+  },
+];
+
 function JoinFormBody() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const testRedux = useSelector((state) => state.user.test);
+  const testRedux = useSelector((state) => state.user.data);
+  const reduxdata = testRedux.input;
 
-  const [input, setInput] = useState({ id: '', password: '', passwordConfirm: '', name: '', email: '', phone: '' });
-  const [warning, setWarning] = useState({ id: '', password: '', passwordConfirm: '', name: '', email: '', phone: '' });
+  const [input, setInput] = useState({
+    id: '',
+    password: '',
+    passwordConfirm: '',
+    name: '',
+    email: '',
+    phone: '',
+    addr: '',
+    age: '',
+    gender: '',
+  });
+  const [warning, setWarning] = useState({
+    id: '',
+    password: '',
+    passwordConfirm: '',
+    name: '',
+    email: '',
+    phone: '',
+    addr: '',
+    age: '',
+    gender: '',
+  });
   const [submitWarning, setSubmitWarning] = useState({
     id: '',
     password: '',
@@ -24,6 +60,9 @@ function JoinFormBody() {
     name: '',
     email: '',
     phone: '',
+    addr: '',
+    age: '',
+    gender: '',
   });
   const [visiblePW, setVisiblePW] = useState(false);
 
@@ -41,6 +80,12 @@ function JoinFormBody() {
   });
 
   const OnChange = (e) => {
+    const checkboxes = document.getElementsByName('gender');
+    for (let i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i] !== e.target) {
+        checkboxes[i].checked = false;
+      }
+    }
     setInput({ ...input, [e.target.name]: e.target.value });
     setSubmitWarning({ ...submitWarning, [e.target.name]: '' });
   };
@@ -109,7 +154,26 @@ function JoinFormBody() {
       return;
     } else {
       const state = { input, term: location.state };
-      dispatch(register({ test: state }));
+      dispatch(register({ data: state }));
+
+      let body = {
+        data: {
+          id: input.id,
+          password: input.password,
+          passwordConfirm: input.passwordConfirm,
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          addr: input.addr,
+          age: input.age,
+          gender: input.gender,
+        },
+      };
+      axios.post('http://localhost:8000/auth/signup', JSON.stringify(body), {
+        headers: {
+          'Content-Type': `application/json`,
+        },
+      });
     }
   };
   // 아이디 중복체크
@@ -131,7 +195,6 @@ function JoinFormBody() {
             onChange={OnChange}
             onBlur={blurTest}
           ></input>
-          {testRedux.input?.id}
           {warning.id && <p className="mt-PcSm text-red-600">{warning.id}</p>}
           {submitWarning.id && <p className="mt-PcSm text-red-600">{submitWarning.id}</p>}
         </li>
@@ -231,6 +294,38 @@ function JoinFormBody() {
           ></input>
           {warning.phone && <p className="mt-PcSm text-red-500">{warning.phone}</p>}
           {submitWarning.phone && <p className="mt-PcSm text-red-600">{submitWarning.phone}</p>}
+        </li>
+
+        <li className="mt-PcMd">
+          <p className="font-bold">주소</p>
+          <input
+            type="text"
+            name="addr"
+            value={input.addr}
+            onChange={OnChange}
+            className="
+              focus:ring-black focus:border-black 
+              w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
+            placeholder="주소를 입력하세요"
+          ></input>
+        </li>
+
+        <li className="mt-PcMd">
+          <p className="font-bold">나이</p>
+          <input
+            type="text"
+            name="age"
+            value={input.age}
+            onChange={OnChange}
+            className="
+              focus:ring-black focus:border-black 
+              w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
+            placeholder="나이를 입력하세요"
+          ></input>
+        </li>
+        <li className="mt-PcMd">
+          <p className="font-bold">성별</p>
+          <GenderList genderList={genderList} OnChange={OnChange} />
         </li>
       </form>
       <button className="w-full h-20 mt-PcBase bg-black text-white" onClick={submit} type="submit" value={'서브밋'}>
