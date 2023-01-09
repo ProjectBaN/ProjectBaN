@@ -99,7 +99,34 @@ const signIn = async (req, res, next) => {
   );
 };
 
+// id중복체크
+const idCheck = (req, res) => {
+  const id = req.query.id;
+
+  if (!id) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
+  maria.query(
+    "select * from t_users where (users_id)=(?)",
+    [id],
+    (err, results) => {
+      console.log(results);
+      if (results.length === 0) {
+        return res.send({
+          duplicate: false,
+        });
+      } else if (results.length !== 0) {
+        return res.send({
+          duplicate: true,
+        });
+      }
+    }
+  );
+};
+
 module.exports = {
   signUp,
   signIn,
+  idCheck,
 };
