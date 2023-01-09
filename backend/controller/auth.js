@@ -4,8 +4,15 @@ const maria = require("../database/maria");
 const bcrypt = require("bcrypt");
 const createError = require("../module/error");
 const jwt = require("jsonwebtoken");
+const emailSend = require("../module/sendEmail");
 
-require("dotenv").config();
+const authNumber = () => {
+  let str = "";
+  for (let i = 0; i < 6; i++) {
+    str += Math.floor(Math.random() * 10);
+  }
+  return str;
+};
 // 회원가입 데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
 const signUp = async (req, res, next) => {
   if (
@@ -111,7 +118,6 @@ const idCheck = (req, res) => {
     "select * from t_users where (users_id)=(?)",
     [id],
     (err, results) => {
-      console.log(results);
       if (results.length === 0) {
         return res.send({
           duplicate: false,
@@ -125,8 +131,52 @@ const idCheck = (req, res) => {
   );
 };
 
+// 이메일 아이디 찾기 ** 수정**
+const forgetIdAuth = (req, res) => {
+  const email = req.body.data.email;
+  const authNum = authNumber();
+  if (!req.body.data || !email) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
+  maria.query(
+    "select * from t_users where (users_email)=(?)",
+    [email],
+    (err, results) => {
+      if (results.length === 0) {
+        return res.send({
+          idCheck: false,
+          message: "아이디가 없습니다.",
+        });
+      } else if (results.length !== 0) {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(authNum, salt);
+
+        emailSend(email, authNum);
+        const token = jwt.sign(
+          { authHashNum: hash, email: email },
+          process.env.JWT
+        );
+
+        return res
+          .cookie("forget_token", token, {
+            httpOnly: true,
+          })
+          .send({
+            idCheck: true,
+            message: "메세지를 발송합니다.",
+          });
+      }
+    }
+  );
+};
+
+const forgetIdAuthCheck = (req, res) => {};
+
 module.exports = {
   signUp,
   signIn,
   idCheck,
+  forgetIdAuth,
+  forgetIdAuthCheck,
 };

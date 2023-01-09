@@ -1,9 +1,9 @@
 const express = require("express");
-const verifyToken = require("../module/verify");
+const { verifyAccessToken, verifyForgetIdToken } = require("../module/verify");
 
 const router = express.Router();
 
-router.get("/", verifyToken, (req, res) => {
+router.get("/", verifyAccessToken, (req, res) => {
   return res.send("hello world!");
 });
 
