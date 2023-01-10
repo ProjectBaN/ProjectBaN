@@ -13,9 +13,5 @@ const router = express.Router();
 
 router.get("/getuserinfo", verifyAccessToken, getUserInfo);
 router.post("/updateuserid", verifyAccessToken, updateId);
-router.get(
-  "/temporarilyupdatepassword",
-  verifyTemporarilyAccessToken,
-  temporarilyUpdatePassword
-);
+
 module.exports = router;

@@ -4,7 +4,11 @@ const maria = require("../database/maria");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const { createError, createSqlError } = require("../module/error");
+const {
+  createError,
+  createSqlError,
+  checkSqlError,
+} = require("../module/error");
 
 // 비밀번호 제외한 유저 정보를 찾아옴
 const getUserInfo = (req, res, next) => {
@@ -59,11 +63,8 @@ const updateId = (req, res, next) => {
 // 방식채택안됨 추후 추가예정
 const deleteId = (res, req) => {};
 
-const temporarilyUpdatePassword = (req, res) => {};
-
 module.exports = {
   getUserInfo,
   updateId,
   deleteId,
-  temporarilyUpdatePassword,
 };

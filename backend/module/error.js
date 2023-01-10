@@ -8,4 +8,13 @@ const createSqlError = (sqlErr) => {
   return err;
 };
 
-module.exports = { createError, createSqlError };
+const checkSqlError = (sqlerr, results) => {
+  if (sqlerr) {
+    return createSqlError(sqlerr);
+  }
+  if (!results || results.length === 0) {
+    return createError(400, "값이존재하지않습니다.");
+  }
+};
+
+module.exports = { createError, createSqlError, checkSqlError };

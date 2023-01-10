@@ -5,7 +5,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const emailSend = require("../module/sendEmail");
-const { createError } = require("../module/error");
+const {
+  createError,
+  createSqlError,
+  checkSqlError,
+} = require("../module/error");
 
 const authNumber = () => {
   let str = "";
@@ -63,7 +67,7 @@ const signUp = async (req, res, next) => {
       if (!err) {
         return res.status(200).send("생성성공");
       } else {
-        next(err);
+        return next(err);
       }
     }
   );
@@ -119,6 +123,7 @@ const idCheck = (req, res) => {
     "select * from t_users where (users_id)=(?)",
     [id],
     (err, results) => {
+      if (err) return next(createError(500, "서버오류"));
       if (results.length === 0) {
         return res.send({
           duplicate: false,
@@ -132,14 +137,14 @@ const idCheck = (req, res) => {
   );
 };
 
-// 이메일  찾기 > 아이디 입력박구 있으면 거기 정도에있는 이메일 전송
+// 이메일 비밀번호 찾기 > 아이디 입력박구 있으면 거기 정도에있는 이메일 전송
 const forgetPasswordAuthEmail = (req, res) => {
   const id = req.body.data.id;
   const authNum = authNumber();
   if (!req.body.data || !id) {
     return res.status(401).send("보낸 값이 없습니다.");
   }
-
+  // 1차 아이디 체크
   maria.query(
     "select * from t_users where (users_id)=(?)",
     [id],
@@ -175,18 +180,16 @@ const forgetPasswordAuthEmail = (req, res) => {
   );
 };
 
-// 이메일찾기 체크 후 비밀번호 생성 허용 토큰 제공
+// 이메일 찾기 체크 비밀번호 생성 허용 토큰 제공
 const forgetIdAuthCheckEmail = (req, res, next) => {
+  // 2차 아이디 체크
   const id = req.id;
   maria.query(
     "select * from t_users where (users_id)=(?)",
     [id],
     (err, results) => {
       if (err) {
-        return next(createError(err));
-      }
-      if (!results || results.length === 0) {
-        return next(createError(400, "값이존재하지않습니다."));
+        return next(checkSqlError(err, results));
       }
       // 임시 비밀번호 변경 허용 토큰 전송 5분허용
       const token = jwt.sign({ id: results[0].users_id }, process.env.JWT, {
@@ -202,10 +205,35 @@ const forgetIdAuthCheckEmail = (req, res, next) => {
   );
 };
 
+// 비밀번호 찾기 후 변경
+const temporarilyUpdatePassword = (req, res, next) => {
+  if (!req.user || !req.user.id || !req.body.data || !req.body.data.password) {
+    return res.status(401).send("값이 없습니다.");
+  }
+  const id = req.user.id;
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(req.body.data.password, salt);
+
+  maria.query(
+    "update t_users set users_password=? where users_id=?",
+    [hash, id],
+    (err, results) => {
+      if (err) {
+        return next(checkSqlError(err, results));
+      }
+      if (!results || results.length === 0) {
+        return next(createError(400, "값이존재하지않습니다."));
+      }
+      return res.send(results);
+    }
+  );
+};
+
 module.exports = {
   signUp,
   signIn,
   idCheck,
   forgetPasswordAuthEmail,
   forgetIdAuthCheckEmail,
+  temporarilyUpdatePassword,
 };
