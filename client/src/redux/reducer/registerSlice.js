@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  data: '',
+  registerState: '',
 };
 
 export const registerSlice = createSlice({
@@ -9,7 +9,7 @@ export const registerSlice = createSlice({
   initialState,
   reducers: {
     register: (state, action) => {
-      state.data = action.payload.data;
+      state.registerState = action.payload;
     },
   },
 });

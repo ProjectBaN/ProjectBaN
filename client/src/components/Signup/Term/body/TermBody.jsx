@@ -13,12 +13,21 @@ const joinTermList = [
     contents:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos dolorum natus dignissimos nemo qui modi delectus, quam omnis odio animi neque tempora, itaque ratione, quas reiciendis. Facere dolorem incidunt soluta ',
     value: '14year',
+    checks: '',
+    name: 'termAge',
   },
-  { id: 2, title: '이용약관동의', required: true, value: 'use' },
-  { id: 3, title: '개인정도 수집 및 동의', required: true, value: 'info' },
-  { id: 4, title: '선택정보 수집및 동의', required: false, value: 'choiceInfo' },
-  { id: 5, title: '개인정보 유효기관 3년(미동의 시 1년)', required: false, value: '3year' },
-  { id: 6, title: '이메일 마케팅동의', required: false, value: 'email' },
+  { id: 2, title: '이용약관동의', required: true, value: 'use', checks: '', name: 'termUse' },
+  { id: 3, title: '개인정도 수집 및 동의', required: true, value: 'info', checks: '', name: 'termInfo' },
+  { id: 4, title: '앱 푸시 동의', required: false, value: 'appPush', checks: '', name: 'termAppPush' },
+  {
+    id: 5,
+    title: '개인정보 유효기관 3년(미동의 시 1년)',
+    required: false,
+    value: '3year',
+    checks: '',
+    name: 'temPrivateUse',
+  },
+  { id: 6, title: '이메일 마케팅동의', required: false, value: 'email', checks: '', name: 'termEmailAd' },
 ];
 
 const joinTermRequiredList = joinTermList.filter((term) => term.required).map((term) => term.title);
@@ -34,7 +43,6 @@ function TermBody() {
   const [termCheckList, setTermCheckList] = useState([]);
   const [allTermListCheck, setAllTermListCheck] = useState(false);
   const [warmList, setWarmList] = useState([]);
-
   const [moDal, setMoDal] = useState(false);
   const [moDalContents, setMoDalContents] = useState({ title: '', contents: '' });
 
@@ -78,9 +86,12 @@ function TermBody() {
     } else {
       const termCheckIdList = joinTermList
         .filter((term) => termCheckList.includes(term.title))
+        .map((term) => term.name);
+      const termCheckIdList1 = joinTermList
+        .filter((term) => termCheckList.includes(term.title))
         .map((term) => term.value);
-      console.log(termCheckIdList);
-      navigate('/signup/joinform', { state: termCheckIdList });
+
+      navigate('/signup/joinform', { state: { termCheckIdList, termCheckIdList1 } });
     }
   };
 

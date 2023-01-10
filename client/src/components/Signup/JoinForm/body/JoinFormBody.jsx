@@ -27,10 +27,9 @@ function JoinFormBody() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const testRedux = useSelector((state) => state.user.registerState);
 
-  const testRedux = useSelector((state) => state.user.data);
-  const reduxdata = testRedux.input;
-
+  console.log(location.state);
   const [input, setInput] = useState({
     id: '',
     password: '',
@@ -153,30 +152,39 @@ function JoinFormBody() {
     if (id || email || name || phone) {
       return;
     } else {
-      const state = { input, term: location.state };
-      dispatch(register({ data: state }));
-
-      let body = {
-        data: {
-          id: input.id,
-          password: input.password,
-          passwordConfirm: input.passwordConfirm,
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          addr: input.addr,
-          age: input.age,
-          gender: input.gender,
-        },
-      };
-      axios.post('http://localhost:8000/auth/signup', JSON.stringify(body), {
-        headers: {
-          'Content-Type': `application/json`,
-        },
-      });
+      const registerState = { input, term: location.state };
+      dispatch(register(registerState));
     }
+
+    // let body = {
+    //   data: {
+    //     id: testRedux.input.id,
+    //     password: testRedux.input.password,
+    //     name: testRedux.input.name,
+    //     email: testRedux.input.email,
+    //     phone: testRedux.input.phone,
+    //     addr: testRedux.input.addr,
+    //     age: testRedux.input.age,
+    //     gender: testRedux.input.gender,
+    //     termAge: 'T',
+    //     termUse: 'T',
+    //     termInfo: 'T',
+    //     termEmailAd: 'F',
+    //     termPrivateUse: 'F',
+    //     termAppPush: 'F',
+    //   },
+    // };
+    // const names = axios
+    //   .post('http://localhost:8000/auth/signup', body, {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Accept: 'application/json',
+    //     },
+    //   })
+    //   .catch((err) => console.log(err));
   };
   // 아이디 중복체크
+
   const blurTest = () => {};
   return (
     <main className="max-w-signUpContainer m-auto mt-MbBase flex flex-col items-center">
