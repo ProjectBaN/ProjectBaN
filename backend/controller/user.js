@@ -59,8 +59,11 @@ const updateId = (req, res, next) => {
 // 방식채택안됨 추후 추가예정
 const deleteId = (res, req) => {};
 
+const temporarilyUpdatePassword = (req, res) => {};
+
 module.exports = {
   getUserInfo,
   updateId,
   deleteId,
+  temporarilyUpdatePassword,
 };

@@ -132,31 +132,34 @@ const idCheck = (req, res) => {
   );
 };
 
-// 이메일 아이디 찾기
-const forgetIdAuthEmail = (req, res) => {
-  const email = req.body.data.email;
+// 이메일  찾기 > 아이디 입력박구 있으면 거기 정도에있는 이메일 전송
+const forgetPasswordAuthEmail = (req, res) => {
+  const id = req.body.data.id;
   const authNum = authNumber();
-  if (!req.body.data || !email) {
-    return res.status(401).send("값이 없습니다.");
+  if (!req.body.data || !id) {
+    return res.status(401).send("보낸 값이 없습니다.");
   }
 
   maria.query(
-    "select * from t_users where (users_email)=(?)",
-    [email],
+    "select * from t_users where (users_id)=(?)",
+    [id],
     (err, results) => {
       if (results.length === 0) {
         return res.send({
           idCheck: false,
-          message: "아이디가 없습니다.",
+          message: "아이디가 존해하지 않습니다.",
         });
       } else if (results.length !== 0) {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(authNum, salt);
 
-        emailSend(email, authNum);
+        emailSend(results[0].users_email, authNum);
         const token = jwt.sign(
-          { authHashNum: hash, email: email },
-          process.env.JWT
+          { authHashNum: hash, id: results[0].users_id },
+          process.env.JWT,
+          {
+            expiresIn: "5m",
+          }
         );
 
         return res
@@ -172,29 +175,37 @@ const forgetIdAuthEmail = (req, res) => {
   );
 };
 
-// 이메일찾기 체크 후 아이디 제공
+// 이메일찾기 체크 후 비밀번호 생성 허용 토큰 제공
 const forgetIdAuthCheckEmail = (req, res, next) => {
-  const email = req.email;
+  const id = req.id;
   maria.query(
-    "select * from t_users where (users_email)=(?)",
-    [email],
+    "select * from t_users where (users_id)=(?)",
+    [id],
     (err, results) => {
       if (err) {
         return next(createError(err));
       }
-      if (!results) {
+      if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
       }
-
-      const { users_password, ...others } = results[0];
-      res.send(others);
+      // 임시 비밀번호 변경 허용 토큰 전송 5분허용
+      const token = jwt.sign({ id: results[0].users_id }, process.env.JWT, {
+        expiresIn: "5m",
+      });
+      return res
+        .cookie("temporarily_access_token", token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json({ succes: true });
     }
   );
 };
+
 module.exports = {
   signUp,
   signIn,
   idCheck,
-  forgetIdAuthEmail,
+  forgetPasswordAuthEmail,
   forgetIdAuthCheckEmail,
 };

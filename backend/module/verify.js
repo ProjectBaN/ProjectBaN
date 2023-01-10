@@ -13,6 +13,17 @@ const verifyAccessToken = (req, res, next) => {
   });
 };
 
+// 토큰확인
+const verifyTemporarilyAccessToken = (req, res, next) => {
+  const token = req.cookies.temporarily_access_token;
+  if (!token) return next(createError(401, "토큰이없습니다."));
+  jwt.verify(token, process.env.JWT, (err, user) => {
+    if (err) return next(createError(403, "token is not valid"));
+    req.user = user;
+    next();
+  });
+};
+
 // 이메일 아이디 찾기 토큰 인증
 const verifyForgetIdToken = (req, res, next) => {
   const token = req.cookies.forget_token;
@@ -28,7 +39,7 @@ const verifyForgetIdToken = (req, res, next) => {
     );
 
     if (compare) {
-      req.email = idAuth.email;
+      req.id = idAuth.id;
 
       next();
     } else {
@@ -37,4 +48,8 @@ const verifyForgetIdToken = (req, res, next) => {
   });
 };
 
-module.exports = { verifyAccessToken, verifyForgetIdToken };
+module.exports = {
+  verifyAccessToken,
+  verifyForgetIdToken,
+  verifyTemporarilyAccessToken,
+};
