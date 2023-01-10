@@ -17,6 +17,7 @@ app.use("/user", userRouter);
 app.use("/auth", authRouter);
 
 app.use((err, req, res, next) => {
+  console.log("에러발생");
   console.log(err);
   const status = err.status || 500;
   const message = err.message || "Something went wrong!";

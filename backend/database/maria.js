@@ -10,7 +10,6 @@ const conn = maria.createConnection({
   database: process.env.DB_DATABASE,
   multipleStatements: true,
   typeCast: function (field, next) {
-    console.log(field.type);
     if (field.type == "VAR_STRING" || field.type == "STRING") {
       return field.string();
     }

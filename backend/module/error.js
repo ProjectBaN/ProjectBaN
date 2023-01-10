@@ -3,4 +3,9 @@ const createError = (status, message) => {
   return err;
 };
 
-module.exports = createError;
+const createSqlError = (sqlErr) => {
+  const err = { message: sqlErr.sqlMessage };
+  return err;
+};
+
+module.exports = { createError, createSqlError };

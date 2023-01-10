@@ -2,9 +2,10 @@ require("dotenv").config();
 
 const maria = require("../database/maria");
 const bcrypt = require("bcrypt");
-const createError = require("../module/error");
 const jwt = require("jsonwebtoken");
+
 const emailSend = require("../module/sendEmail");
+const { createError } = require("../module/error");
 
 const authNumber = () => {
   let str = "";
@@ -131,8 +132,8 @@ const idCheck = (req, res) => {
   );
 };
 
-// 이메일 아이디 찾기 ** 수정**
-const forgetIdAuth = (req, res) => {
+// 이메일 아이디 찾기
+const forgetIdAuthEmail = (req, res) => {
   const email = req.body.data.email;
   const authNum = authNumber();
   if (!req.body.data || !email) {
@@ -171,12 +172,29 @@ const forgetIdAuth = (req, res) => {
   );
 };
 
-const forgetIdAuthCheck = (req, res) => {};
+// 이메일찾기 체크 후 아이디 제공
+const forgetIdAuthCheckEmail = (req, res, next) => {
+  const email = req.email;
+  maria.query(
+    "select * from t_users where (users_email)=(?)",
+    [email],
+    (err, results) => {
+      if (err) {
+        return next(createError(err));
+      }
+      if (!results) {
+        return next(createError(400, "값이존재하지않습니다."));
+      }
 
+      const { users_password, ...others } = results[0];
+      res.send(others);
+    }
+  );
+};
 module.exports = {
   signUp,
   signIn,
   idCheck,
-  forgetIdAuth,
-  forgetIdAuthCheck,
+  forgetIdAuthEmail,
+  forgetIdAuthCheckEmail,
 };

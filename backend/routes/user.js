@@ -1,10 +1,9 @@
 const express = require("express");
-const { verifyAccessToken, verifyForgetIdToken } = require("../module/verify");
+const { getUserInfo, updateId } = require("../controller/user");
+const { verifyAccessToken } = require("../module/verify");
 
 const router = express.Router();
 
-router.get("/", verifyAccessToken, (req, res) => {
-  return res.send("hello world!");
-});
-
+router.get("/getuserinfo", verifyAccessToken, getUserInfo);
+router.post("/updateuserid", verifyAccessToken, updateId);
 module.exports = router;
