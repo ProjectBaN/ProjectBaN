@@ -3,9 +3,11 @@ const {
   signUp,
   signIn,
   idCheck,
-  forgetIdAuthCheckEmail,
   forgetPasswordAuthEmail,
   temporarilyUpdatePassword,
+  forgetPasswordAuthCheckEmail,
+  forgetIdNamePhone,
+  forgetIdEmail,
 } = require("../controller/auth");
 const {
   verifyForgetIdToken,
@@ -17,10 +19,17 @@ router.post("/signup", signUp);
 router.get("/signup/idcheck", idCheck);
 router.post("/signin", signIn);
 router.post("/forgetpasswordemail", forgetPasswordAuthEmail);
-router.get("/forgetidEmailCheck", verifyForgetIdToken, forgetIdAuthCheckEmail);
+router.get(
+  "/forgetpasswordauthcheckemail",
+  verifyForgetIdToken,
+  forgetPasswordAuthCheckEmail
+);
 router.post(
   "/temporarilyupdatepassword",
   verifyTemporarilyAccessToken,
   temporarilyUpdatePassword
 );
+router.post("/forgetidnamephone", forgetIdNamePhone);
+router.post("/forgetidemail", forgetIdEmail);
+
 module.exports = router;

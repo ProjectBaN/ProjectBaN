@@ -10,6 +10,7 @@ const {
   createSqlError,
   checkSqlError,
 } = require("../module/error");
+const { checkReqBodyData } = require("../module/check");
 
 const authNumber = () => {
   let str = "";
@@ -21,21 +22,23 @@ const authNumber = () => {
 // 회원가입 데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
 const signUp = async (req, res, next) => {
   if (
-    !req.body.data ||
-    !req.body.data.id ||
-    !req.body.data.password ||
-    !req.body.data.name ||
-    !req.body.data.gender ||
-    !req.body.data.email ||
-    !req.body.data.phone ||
-    !req.body.data.addr ||
-    !req.body.data.age ||
-    !req.body.data.termAge ||
-    !req.body.data.termUse ||
-    !req.body.data.termInfo ||
-    !req.body.data.termEmailAd ||
-    !req.body.data.termPrivateUse ||
-    !req.body.data.termAppPush
+    !checkReqBodyData(
+      req,
+      "id",
+      "password",
+      "name",
+      "gender",
+      "email",
+      "phone",
+      "addr",
+      "age",
+      "termAge",
+      "termUse",
+      "termInfo",
+      "termEmailAd",
+      "termPrivateUse",
+      "termAppPush"
+    )
   ) {
     return res.status(401).send("값이 없습니다.");
   }
@@ -67,7 +70,7 @@ const signUp = async (req, res, next) => {
       if (!err) {
         return res.status(200).send("생성성공");
       } else {
-        return next(err);
+        return next(checkSqlError(err));
       }
     }
   );
@@ -77,8 +80,7 @@ const signUp = async (req, res, next) => {
 const signIn = async (req, res, next) => {
   const id = req.body.data.id;
   const password = req.body.data.password;
-
-  if (!req.body.data || !id || !password) {
+  if (!checkReqBodyData(req, "id", "password")) {
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -141,9 +143,10 @@ const idCheck = (req, res) => {
 const forgetPasswordAuthEmail = (req, res) => {
   const id = req.body.data.id;
   const authNum = authNumber();
-  if (!req.body.data || !id) {
+  if (!checkReqBodyData(req, "id")) {
     return res.status(401).send("보낸 값이 없습니다.");
   }
+
   // 1차 아이디 체크
   maria.query(
     "select * from t_users where (users_id)=(?)",
@@ -181,7 +184,7 @@ const forgetPasswordAuthEmail = (req, res) => {
 };
 
 // 이메일 찾기 체크 비밀번호 생성 허용 토큰 제공
-const forgetIdAuthCheckEmail = (req, res, next) => {
+const forgetPasswordAuthCheckEmail = (req, res, next) => {
   // 2차 아이디 체크
   const id = req.id;
   maria.query(
@@ -207,10 +210,11 @@ const forgetIdAuthCheckEmail = (req, res, next) => {
 
 // 비밀번호 찾기 후 변경
 const temporarilyUpdatePassword = (req, res, next) => {
-  if (!req.user || !req.user.id || !req.body.data || !req.body.data.password) {
+  if (!checkReqBodyData(req, "password", "user")) {
     return res.status(401).send("값이 없습니다.");
   }
-  const id = req.user.id;
+
+  const id = req.body.data.id;
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(req.body.data.password, salt);
 
@@ -229,11 +233,57 @@ const temporarilyUpdatePassword = (req, res, next) => {
   );
 };
 
+// 아이디찾기 이름,폰
+const forgetIdNamePhone = (req, res, next) => {
+  if (!checkReqBodyData(req, "name", "phone")) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
+  const name = req.body.data.name;
+  const phone = req.body.data.phone;
+  maria.query(
+    "select users_id from t_users where users_name=? and users_phone=?",
+    [name, phone],
+    (err, results) => {
+      if (err) {
+        return next(checkSqlError(err, results));
+      }
+      if (!results || results.length === 0) {
+        return next(createError(400, "값이존재하지않습니다."));
+      }
+      return res.status(200).json(results[0]);
+    }
+  );
+};
+// 아이디찾기 이메일
+const forgetIdEmail = (req, res, next) => {
+  if (!checkReqBodyData(req, "email")) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
+  const email = req.body.data.email;
+  maria.query(
+    "select users_id from t_users where users_email=?",
+    [email],
+    (err, results) => {
+      if (err) {
+        return next(checkSqlError(err, results));
+      }
+      if (!results || results.length === 0) {
+        return next(createError(400, "값이존재하지않습니다."));
+      }
+      return res.status(200).json(results[0]);
+    }
+  );
+};
+
 module.exports = {
   signUp,
   signIn,
   idCheck,
   forgetPasswordAuthEmail,
-  forgetIdAuthCheckEmail,
+  forgetPasswordAuthCheckEmail,
   temporarilyUpdatePassword,
+  forgetIdNamePhone,
+  forgetIdEmail,
 };
