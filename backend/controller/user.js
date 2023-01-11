@@ -106,12 +106,11 @@ const udatePassword = (req, res, next) => {
   );
 };
 const udateName = (req, res, next) => {
-  return res.send("udateName");
-  if (!checkReqBodyData(req, "password")) {
+  if (!checkReqBodyData(req, "name")) {
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
-  const updatePassword = req.body.data.password;
+  const updateName = req.body.data.name;
 
   maria.query(
     "select * from t_users where (users_id)=(?)",
@@ -120,33 +119,175 @@ const udateName = (req, res, next) => {
       if (err) {
         return next(createSqlError(err));
       }
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(updatePassword, salt);
 
       maria.query(
-        "update t_users set users_password=? where users_id=?",
-        [hash, req.body.user.id],
+        "update t_users set users_name=? where users_id=?",
+        [updateName, req.body.user.id],
         (err, results) => {
           if (err) {
             return next(createSqlError(err));
           }
-          // const token = jwt.sign({ id: updateId }, process.env.JWT);
-          // return res
-          //   .cookie("access_token", token, {
-          //     httpOnly: true,
-          //   })
-          //   .status(200)
-          //   .send(successStatus(others));
+
           return res.send(successStatus({ message: "성공하였습니다." }));
         }
       );
     }
   );
 };
-const udateGender = (req, res, next) => {};
-const udateEmail = (req, res, next) => {};
-const udateAddr = (req, res, next) => {};
-const udateAge = (req, res, next) => {};
+const udateGender = (req, res, next) => {
+  if (!checkReqBodyData(req, "gender")) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+  if (
+    req.body.data.gender !== "D" &&
+    req.body.data.gender !== "M" &&
+    req.body.data.gender !== "F"
+  ) {
+    return next(createError(401, "잘못됩 입력값입니다."));
+  }
+  const updateGender = req.body.data.gender;
+
+  maria.query(
+    "select * from t_users where (users_id)=(?)",
+    [req.body.user.id],
+    (err, results) => {
+      if (err) {
+        return next(createSqlError(err));
+      }
+
+      maria.query(
+        "update t_users set users_gender=? where users_id=?",
+        [updateGender, req.body.user.id],
+        (err, results) => {
+          if (err) {
+            return next(createSqlError(err));
+          }
+
+          return res.send(successStatus({ message: "성공하였습니다." }));
+        }
+      );
+    }
+  );
+};
+const udateEmail = (req, res, next) => {
+  if (!checkReqBodyData(req, "email")) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+
+  const updateEmail = req.body.data.email;
+
+  maria.query(
+    "select * from t_users where (users_id)=(?)",
+    [req.body.user.id],
+    (err, results) => {
+      if (err) {
+        return next(createSqlError(err));
+      }
+
+      maria.query(
+        "update t_users set users_email=? where users_id=?",
+        [updateEmail, req.body.user.id],
+        (err, results) => {
+          if (err) {
+            return next(createSqlError(err));
+          }
+
+          return res.send(successStatus({ message: "성공하였습니다." }));
+        }
+      );
+    }
+  );
+};
+const udateAddr = (req, res, next) => {
+  if (!checkReqBodyData(req, "addr")) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+
+  const updateAddr = req.body.data.addr;
+
+  maria.query(
+    "select * from t_users where (users_id)=(?)",
+    [req.body.user.id],
+    (err, results) => {
+      if (err) {
+        return next(createSqlError(err));
+      }
+
+      maria.query(
+        "update t_users set users_addr=? where users_id=?",
+        [updateAddr, req.body.user.id],
+        (err, results) => {
+          if (err) {
+            return next(createSqlError(err));
+          }
+
+          return res.send(successStatus({ message: "성공하였습니다." }));
+        }
+      );
+    }
+  );
+};
+const udateAge = (req, res, next) => {
+  if (!checkReqBodyData(req, "age")) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+
+  const updateAge = req.body.data.age;
+
+  maria.query(
+    "select * from t_users where (users_id)=(?)",
+    [req.body.user.id],
+    (err, results) => {
+      if (err) {
+        return next(createSqlError(err));
+      }
+
+      maria.query(
+        "update t_users set users_age=? where users_id=?",
+        [updateAge, req.body.user.id],
+        (err, results) => {
+          if (err) {
+            return next(createSqlError(err));
+          }
+
+          return res.send(successStatus({ message: "성공하였습니다." }));
+        }
+      );
+    }
+  );
+};
+
+const deleteUser = (req, res, next) => {
+  if (!checkReqBodyData(req, "agree")) {
+    return next(createError(401, "입력된 값이 없습니다."));
+  }
+
+  if (req.body.data.agree === "F") {
+    return next(createError(401, "동의가 되지않았습니다."));
+  }
+
+  maria.query(
+    "select * from t_users where (users_id)=(?)",
+    [req.body.user.id],
+    (err, results) => {
+      if (err) {
+        return next(createSqlError(err));
+      }
+
+      maria.query(
+        "update t_users set users_leave_at=now() where users_id=?",
+        [req.body.user.id],
+        (err, results) => {
+          if (err) {
+            return next(createSqlError(err));
+          }
+
+          return res.send(successStatus({ message: "성공하였습니다." }));
+        }
+      );
+    }
+  );
+};
 
 module.exports = {
   getUserInfo,
@@ -158,4 +299,5 @@ module.exports = {
   udateEmail,
   udateAddr,
   udateAge,
+  deleteUser,
 };

@@ -141,7 +141,7 @@ const idCheck = (req, res) => {
 };
 
 // 이메일 비밀번호 찾기 > 아이디 입력받구 있으면 거기 정보에있는 이메일 전송
-const forgetPasswordAuthEmail = (req, res) => {
+const forgetPasswordAuthEmail = (req, res, next) => {
   const id = req.body.data.id;
   const authNum = authNumber();
   if (!checkReqBodyData(req, "id")) {

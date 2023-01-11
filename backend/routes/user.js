@@ -8,6 +8,7 @@ const {
   udateEmail,
   udateAddr,
   udateAge,
+  deleteUser,
 } = require("../controller/user");
 const { verifyAccessToken } = require("../module/verify");
 
@@ -21,5 +22,6 @@ router.post("/updateusergender", verifyAccessToken, udateGender);
 router.post("/updateuseremail", verifyAccessToken, udateEmail);
 router.post("/updateuseraddr", verifyAccessToken, udateAddr);
 router.post("/updateuserage", verifyAccessToken, udateAge);
+router.post("/updateuserdelete", verifyAccessToken, deleteUser);
 
 module.exports = router;
