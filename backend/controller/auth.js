@@ -5,12 +5,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const emailSend = require("../module/sendEmail");
-const {
-  createError,
-  createSqlError,
-  checkSqlError,
-} = require("../module/error");
+const { createError, checkSqlError } = require("../module/error");
 const { checkReqBodyData } = require("../module/check");
+const { successStatus } = require("../module/statuscode");
 
 const authNumber = () => {
   let str = "";
@@ -19,7 +16,8 @@ const authNumber = () => {
   }
   return str;
 };
-// 회원가입 데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
+
+// 회원가입 ++ 데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
 const signUp = async (req, res, next) => {
   if (
     !checkReqBodyData(
@@ -68,7 +66,7 @@ const signUp = async (req, res, next) => {
     ],
     (err, rows, fields) => {
       if (!err) {
-        return res.status(200).send("생성성공");
+        return res.status(200).send(successStatus({ results: "가입성공" }));
       } else {
         return next(checkSqlError(err));
       }
@@ -76,7 +74,7 @@ const signUp = async (req, res, next) => {
   );
 };
 
-// 로그인데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
+// 로그인 ++데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
 const signIn = async (req, res, next) => {
   const id = req.body.data.id;
   const password = req.body.data.password;
@@ -91,6 +89,9 @@ const signIn = async (req, res, next) => {
       if (results.length === 0) {
         return res.send("아이디가 없습니다.");
       }
+      if (results[0].users_leave_at) {
+        return next(createError(500, "탈퇴한 유저입니다."));
+      }
       if (!err) {
         const compare = bcrypt.compareSync(
           password,
@@ -104,7 +105,7 @@ const signIn = async (req, res, next) => {
               httpOnly: true,
             })
             .status(200)
-            .json(others);
+            .json(successStatus(others));
         } else {
           next(createError(500, "아이디 또는 비밀번호가 없습니다."));
         }
@@ -113,7 +114,7 @@ const signIn = async (req, res, next) => {
   );
 };
 
-// id중복체크
+// id 중복체크
 const idCheck = (req, res) => {
   const id = req.query.id;
 
@@ -127,19 +128,19 @@ const idCheck = (req, res) => {
     (err, results) => {
       if (err) return next(createError(500, "서버오류"));
       if (results.length === 0) {
-        return res.send({
-          duplicate: false,
-        });
+        return res.send(successStatus({ duplicate: false }));
       } else if (results.length !== 0) {
-        return res.send({
-          duplicate: true,
-        });
+        return res.send(
+          successStatus({
+            duplicate: true,
+          })
+        );
       }
     }
   );
 };
 
-// 이메일 비밀번호 찾기 > 아이디 입력박구 있으면 거기 정도에있는 이메일 전송
+// 이메일 비밀번호 찾기 > 아이디 입력받구 있으면 거기 정보에있는 이메일 전송
 const forgetPasswordAuthEmail = (req, res) => {
   const id = req.body.data.id;
   const authNum = authNumber();
@@ -157,7 +158,11 @@ const forgetPasswordAuthEmail = (req, res) => {
           idCheck: false,
           message: "아이디가 존해하지 않습니다.",
         });
-      } else if (results.length !== 0) {
+      }
+      if (results[0].users_leave_at) {
+        return next(createError(500, "탈퇴한 유저의 아이디입니다."));
+      }
+      if (results.length !== 0) {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(authNum, salt);
 
@@ -174,10 +179,12 @@ const forgetPasswordAuthEmail = (req, res) => {
           .cookie("forget_token", token, {
             httpOnly: true,
           })
-          .send({
-            idCheck: true,
-            message: "메세지를 발송합니다.",
-          });
+          .send(
+            successStatus({
+              idCheck: true,
+              message: "메세지를 발송합니다.",
+            })
+          );
       }
     }
   );
@@ -194,6 +201,12 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
       if (err) {
         return next(checkSqlError(err, results));
       }
+      if (results !== 0) {
+        return next(createError(500, "값이 존재하지않습니다."));
+      }
+      if (results[0].users_leave_at) {
+        return next(createError(500, "탈퇴한 유저의 아이디입니다."));
+      }
       // 임시 비밀번호 변경 허용 토큰 전송 5분허용
       const token = jwt.sign({ id: results[0].users_id }, process.env.JWT, {
         expiresIn: "5m",
@@ -203,7 +216,7 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
           httpOnly: true,
         })
         .status(200)
-        .json({ succes: true });
+        .json(successStatus({ succes: true }));
     }
   );
 };
@@ -211,7 +224,7 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
 // 비밀번호 찾기 후 변경
 const temporarilyUpdatePassword = (req, res, next) => {
   if (!checkReqBodyData(req, "password", "user")) {
-    return res.status(401).send("값이 없습니다.");
+    return res.status(401).send();
   }
 
   const id = req.body.data.id;
@@ -226,9 +239,9 @@ const temporarilyUpdatePassword = (req, res, next) => {
         return next(checkSqlError(err, results));
       }
       if (!results || results.length === 0) {
-        return next(createError(400, "값이존재하지않습니다."));
+        return next(createError(500, "변경 실패하였습니다."));
       }
-      return res.send(results);
+      return res.send(successStatus(results));
     }
   );
 };
@@ -241,8 +254,9 @@ const forgetIdNamePhone = (req, res, next) => {
 
   const name = req.body.data.name;
   const phone = req.body.data.phone;
+
   maria.query(
-    "select users_id from t_users where users_name=? and users_phone=?",
+    "select users_id, users_leave_at from t_users where users_name=? and users_phone=?",
     [name, phone],
     (err, results) => {
       if (err) {
@@ -251,7 +265,14 @@ const forgetIdNamePhone = (req, res, next) => {
       if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
       }
-      return res.status(200).json(results[0]);
+      if (results[0].users_leave_at) {
+        return res
+          .status(200)
+          .json(successStatus({ leave_at: results[0].users_leave_at }));
+      }
+      return res
+        .status(200)
+        .json(successStatus({ users_id: results[0].users_id }));
     }
   );
 };
@@ -272,7 +293,12 @@ const forgetIdEmail = (req, res, next) => {
       if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
       }
-      return res.status(200).json(results[0]);
+      if (results[0].users_leave_at) {
+        return res
+          .status(200)
+          .json(successStatus({ leave_at: results[0].users_leave_at }));
+      }
+      return res.status(200).json(successStatus(results[0]));
     }
   );
 };
