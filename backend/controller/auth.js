@@ -5,9 +5,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const emailSend = require("../module/sendEmail");
-const { createError, checkSqlError } = require("../module/error");
+const { createError, createSqlError } = require("../module/error");
 const { checkReqBodyData } = require("../module/check");
 const { successStatus } = require("../module/statuscode");
+const {
+  createAccessToken,
+  createRefreshToken,
+  createEmailToken,
+  createTemporarilyAccessToken,
+} = require("../module/token");
 
 const authNumber = () => {
   let str = "";
@@ -68,7 +74,7 @@ const signUp = async (req, res, next) => {
       if (!err) {
         return res.status(200).send(successStatus({ results: "가입성공" }));
       } else {
-        return next(checkSqlError(err));
+        return next(createSqlError(err));
       }
     }
   );
@@ -78,6 +84,7 @@ const signUp = async (req, res, next) => {
 const signIn = async (req, res, next) => {
   const id = req.body.data.id;
   const password = req.body.data.password;
+
   if (!checkReqBodyData(req, "id", "password")) {
     return res.status(401).send("값이 없습니다.");
   }
@@ -86,32 +93,63 @@ const signIn = async (req, res, next) => {
     "select * from t_users where (users_id)=(?)",
     [id],
     function (err, results) {
-      if (results.length === 0) {
+      if (err) {
+        return next(createSqlError(err));
+      }
+      if (!results || results.length === 0) {
         return res.send("아이디가 없습니다.");
       }
       if (results[0].users_leave_at) {
         return next(createError(500, "탈퇴한 유저입니다."));
       }
-      if (!err) {
-        const compare = bcrypt.compareSync(
-          password,
-          `` + results[0].users_password
+      console.log(results);
+      const dbId = results[0].users_id;
+      const dbPassword = results[0].users_password;
+
+      const compare = bcrypt.compareSync(password, `` + dbPassword);
+
+      if (compare) {
+        const token = createAccessToken(dbId);
+        const refreshToken = createRefreshToken(dbId);
+
+        maria.query(
+          "update t_users set users_refresh_token=? where users_id=?",
+          [refreshToken, dbId],
+          (err, result) => {
+            if (err) {
+              return next(createSqlError(err));
+            }
+            console.log(result);
+          }
         );
-        if (compare) {
-          const token = jwt.sign({ id: results[0].users_id }, process.env.JWT);
-          const { users_password, ...others } = results[0];
-          return res
-            .cookie("access_token", token, {
-              httpOnly: true,
-            })
-            .status(200)
-            .json(successStatus(others));
-        } else {
-          next(createError(500, "아이디 또는 비밀번호가 없습니다."));
-        }
+
+        return res
+          .cookie("access_token", token, {
+            httpOnly: true,
+          })
+          .cookie("refresh_token", refreshToken, { httpOnly: true })
+          .status(200)
+          .json(successStatus({ message: "로그인 성공" }));
+      } else {
+        next(createError(500, "아이디 또는 비밀번호가 없습니다."));
       }
     }
   );
+};
+
+// 로그아웃 리프레시 토큰 추가시 추가작업
+const signOut = (req, res, next) => {
+  return res
+    .clearCookie("access_token", {
+      sameSite: "none",
+      secure: true,
+    })
+    .clearCookie("refresh_token", {
+      sameSite: "none",
+      secure: true,
+    })
+    .status(200)
+    .json(successStatus({ message: "성공" }));
 };
 
 // id 중복체크
@@ -165,15 +203,9 @@ const forgetPasswordAuthEmail = (req, res, next) => {
       if (results.length !== 0) {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(authNum, salt);
-
+        const dbId = results[0].users_id;
         emailSend(results[0].users_email, authNum);
-        const token = jwt.sign(
-          { authHashNum: hash, id: results[0].users_id },
-          process.env.JWT,
-          {
-            expiresIn: "5m",
-          }
-        );
+        const token = createEmailToken(hash, dbId);
 
         return res
           .cookie("forget_token", token, {
@@ -193,29 +225,35 @@ const forgetPasswordAuthEmail = (req, res, next) => {
 // 이메일 찾기 체크 비밀번호 생성 허용 토큰 제공
 const forgetPasswordAuthCheckEmail = (req, res, next) => {
   // 2차 아이디 체크
-  const id = req.id;
+
+  const id = req.body.id;
   maria.query(
     "select * from t_users where (users_id)=(?)",
     [id],
     (err, results) => {
       if (err) {
-        return next(checkSqlError(err, results));
+        return next(createSqlError(err, results));
       }
-      if (results !== 0) {
+      console.log(results);
+      if (results.length === 0) {
         return next(createError(500, "값이 존재하지않습니다."));
       }
       if (results[0].users_leave_at) {
         return next(createError(500, "탈퇴한 유저의 아이디입니다."));
       }
+      const dbId = results[0].users_id;
       // 임시 비밀번호 변경 허용 토큰 전송 5분허용
-      const token = jwt.sign({ id: results[0].users_id }, process.env.JWT, {
-        expiresIn: "5m",
-      });
+      const token = createTemporarilyAccessToken(dbId);
+
       return res
         .cookie("temporarily_access_token", token, {
           httpOnly: true,
         })
         .status(200)
+        .clearCookie("forget_token", {
+          sameSite: "none",
+          secure: true,
+        })
         .json(successStatus({ succes: true }));
     }
   );
@@ -226,22 +264,25 @@ const temporarilyUpdatePassword = (req, res, next) => {
   if (!checkReqBodyData(req, "password", "user")) {
     return res.status(401).send();
   }
-
-  const id = req.body.data.id;
+  const id = req.body.data.user.id;
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(req.body.data.password, salt);
-
   maria.query(
     "update t_users set users_password=? where users_id=?",
     [hash, id],
     (err, results) => {
       if (err) {
-        return next(checkSqlError(err, results));
+        return next(createSqlError(err));
       }
       if (!results || results.length === 0) {
         return next(createError(500, "변경 실패하였습니다."));
       }
-      return res.send(successStatus(results));
+      return res
+        .clearCookie("temporarily_access_token", {
+          sameSite: "none",
+          secure: true,
+        })
+        .send(successStatus(results));
     }
   );
 };
@@ -260,7 +301,7 @@ const forgetIdNamePhone = (req, res, next) => {
     [name, phone],
     (err, results) => {
       if (err) {
-        return next(checkSqlError(err, results));
+        return next(createSqlError(err));
       }
       if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
@@ -288,7 +329,7 @@ const forgetIdEmail = (req, res, next) => {
     [email],
     (err, results) => {
       if (err) {
-        return next(checkSqlError(err, results));
+        return next(createSqlError(err));
       }
       if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
@@ -312,4 +353,5 @@ module.exports = {
   temporarilyUpdatePassword,
   forgetIdNamePhone,
   forgetIdEmail,
+  signOut,
 };

@@ -1,23 +1,95 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { createError } = require("./error");
+const maria = require("../database/maria");
+const { createError, createSqlError } = require("./error");
+const {
+  createAccessToken,
+  createRefreshToken,
+  checkAccessToken,
+  checkRefreshToken,
+} = require("./token");
 
 // 토큰확인
-const verifyAccessToken = (req, res, next) => {
-  const token = req.cookies.access_token;
-  if (!token) return next(createError(401, "토큰이없습니다."));
-  jwt.verify(token, process.env.JWT, (err, user) => {
-    if (err) return next(createError(403, "token is not valid"));
-    req.body.user = user;
-    next();
-  });
+const verifyAccessToken = async (req, res, next) => {
+  const accessToken = req.cookies.access_token;
+
+  const refreshToken = req.cookies.refresh_token;
+
+  if (!accessToken && !refreshToken) {
+    return next(createError(401, "토큰이 없습니다."));
+  }
+
+  maria.query(
+    "select users_refresh_token from t_users where users_refresh_token=(?)",
+    [refreshToken],
+    (err, result) => {
+      if (err) return next(createSqlError(err));
+      // 토큰 초기화 고려
+      if (
+        result.length === 0 ||
+        refreshToken !== result[0].users_refresh_token
+      ) {
+        console.log("비정상적 토큰");
+        return next(createError(401, "비정상적 토큰"));
+      }
+
+      // 체크후 실행
+      const check_acces_token = checkAccessToken(accessToken);
+      const check_refresh_token = checkRefreshToken(refreshToken);
+
+      if (check_acces_token && check_refresh_token) {
+        console.log("엑세스 O, 리프레시 O");
+        req.body.user = check_acces_token.id;
+        return next();
+      }
+
+      if (!check_acces_token && check_refresh_token) {
+        console.log("엑세스 X, 리프레시 O");
+
+        const accessToken = createAccessToken(check_refresh_token.id);
+
+        res.cookie("access_token", accessToken, {
+          httpOnly: true,
+        });
+        req.body.user = check_refresh_token.id;
+
+        return next();
+      }
+
+      if (check_acces_token && !check_refresh_token) {
+        console.log("엑세스 O, 리프레시 X");
+
+        const refreshToken = createRefreshToken(check_acces_token.id);
+
+        maria.query(
+          "update t_users set users_refresh_token=? where users_id=?",
+          [refreshToken, check_acces_token.id],
+          (err, result) => {
+            if (err) {
+              return next(createSqlError(err));
+            }
+            res.cookie("refresh_token", refreshToken, { httpOnly: true });
+
+            req.body.user = check_acces_token.id;
+
+            return next();
+          }
+        );
+      }
+      if (!check_acces_token && !check_refresh_token) {
+        console.log("엑세스 X, 리프레시 X");
+        return next(createError(500, "다시로그인해주세요"));
+      }
+    }
+  );
 };
 
 // 임시 비밀번호 변경 토큰확인
 const verifyTemporarilyAccessToken = (req, res, next) => {
-  const token = req.cookies.temporarily_access_token;
-  if (!token) return next(createError(401, "토큰이없습니다."));
-  jwt.verify(token, process.env.JWT, (err, user) => {
+  const accessToken = req.cookies.temporarily_access_token;
+  if (!accessToken) return next(createError(401, "토큰이없습니다."));
+
+  jwt.verify(accessToken, process.env.JWT, (err, user) => {
     if (err) return next(createError(403, "token is not valid"));
     req.body.data.user = user;
     next();
@@ -39,7 +111,7 @@ const verifyForgetIdToken = (req, res, next) => {
     );
 
     if (compare) {
-      req.body.data.id = idAuth.id;
+      req.body.id = idAuth.id;
 
       next();
     } else {

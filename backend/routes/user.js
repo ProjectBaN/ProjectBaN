@@ -2,12 +2,12 @@ const express = require("express");
 const {
   getUserInfo,
   updateId,
-  udatePassword,
-  udateName,
-  udateGender,
-  udateEmail,
-  udateAddr,
-  udateAge,
+  updatePassword,
+  updateName,
+  updateGender,
+  updateEmail,
+  updateAddr,
+  updateAge,
   deleteUser,
 } = require("../controller/user");
 const { verifyAccessToken } = require("../module/verify");
@@ -16,12 +16,12 @@ const router = express.Router();
 
 router.get("/getuserinfo", verifyAccessToken, getUserInfo);
 router.post("/updateuserid", verifyAccessToken, updateId);
-router.post("/updateuserpassword", verifyAccessToken, udatePassword);
-router.post("/updateusername", verifyAccessToken, udateName);
-router.post("/updateusergender", verifyAccessToken, udateGender);
-router.post("/updateuseremail", verifyAccessToken, udateEmail);
-router.post("/updateuseraddr", verifyAccessToken, udateAddr);
-router.post("/updateuserage", verifyAccessToken, udateAge);
+router.post("/updateuserpassword", verifyAccessToken, updatePassword);
+router.post("/updateusername", verifyAccessToken, updateName);
+router.post("/updateusergender", verifyAccessToken, updateGender);
+router.post("/updateuseremail", verifyAccessToken, updateEmail);
+router.post("/updateuseraddr", verifyAccessToken, updateAddr);
+router.post("/updateuserage", verifyAccessToken, updateAge);
 router.post("/updateuserdelete", verifyAccessToken, deleteUser);
 
 module.exports = router;
