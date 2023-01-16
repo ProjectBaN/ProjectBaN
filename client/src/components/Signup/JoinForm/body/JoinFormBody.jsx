@@ -5,10 +5,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { register } from '../../../../redux/reducer/registerSlice';
 import GenderList from './GenderList';
 
-const idRegex = /^[0-9a-zA-Z]{3,12}$/;
+const idRegex = /^[0-9a-zA-Z]{3,16}$/;
 const nameRegex = /^[가-힣a-zA-Z]{2,10}$/;
 const emailRegex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
 const phoneRegex = /^01[0179][0-9]{7,8}$/;
+const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{4,10}$/;
+const ageRegex = /^[0-9]{0,2}$/;
 
 const genderList = [
   {
@@ -28,8 +30,6 @@ function JoinFormBody() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const testRedux = useSelector((state) => state.user.registerState);
-
-  console.log(location.state);
   const [input, setInput] = useState({
     id: '',
     password: '',
@@ -70,11 +70,13 @@ function JoinFormBody() {
       alert('비정상적인 접근입니다.');
       navigate('/signup');
     }
-    regexCheck('id', idRegex, '아이디는 3~16자리 영문과 숫자를 적어주십시오');
+    regexCheck('id', idRegex, '아이디는 3~16자리 영문과 숫자를 조합하여 적어주십시오');
     passwordConfirmCheck();
     regexCheck('name', nameRegex, '성함은 영문또는 한글로 작성해주세요');
     regexCheck('email', emailRegex, '올바른 이메일 형식을 적어주세요');
     regexCheck('phone', phoneRegex, '올바른 번호를 적어주세요');
+    regexCheck('password', passwordRegex, '비밀번호는 4~10자리 영문과 숫자를 조합하여 적어주십시오');
+    regexCheck('age', ageRegex, '숫자로만 적어주십시오');
     return () => {};
   });
 
@@ -86,6 +88,7 @@ function JoinFormBody() {
       }
     }
     setInput({ ...input, [e.target.name]: e.target.value });
+
     setSubmitWarning({ ...submitWarning, [e.target.name]: '' });
   };
 
@@ -136,7 +139,7 @@ function JoinFormBody() {
 
   const submitCheck = (check, regex) => {
     if (!input[check] || !regex.test(input[check])) {
-      return '다시 입력해주세요';
+      return '입력해주세요';
     } else {
       return '';
     }
@@ -148,43 +151,44 @@ function JoinFormBody() {
     const email = submitCheck('email', emailRegex);
     const name = submitCheck('name', nameRegex);
     const phone = submitCheck('phone', phoneRegex);
-    setSubmitWarning({ ...submitWarning, email, id, name, phone });
-    if (id || email || name || phone) {
+    const password = submitCheck('password', passwordRegex);
+    const age = submitCheck('age', ageRegex);
+    setSubmitWarning({ ...submitWarning, email, id, name, phone, password, age });
+    if (id || email || name || phone || password || age) {
       return;
     } else {
       const registerState = { input, term: location.state };
       dispatch(register(registerState));
     }
-
-    // let body = {
-    //   data: {
-    //     id: testRedux.input.id,
-    //     password: testRedux.input.password,
-    //     name: testRedux.input.name,
-    //     email: testRedux.input.email,
-    //     phone: testRedux.input.phone,
-    //     addr: testRedux.input.addr,
-    //     age: testRedux.input.age,
-    //     gender: testRedux.input.gender,
-    //     termAge: 'T',
-    //     termUse: 'T',
-    //     termInfo: 'T',
-    //     termEmailAd: 'F',
-    //     termPrivateUse: 'F',
-    //     termAppPush: 'F',
-    //   },
-    // };
-    // const names = axios
-    //   .post('http://localhost:8000/auth/signup', body, {
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Accept: 'application/json',
-    //     },
-    //   })
-    //   .catch((err) => console.log(err));
+    let body = {
+      data: {
+        id: testRedux.input.id,
+        password: testRedux.input.password,
+        name: testRedux.input.name,
+        email: testRedux.input.email,
+        phone: testRedux.input.phone,
+        addr: testRedux.input.addr,
+        age: testRedux.input.age,
+        gender: testRedux.input.gender,
+        termAge: location.state.checkListItem.termAge,
+        termUse: location.state.checkListItem.termUse,
+        termInfo: location.state.checkListItem.termInfo,
+        termEmailAd: location.state.checkListItem.termEmailAd,
+        termPrivateUse: location.state.checkListItem.termPrivateUse,
+        termAppPush: location.state.checkListItem.termAppPush,
+      },
+    };
+    const names = axios
+      .post('http://localhost:8000/auth/signup', body, {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      })
+      .catch((err) => console.log(err));
   };
-  // 아이디 중복체크
 
+  // 아이디 중복체크
   const blurTest = () => {};
   return (
     <main className="max-w-signUpContainer m-auto mt-MbBase flex flex-col items-center">
@@ -206,24 +210,36 @@ function JoinFormBody() {
           {warning.id && <p className="mt-PcSm text-red-600">{warning.id}</p>}
           {submitWarning.id && <p className="mt-PcSm text-red-600">{submitWarning.id}</p>}
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">비밀번호</p>
-          <div className="relative w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-gray-300 focus-within:ring-black focus-within:border-black  focus-within:outline-none">
+          <div
+            className={
+              `${
+                warning.password
+                  ? 'focus-within:ring-red-600 focus-within:border-red-600 '
+                  : 'focus-within:ring-black focus-within:border-black '
+              }` +
+              'relative w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-gray-300 focus-within:ring-black focus-within:border-black  focus-within:outline-none'
+            }
+          >
             <input
-              type={visiblePW ? 'text' : 'password'}
+              type="password"
               name="password"
-              className="relative w-full p-2.5 text-sm focus:border-none focus:outline-none"
+              className={
+                `${
+                  warning.password
+                    ? 'focus:ring-red-600 focus:border-red-600 '
+                    : ' focus:ring-black focus:border-black '
+                }` + 'relative w-full p-2.5 text-sm focus:border-none focus:outline-none'
+              }
               placeholder="비밀번호를 입력하세요"
               value={input.password}
               onChange={OnChange}
             ></input>
-            <button className="text-sm right-0 top-0 h-full w-20" onClick={visiblePassWard}>
-              {visiblePW ? '눈감기' : '눈뜨기'}
-            </button>
           </div>
+          {warning.password && <p className="mt-PcSm text-red-600">{warning.password}</p>}
+          {submitWarning.password && <p className="mt-PcSm text-red-600">{submitWarning.password}</p>}
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">비밀번호 확인</p>
           <div
@@ -237,20 +253,16 @@ function JoinFormBody() {
             }
           >
             <input
-              type={visiblePW ? 'text' : 'password'}
+              type="password"
               name="passwordConfirm"
               className="relative w-full p-2.5 text-sm focus:border-none focus:outline-none"
               placeholder="비밀번호를 입력하세요"
               value={input.passwordConfirm}
               onChange={OnChange}
             ></input>
-            <button className="text-sm right-0 top-0 h-full w-20" onClick={visiblePassWard}>
-              {visiblePW ? '눈감기' : '눈뜨기'}
-            </button>
           </div>
           {warning.passwordConfirm && <p className="mt-PcSm text-red-500">{warning.passwordConfirm}</p>}
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">성명</p>
           <input
@@ -267,7 +279,6 @@ function JoinFormBody() {
           {warning.name && <p className="mt-PcSm text-red-500">{warning.name}</p>}
           {submitWarning.name && <p className="mt-PcSm text-red-600">{submitWarning.name}</p>}
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">이메일</p>
           <input
@@ -285,7 +296,6 @@ function JoinFormBody() {
           {warning.email && <p className="mt-PcSm text-red-500">{warning.email}</p>}
           {submitWarning.email && <p className="mt-PcSm text-red-600">{submitWarning.email}</p>}
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">휴대폰번호</p>
           <input
@@ -303,7 +313,6 @@ function JoinFormBody() {
           {warning.phone && <p className="mt-PcSm text-red-500">{warning.phone}</p>}
           {submitWarning.phone && <p className="mt-PcSm text-red-600">{submitWarning.phone}</p>}
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">주소</p>
           <input
@@ -317,7 +326,6 @@ function JoinFormBody() {
             placeholder="주소를 입력하세요"
           ></input>
         </li>
-
         <li className="mt-PcMd">
           <p className="font-bold">나이</p>
           <input
@@ -325,11 +333,15 @@ function JoinFormBody() {
             name="age"
             value={input.age}
             onChange={OnChange}
-            className="
-              focus:ring-black focus:border-black 
-              w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
+            className={
+              `${
+                warning.phone ? 'focus:ring-red-600 focus:border-red-600 ' : ' focus:ring-black focus:border-black '
+              }` + 'w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none'
+            }
             placeholder="나이를 입력하세요"
           ></input>
+          {warning.age && <p className="mt-PcSm text-red-500">{warning.age}</p>}
+          {submitWarning.age && <p className="mt-PcSm text-red-600">{submitWarning.age}</p>}
         </li>
         <li className="mt-PcMd">
           <p className="font-bold">성별</p>

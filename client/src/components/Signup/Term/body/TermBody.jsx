@@ -12,27 +12,24 @@ const joinTermList = [
     required: true,
     contents:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos dolorum natus dignissimos nemo qui modi delectus, quam omnis odio animi neque tempora, itaque ratione, quas reiciendis. Facere dolorem incidunt soluta ',
-    value: '14year',
-    checks: '',
+    value: '',
     name: 'termAge',
   },
-  { id: 2, title: '이용약관동의', required: true, value: 'use', checks: '', name: 'termUse' },
-  { id: 3, title: '개인정도 수집 및 동의', required: true, value: 'info', checks: '', name: 'termInfo' },
-  { id: 4, title: '앱 푸시 동의', required: false, value: 'appPush', checks: '', name: 'termAppPush' },
+  { id: 2, title: '이용약관동의', required: true, value: '', name: 'termUse' },
+  { id: 3, title: '개인정도 수집 및 동의', required: true, value: '', name: 'termInfo' },
+  { id: 4, title: '앱 푸시 동의', required: false, value: '', name: 'termAppPush' },
   {
     id: 5,
     title: '개인정보 유효기관 3년(미동의 시 1년)',
     required: false,
     value: '3year',
-    checks: '',
-    name: 'temPrivateUse',
+    name: 'termPrivateUse',
   },
-  { id: 6, title: '이메일 마케팅동의', required: false, value: 'email', checks: '', name: 'termEmailAd' },
+  { id: 6, title: '이메일 마케팅동의', required: false, value: '', name: 'termEmailAd' },
 ];
-
 const joinTermRequiredList = joinTermList.filter((term) => term.required).map((term) => term.title);
 
-const joinTermTitleList = joinTermList.map((term) => term.title);
+const joinTermTitleList = joinTermList.map((term) => term.name);
 
 function TermBody() {
   useEffect(() => {
@@ -49,6 +46,7 @@ function TermBody() {
   const termCheck = (event) => {
     if (event.target.checked) {
       setTermCheckList([...termCheckList, event.target.value]);
+
       if (warmList.includes(event.target.value)) {
         setWarmList(warmList.filter((term) => term !== event.target.value));
       }
@@ -56,7 +54,6 @@ function TermBody() {
       setTermCheckList(termCheckList.filter((term) => term !== event.target.value));
     }
   };
-
   const allTermCheck = (event) => {
     if (event.target.checked) {
       setTermCheckList(joinTermTitleList);
@@ -87,14 +84,10 @@ function TermBody() {
       const termCheckIdList = joinTermList
         .filter((term) => termCheckList.includes(term.title))
         .map((term) => term.name);
-      const termCheckIdList1 = joinTermList
-        .filter((term) => termCheckList.includes(term.title))
-        .map((term) => term.value);
-
-      navigate('/signup/joinform', { state: { termCheckIdList, termCheckIdList1 } });
+      console.log(termCheckIdList);
+      navigate('/signup/joinform', { state: { termCheckIdList, joinTermTitleList } });
     }
   };
-
   const modalSet = (title, contents) => {
     setMoDalContents({ title, contents });
     setMoDal(true);
