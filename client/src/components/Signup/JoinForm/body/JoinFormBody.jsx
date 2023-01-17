@@ -9,7 +9,7 @@ const idRegex = /^[0-9a-zA-Z]{3,16}$/;
 const nameRegex = /^[가-힣a-zA-Z]{2,10}$/;
 const emailRegex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
 const phoneRegex = /^01[0179][0-9]{7,8}$/;
-const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{4,10}$/;
+const passwordRegex = /^[0-9a-zA-Z]{4,10}$/;
 const ageRegex = /^[0-9]{0,2}$/;
 let body = '';
 
@@ -30,7 +30,6 @@ function JoinFormBody() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const testRedux = useSelector((state) => state.user.registerState);
   const [input, setInput] = useState({
     id: '',
     password: '',
@@ -66,6 +65,8 @@ function JoinFormBody() {
   });
   const [visiblePW, setVisiblePW] = useState(false);
 
+  const [genderButton, setGenderButton] = useState(false);
+
   useEffect(() => {
     if (!location.state) {
       alert('비정상적인 접근입니다.');
@@ -82,15 +83,13 @@ function JoinFormBody() {
   });
 
   const OnChange = (e) => {
-    const checkboxes = document.getElementsByName('gender');
-    for (let i = 0; i < checkboxes.length; i++) {
-      if (checkboxes[i] !== e.target) {
-        checkboxes[i].checked = false;
-      }
-    }
+    e.preventDefault();
+
     setInput({ ...input, [e.target.name]: e.target.value });
 
     setSubmitWarning({ ...submitWarning, [e.target.name]: '' });
+
+    setGenderButton(e.target.value);
   };
 
   const regexCheck = (check, regex, warn) => {
@@ -161,7 +160,6 @@ function JoinFormBody() {
       const registerState = { input, term: location.state };
       dispatch(register(registerState));
     }
-
     body = {
       data: {
         id: input?.id,
@@ -180,16 +178,16 @@ function JoinFormBody() {
         termAppPush: location.state.checkListItem.termAppPush,
       },
     };
-    const names = axios
-      .post('http://localhost:8000/auth/signup', body, {
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      })
-      .catch((err) => console.log(err));
+    // const names = axios
+    //   .post('http://localhost:8000/auth/signup', body, {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Accept: 'application/json',
+    //     },
+    //   })
+    //   .catch((err) => console.log(err));
+    console.log(body);
   };
-  console.log(body);
   // 아이디 중복체크
   const blurTest = () => {};
   return (
@@ -347,7 +345,7 @@ function JoinFormBody() {
         </li>
         <li className="mt-PcMd">
           <p className="font-bold">성별</p>
-          <GenderList genderList={genderList} OnChange={OnChange} />
+          <GenderList genderList={genderList} OnChange={OnChange} genderButton={genderButton} />
         </li>
       </form>
       <button className="w-full h-20 mt-PcBase bg-black text-white" onClick={submit} type="submit" value={'서브밋'}>
