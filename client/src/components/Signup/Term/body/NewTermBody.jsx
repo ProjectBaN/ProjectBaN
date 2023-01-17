@@ -59,14 +59,7 @@ function NewTermBody() {
   const termCheckList = TermNameList.filter((term) => checkList.includes(term));
   const termNotCheckList = TermNameList.filter((term) => !checkList.includes(term));
 
-  let checkListItem = [
-    { termAge: '' },
-    { termInfo: '' },
-    { termUse: '' },
-    { termEmailAd: '' },
-    { termprivateUse: '' },
-    { termAppPush: '' },
-  ];
+  let checkListItem = [];
 
   //모든 체크표시
   const checkAll = (e) => {

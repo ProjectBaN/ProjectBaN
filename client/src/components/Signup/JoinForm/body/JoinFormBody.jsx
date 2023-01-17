@@ -11,6 +11,7 @@ const emailRegex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
 const phoneRegex = /^01[0179][0-9]{7,8}$/;
 const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{4,10}$/;
 const ageRegex = /^[0-9]{0,2}$/;
+let body = '';
 
 const genderList = [
   {
@@ -160,16 +161,17 @@ function JoinFormBody() {
       const registerState = { input, term: location.state };
       dispatch(register(registerState));
     }
-    let body = {
+
+    body = {
       data: {
-        id: testRedux.input.id,
-        password: testRedux.input.password,
-        name: testRedux.input.name,
-        email: testRedux.input.email,
-        phone: testRedux.input.phone,
-        addr: testRedux.input.addr,
-        age: testRedux.input.age,
-        gender: testRedux.input.gender,
+        id: input?.id,
+        password: input.password,
+        name: input?.name,
+        email: input?.email,
+        phone: input?.phone,
+        addr: input?.addr,
+        age: input?.age,
+        gender: input?.gender,
         termAge: location.state.checkListItem.termAge,
         termUse: location.state.checkListItem.termUse,
         termInfo: location.state.checkListItem.termInfo,
@@ -187,7 +189,7 @@ function JoinFormBody() {
       })
       .catch((err) => console.log(err));
   };
-
+  console.log(body);
   // 아이디 중복체크
   const blurTest = () => {};
   return (
