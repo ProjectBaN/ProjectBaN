@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { register } from '../../../../redux/reducer/registerSlice';
+import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
 
 const idRegex = /^[0-9a-zA-Z]{3,16}$/;
@@ -66,6 +67,7 @@ function JoinFormBody() {
   const [visiblePW, setVisiblePW] = useState(false);
 
   const [genderButton, setGenderButton] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!location.state) {
@@ -81,6 +83,11 @@ function JoinFormBody() {
     regexCheck('age', ageRegex, '숫자로만 적어주십시오');
     return () => {};
   });
+
+  const onToggleModal = (e) => {
+    e.preventDefault();
+    setIsOpen(!isOpen);
+  };
 
   const OnChange = (e) => {
     e.preventDefault();
@@ -322,10 +329,15 @@ function JoinFormBody() {
             onChange={OnChange}
             className="
               focus:ring-black focus:border-black 
-              w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
+              w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
             placeholder="주소를 입력하세요"
           ></input>
+          <button onClick={onToggleModal} className="w-24 p-3.5 ml-4 bg-black text-white">
+            주소찾기
+          </button>
+          {isOpen && <AddressSearch setIsOpen={setIsOpen} />}
         </li>
+
         <li className="mt-PcMd">
           <p className="font-bold">나이</p>
           <input
