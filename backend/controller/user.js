@@ -276,6 +276,7 @@ const updateAge = (req, res, next) => {
   );
 };
 
+// 유저삭제 협의후 결졍
 const deleteUser = (req, res, next) => {
   if (!checkReqBodyData(req, "agree")) {
     return next(createError(401, "입력된 값이 없습니다."));

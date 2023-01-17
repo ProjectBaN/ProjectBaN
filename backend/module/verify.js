@@ -37,15 +37,16 @@ const verifyAccessToken = async (req, res, next) => {
       const check_acces_token = checkAccessToken(accessToken);
       const check_refresh_token = checkRefreshToken(refreshToken);
 
+      // console.log("엑세스 O, 리프레시 O");
+
       if (check_acces_token && check_refresh_token) {
-        console.log("엑세스 O, 리프레시 O");
         req.body.user = check_acces_token.id;
         return next();
       }
 
-      if (!check_acces_token && check_refresh_token) {
-        console.log("엑세스 X, 리프레시 O");
+      // console.log("엑세스 X, 리프레시 O");
 
+      if (!check_acces_token && check_refresh_token) {
         const accessToken = createAccessToken(check_refresh_token.id);
 
         res.cookie("access_token", accessToken, {
@@ -56,9 +57,9 @@ const verifyAccessToken = async (req, res, next) => {
         return next();
       }
 
-      if (check_acces_token && !check_refresh_token) {
-        console.log("엑세스 O, 리프레시 X");
+      // console.log("엑세스 O, 리프레시 X");
 
+      if (check_acces_token && !check_refresh_token) {
         const refreshToken = createRefreshToken(check_acces_token.id);
 
         maria.query(
@@ -76,8 +77,8 @@ const verifyAccessToken = async (req, res, next) => {
           }
         );
       }
+      // console.log("엑세스 X, 리프레시 X");
       if (!check_acces_token && !check_refresh_token) {
-        console.log("엑세스 X, 리프레시 X");
         return next(createError(500, "다시로그인해주세요"));
       }
     }

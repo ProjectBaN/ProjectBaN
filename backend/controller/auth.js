@@ -153,7 +153,7 @@ const signOut = (req, res, next) => {
 };
 
 // id 중복체크
-const idCheck = (req, res) => {
+const idCheck = (req, res, next) => {
   const id = req.query.id;
 
   if (!id) {
@@ -168,11 +168,51 @@ const idCheck = (req, res) => {
       if (results.length === 0) {
         return res.send(successStatus({ duplicate: false }));
       } else if (results.length !== 0) {
-        return res.send(
-          successStatus({
-            duplicate: true,
-          })
-        );
+        return next(createError(500, "중복입니다."));
+      }
+    }
+  );
+};
+
+// email 중복체크
+const emailCheck = (req, res, next) => {
+  const email = req.query.email;
+
+  if (!email) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
+  maria.query(
+    "select * from t_users where (users_email)=(?)",
+    [email],
+    (err, results) => {
+      if (err) return next(createError(500, "서버오류"));
+      if (results.length === 0) {
+        return res.send(successStatus({ duplicate: false }));
+      } else if (results.length !== 0) {
+        return next(createError(500, "중복입니다."));
+      }
+    }
+  );
+};
+
+// phone 중복체크
+const phoneCheck = (req, res, next) => {
+  const phone = req.query.phone;
+
+  if (!phone) {
+    return res.status(401).send("값이 없습니다.");
+  }
+
+  maria.query(
+    "select * from t_users where (users_phone)=(?)",
+    [phone],
+    (err, results) => {
+      if (err) return next(createError(500, "서버오류"));
+      if (results.length === 0) {
+        return res.send(successStatus({ duplicate: false }));
+      } else if (results.length !== 0) {
+        return next(createError(500, "중복입니다."));
       }
     }
   );
@@ -234,7 +274,6 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
       if (err) {
         return next(createSqlError(err, results));
       }
-      console.log(results);
       if (results.length === 0) {
         return next(createError(500, "값이 존재하지않습니다."));
       }
@@ -348,10 +387,12 @@ module.exports = {
   signUp,
   signIn,
   idCheck,
+  emailCheck,
   forgetPasswordAuthEmail,
   forgetPasswordAuthCheckEmail,
   temporarilyUpdatePassword,
   forgetIdNamePhone,
   forgetIdEmail,
   signOut,
+  phoneCheck,
 };

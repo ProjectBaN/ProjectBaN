@@ -9,16 +9,19 @@ const {
   forgetIdNamePhone,
   forgetIdEmail,
   signOut,
+  emailCheck,
+  phoneCheck,
 } = require("../controller/auth");
 const {
   verifyForgetIdToken,
   verifyTemporarilyAccessToken,
 } = require("../module/verify");
-const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
 
 router.post("/signup", signUp);
 router.get("/signup/idcheck", idCheck);
+router.get("/signup/emailcheck", emailCheck);
+router.get("/signup/phonecheck", phoneCheck);
 router.post("/signin", signIn);
 router.post("/forgetpasswordemail", forgetPasswordAuthEmail);
 router.get(
