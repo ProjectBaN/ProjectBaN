@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { register } from '../../../../redux/reducer/registerSlice';
+import DaumPostcode from 'react-daum-postcode';
+
 import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
 
@@ -38,7 +40,7 @@ function JoinFormBody() {
     name: '',
     email: '',
     phone: '',
-    addr: '',
+    fulladdress: '',
     age: '',
     gender: '',
   });
@@ -68,6 +70,7 @@ function JoinFormBody() {
 
   const [genderButton, setGenderButton] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [address, setAddress] = useState('');
 
   useEffect(() => {
     if (!location.state) {
@@ -83,6 +86,17 @@ function JoinFormBody() {
     regexCheck('age', ageRegex, '숫자로만 적어주십시오');
     return () => {};
   });
+
+  const onCompletePost = (data) => {
+    let fullAddress = data.address;
+    console.log(fullAddress);
+    setAddress(fullAddress);
+    setIsOpen(false);
+  };
+  const onClick = (e) => {
+    e.preventDefault();
+    setIsOpen(false);
+  };
 
   const onToggleModal = (e) => {
     e.preventDefault();
@@ -174,7 +188,7 @@ function JoinFormBody() {
         name: input?.name,
         email: input?.email,
         phone: input?.phone,
-        addr: input?.addr,
+        addr: address.addressName + input?.fulladdress,
         age: input?.age,
         gender: input?.gender,
         termAge: location.state.checkListItem.termAge,
@@ -325,19 +339,32 @@ function JoinFormBody() {
           <input
             type="text"
             name="addr"
-            value={input.addr}
+            value={address.addressName || ''}
             onChange={OnChange}
             className="
               focus:ring-black focus:border-black 
               w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
             placeholder="주소를 입력하세요"
           ></input>
+
           <button onClick={onToggleModal} className="w-24 p-3.5 ml-4 bg-black text-white">
             주소찾기
           </button>
-          {isOpen && <AddressSearch setIsOpen={setIsOpen} />}
+          {isOpen && <AddressSearch setIsOpen={setIsOpen} setAddress={setAddress} address={address} />}
         </li>
-
+        <li className="mt-PcMd">
+          <p className="font-bold">상세주소</p>
+          <input
+            type="text"
+            name="fulladdress"
+            value={input.fulladdress}
+            onChange={OnChange}
+            className="
+              focus:ring-black focus:border-black 
+              w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none "
+            placeholder="주소를 입력하세요"
+          ></input>
+        </li>
         <li className="mt-PcMd">
           <p className="font-bold">나이</p>
           <input

@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
-function AddressSearch({ setIsOpen }) {
-  const [address, setAddress] = useState(''); // 주소
-  const [addressDetail, setAddressDetail] = useState(''); // 상세주소
-
+function AddressSearch({ setIsOpen, setAddress, address }) {
   const onCompletePost = (data) => {
-    console.log(data);
+    let fullAddress = data.address;
+
+    setAddress({ ...address, addressName: fullAddress });
     setIsOpen(false);
+    console.log(data);
   };
   const onClick = (e) => {
     e.preventDefault();
     setIsOpen(false);
   };
-
+  console.log(address);
   return (
-    <div className="w-2/6 fixed top-56">
-      <div className="">
-        <button onClick={onClick}>
+    <div className="w-full h-full left-0  top-0 fixed text-center  bg-black/20">
+      <div className="w-2/6 m-auto fixed top-1/4 left-1/3">
+        <button onClick={onClick} className="w-full flex justify-end">
           <i className="fa-solid fa-xmark fa-xl"></i>
         </button>
-      </div>
-
-      <div>
-        <DaumPostcode onComplete={onCompletePost} />
+        <DaumPostcode onComplete={onCompletePost} className="mt-PcSm" />
       </div>
     </div>
   );
