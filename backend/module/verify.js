@@ -121,6 +121,8 @@ const verifyForgetIdToken = (req, res, next) => {
   });
 };
 
+// 관리자인증
+
 module.exports = {
   verifyAccessToken,
   verifyForgetIdToken,
