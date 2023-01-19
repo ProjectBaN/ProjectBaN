@@ -11,6 +11,7 @@ const authRouter = require("./routes/auth");
 const productRouter = require("./routes/product");
 
 const maria = require("./database/maria");
+const { awaitSql } = require("./module/sqlPromise");
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
@@ -32,22 +33,16 @@ app.use((err, req, res, next) => {
 app.listen(8000, console.log("server started"));
 
 app.get("/", async (req, res) => {
-  const name = "김병민4";
-  maria.query(
-    "select * from t_coupon_users as cu join t_coupon as c on cu.t_coupon_num = c.t_coupon_num join t_coupon_rules as cr on c.t_coupon_rules_num = cr.t_coupon_rules_num where t_users_id = ?",
-    [name],
-    (err, results) => {
-      if (err) {
-        console.log(err);
-        return res.send("에러");
-      }
-      if (results) {
-        return res.send("성공");
-      } else {
-        return res.send("hellow world");
-      }
-    }
-  );
+  const name1 = "'김병민4'";
+  const query1 = `select * from t_users where users_id = ${name1}`;
+  const results1 = await awaitSql(query1);
+  console.log(results1);
+
+  const name2 = "'김병민1'";
+  const query2 = `select * from t_users where users_id = ${name2}`;
+  const results2 = await awaitSql(query2);
+
+  res.send(results1);
 });
 
 app.get("/test", (req, res) => {
