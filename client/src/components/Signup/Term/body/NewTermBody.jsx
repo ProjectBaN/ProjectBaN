@@ -59,8 +59,6 @@ function NewTermBody() {
   const termCheckList = TermNameList.filter((term) => checkList.includes(term));
   const termNotCheckList = TermNameList.filter((term) => !checkList.includes(term));
 
-  let checkListItem = [];
-
   //모든 체크표시
   const checkAll = (e) => {
     e.target.checked ? setCheckList(TermAllList) : setCheckList([]); //모두동의 체크를 하면 모두 체크되게한다. 다시 한번 더 체크하면 배열을 빈배열로 초기화 한다.
@@ -76,11 +74,12 @@ function NewTermBody() {
   const onSubmit = (e) => {
     e.preventDefault();
     const requiredCheckList = TermRequiredList.filter((term) => !checkList.includes(term));
+    let checkListItem = [];
 
     // const termTrueFalsecheckList = TermAllList.map((term) =>
     //   checkList.includes(term) ? (checkListItem = { [term]: 'T' }) : (checkListItem = { [term]: 'F' }),
     // );
-    const testCheckList = TermAllList.map((term) =>
+    TermAllList.map((term) =>
       checkList.includes(term)
         ? (checkListItem = { ...checkListItem, [term]: 'T' })
         : (checkListItem = { ...checkListItem, [term]: 'F' }),
