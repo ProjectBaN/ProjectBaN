@@ -8,6 +8,7 @@ const app = express();
 
 const userRouter = require("./routes/user");
 const authRouter = require("./routes/auth");
+const productRouter = require("./routes/product");
 
 const maria = require("./database/maria");
 app.use(cors());
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+app.use("/product", productRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
@@ -40,7 +42,6 @@ app.get("/", async (req, res) => {
         return res.send("에러");
       }
       if (results) {
-        console.log(results);
         return res.send("성공");
       } else {
         return res.send("hellow world");
