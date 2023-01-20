@@ -10,9 +10,6 @@ const userRouter = require("./routes/user");
 const authRouter = require("./routes/auth");
 const productRouter = require("./routes/product");
 
-const maria = require("./database/maria");
-const { awaitSql } = require("./module/sqlPromise");
-const { createSqlError, createError } = require("./module/error");
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());

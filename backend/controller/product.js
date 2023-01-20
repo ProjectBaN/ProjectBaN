@@ -118,6 +118,55 @@ const createProductWrite = async (req, res, next) => {
 // **쇼핑글 업데이트**
 
 const updateProductWrite = async (req, res, next) => {
+  if (
+    !checkReqBodyData(
+      req,
+      "productWriteNumber",
+      "category",
+      "title",
+      "desc",
+      "thumbnail",
+      "mainImage",
+      "optionList",
+      "productImageList"
+    )
+  ) {
+    return next(createError(401, "값이없습니다."));
+  }
+
+  const productWriteNumber = req.body.data.productWriteNumber;
+  const category = req.body.data.category;
+  const title = req.body.data.title;
+  const desc = req.body.data.desc;
+  const thumbnail = req.body.data.thumbnail || [];
+  const mainImage = req.body.data.mainImage || [];
+  const optionList = req.body.data.optionList || [];
+  const productImageList = req.body.data.productImageList || [];
+
+  // 전체적 트랜잭션
+  console.log(productWriteNumber);
+  // 쇼핑글 있는지 체크
+  const checkNumberQuery = `select * from t_product_write where t_product_write_number = '${productWriteNumber}'`;
+  const checkProductWriteNumber = await awaitSql(checkNumberQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  if (checkProductWriteNumber.err) {
+    return next(createSqlError(checkProductWriteNumber.err));
+  }
+  if (checkProductWriteNumber.length === 0) {
+    return next(createError(403, "쇼핑 글이 존재하지 않습니다."));
+  }
+
+  // 쇼핑글은 업데이트를 하고
+
+  // 옵션 상품은 기존에꺼 삭제후 다시 등록
+
+  // 이미지 또한 기존에꺼 삭제후 다시 등록
+
   res.send("hello");
 };
 
