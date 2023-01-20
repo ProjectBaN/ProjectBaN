@@ -6,6 +6,8 @@ const { checkReqBodyData } = require("../module/check");
 
 require("dotenv").config();
 
+// 이미지 서버 로직 추가
+/** 쇼핑글 등록**/
 const createProductWrite = async (req, res, next) => {
   // 값없을 시 || 문 처리 밑 에러 핸들링
   if (
@@ -113,7 +115,38 @@ const createProductWrite = async (req, res, next) => {
     }
   });
 };
+// **쇼핑글 업데이트**
 
+const updateProductWrite = async (req, res, next) => {
+  res.send("hello");
+};
+
+// **쇼핑글지우기**
+// 이미지 서버 로직추가
+const deleteProductWrite = async (req, res, next) => {
+  if (!checkReqBodyData(req, "productWriteNumber")) {
+    return next(createError(401, "값이없습니다."));
+  }
+
+  const productWriteNumber = req.body.data.productWriteNumber;
+
+  const query = `DELETE FROM t_product_write WHERE t_product_write_number = '${productWriteNumber}'`;
+
+  const deleteProductWrite = await awaitSql(query)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (deleteProductWrite.err) {
+    return next(createSqlError(deleteProductWrite.err));
+  }
+
+  res.send(deleteProductWrite);
+};
+// **조회수 증가**
 const hitsUp = async (req, res, next) => {
   if (!req.query || !req.query.product_write_number) {
     return next(createError(401, "상품번호가없습니다."));
@@ -134,4 +167,9 @@ const hitsUp = async (req, res, next) => {
   return res.send(successStatus({ success: "조회수증가성공" }));
 };
 
-module.exports = { createProductWrite, hitsUp };
+module.exports = {
+  createProductWrite,
+  hitsUp,
+  deleteProductWrite,
+  updateProductWrite,
+};
