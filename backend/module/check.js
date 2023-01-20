@@ -8,6 +8,8 @@ const checkReqBodyData = (req, ...args) => {
   }
   args.forEach((element) => {
     if (!req.body.data[element]) {
+      console.log(element);
+
       check = false;
       return;
     }
