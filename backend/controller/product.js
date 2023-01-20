@@ -115,7 +115,23 @@ const createProductWrite = async (req, res, next) => {
 };
 
 const hitsUp = async (req, res, next) => {
-  res;
+  if (!req.query || !req.query.product_write_number) {
+    return next(createError(401, "상품번호가없습니다."));
+  }
+  const product_write_number = req.query.product_write_number;
+  const hitsUpQuery = `update t_product_write set t_product_write_hits=t_product_write_hits+1 where t_product_write_number=${product_write_number}`;
+  const hitsUp = await awaitSql(hitsUpQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (hitsUp.err) {
+    return next(createError(501, "조회수증가에서문제가생겼습니다."));
+  }
+  return res.send(successStatus({ success: "조회수증가성공" }));
 };
 
 module.exports = { createProductWrite, hitsUp };
