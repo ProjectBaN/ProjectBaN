@@ -1,4 +1,4 @@
-const { awaitSql } = require("../module/sqlPromise");
+const { awaitSql, checkSql } = require("../module/sqlPromise");
 const maria = require("../database/maria");
 const { createSqlError, createError } = require("../module/error");
 const { successStatus } = require("../module/statuscode");
@@ -352,8 +352,28 @@ const updateCategory = async (req, res, next) => {
     .then((result) => {
       return result;
     });
-  if (updateCategory.err) {
-    return next(createSqlError(updateCategory.err));
+
+  if (!checkSql(updateCategory)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  return res.send(successStatus({ successStatus: true }));
+};
+const deleteCategory = async (req, res, next) => {
+  if (!checkReqBodyData(req, "categoryName")) {
+    return next(createError(401, "값이없습니다."));
+  }
+  const categoryName = req.body.data.categoryName;
+  const deleteCategoryQuery = `delete from t_product_write_category where t_product_write_category_name = '${categoryName}'`;
+  const deleteCategory = await awaitSql(deleteCategoryQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(deleteCategory)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
   return res.send(successStatus({ successStatus: true }));
@@ -366,4 +386,5 @@ module.exports = {
   updateProductWrite,
   insertCategory,
   updateCategory,
+  deleteCategory,
 };
