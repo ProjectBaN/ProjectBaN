@@ -5,6 +5,7 @@ const {
   deleteProductWrite,
   updateProductWrite,
   insertCategory,
+  updateCategory,
 } = require("../controller/product");
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.post("/delete", deleteProductWrite);
 router.get("/hitsup", hitsUp);
 
 router.post("/insertcategory", insertCategory);
+router.post("/updatecategory", updateCategory);
 
 module.exports = router;

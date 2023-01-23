@@ -332,13 +332,31 @@ const insertCategory = async (req, res, next) => {
     });
 
   if (insertCategory.err) {
-    return next(createSqlError(deleteProductWrite.err));
+    return next(createSqlError(insertCategory.err));
   }
 
-  return res.send("hello");
+  return res.send(successStatus({ successStatus: true }));
 };
 const updateCategory = async (req, res, next) => {
-  res.send("hello");
+  if (!checkReqBodyData(req, "categoryName", "updateCategoryName")) {
+    return next(createError(401, "값이없습니다."));
+  }
+  const categoryName = req.body.data.categoryName;
+  const updateName = req.body.data.updateCategoryName;
+
+  const updateCategoryQuery = `update t_product_write_category set t_product_write_category_name = '${updateName}' where t_product_write_category_name = '${categoryName}'`;
+  const updateCategory = await awaitSql(updateCategoryQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  if (updateCategory.err) {
+    return next(createSqlError(updateCategory.err));
+  }
+
+  return res.send(successStatus({ successStatus: true }));
 };
 
 module.exports = {
@@ -347,4 +365,5 @@ module.exports = {
   deleteProductWrite,
   updateProductWrite,
   insertCategory,
+  updateCategory,
 };
