@@ -315,9 +315,36 @@ const hitsUp = async (req, res, next) => {
   return res.send(successStatus({ success: "조회수증가성공" }));
 };
 
+const insertCategory = async (req, res, next) => {
+  if (!checkReqBodyData(req, "categoryName")) {
+    return next(createError(401, "값이없습니다."));
+  }
+  const categoryName = req.body.data.categoryName;
+
+  const insertCategoryQuery = `insert into t_product_write_category(t_product_write_category_name) values('${categoryName}')`;
+
+  const insertCategory = await awaitSql(insertCategoryQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (insertCategory.err) {
+    return next(createSqlError(deleteProductWrite.err));
+  }
+
+  return res.send("hello");
+};
+const updateCategory = async (req, res, next) => {
+  res.send("hello");
+};
+
 module.exports = {
   createProductWrite,
   hitsUp,
   deleteProductWrite,
   updateProductWrite,
+  insertCategory,
 };
