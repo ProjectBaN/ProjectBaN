@@ -140,34 +140,133 @@ const updateProductWrite = async (req, res, next) => {
   const desc = req.body.data.desc;
   const thumbnail = req.body.data.thumbnail || [];
   const mainImage = req.body.data.mainImage || [];
+
   const optionList = req.body.data.optionList || [];
   const productImageList = req.body.data.productImageList || [];
 
-  // 전체적 트랜잭션
-  console.log(productWriteNumber);
-  // 쇼핑글 있는지 체크
-  const checkNumberQuery = `select * from t_product_write where t_product_write_number = '${productWriteNumber}'`;
-  const checkProductWriteNumber = await awaitSql(checkNumberQuery)
-    .catch((err) => {
-      return { err: err };
-    })
-    .then((result) => {
-      return result;
-    });
-  if (checkProductWriteNumber.err) {
-    return next(createSqlError(checkProductWriteNumber.err));
-  }
-  if (checkProductWriteNumber.length === 0) {
-    return next(createError(403, "쇼핑 글이 존재하지 않습니다."));
-  }
+  maria.beginTransaction(async (err) => {
+    if (err) return next(createError(500, err));
 
-  // 쇼핑글은 업데이트를 하고
+    // 전체적 트랜잭션
+    // 쇼핑글 있는지 체크
+    const checkNumberQuery = `select * from t_product_write where t_product_write_number = '${productWriteNumber}'`;
+    const checkProductWriteNumber = await awaitSql(checkNumberQuery)
+      .catch((err) => {
+        return { err: err };
+      })
+      .then((result) => {
+        return result;
+      });
+    if (checkProductWriteNumber.err) {
+      maria.rollback();
+      return next(createSqlError(checkProductWriteNumber.err));
+    }
+    if (checkProductWriteNumber.length === 0) {
+      maria.rollback();
+      return next(createError(403, "쇼핑 글이 존재하지 않습니다."));
+    }
 
-  // 옵션 상품은 기존에꺼 삭제후 다시 등록
+    // 쇼핑글은 업데이트를 하고
+    const updateProductWriteQuery = `update t_product_write set t_product_write_category= '${category}' , t_product_write_title = '${title}', t_product_write_desc = '${desc}', t_product_write_thumbnail = '${thumbnail}', t_product_write_main_image = '${mainImage}' where t_product_write_number = '${productWriteNumber}'`;
+    const updateProductWrite = await awaitSql(updateProductWriteQuery)
+      .catch((err) => ({ err: err }))
+      .then((result) => {
+        return result;
+      });
+    if (updateProductWrite.err) {
+      maria.rollback();
+      return next(createSqlError(updateProductWrite.err));
+    }
 
-  // 이미지 또한 기존에꺼 삭제후 다시 등록
+    // 옵션 상품은 기존에꺼 삭제후 다시 등록
+    const deleteOptionQuery = `DELETE FROM t_product WHERE t_product_write_num = '${productWriteNumber}'`;
+    const deleteOption = await awaitSql(deleteOptionQuery)
+      .catch((err) => ({ err: err }))
+      .then((result) => {
+        return result;
+      });
 
-  res.send("hello");
+    if (deleteOption.err) {
+      maria.rollback();
+      return next(createSqlError(deleteOption.err));
+    }
+
+    let optionQuaryCheck = {};
+
+    const writeNum = productWriteNumber;
+
+    for (const optiion of optionList) {
+      const optionQuery = `insert into t_product(t_product_name,t_product_write_num, t_product_price, t_product_stock, t_product_thumbnail, t_product_discount) values('${optiion.name}', '${writeNum}', '${optiion.price}', '${optiion.stock}', '${optiion.thumbnail}', '${optiion.discount}')`;
+      const insertOption = await awaitSql(optionQuery)
+        .catch((err) => ({
+          err: err,
+        }))
+        .then((result) => {
+          return result;
+        });
+
+      if (insertOption.err) {
+        optionQuaryCheck = insertOption;
+        break;
+      }
+    }
+
+    if (optionQuaryCheck.err) {
+      maria.rollback();
+      return next(createSqlError(optionQuaryCheck.err));
+    }
+
+    // 이미지 또한 기존에꺼 삭제후 다시 등록
+    const deleteProductImageQuery = `DELETE FROM t_product_write_product_image WHERE t_product_write_num = '${productWriteNumber}'`;
+    const deleteProductImage = await awaitSql(deleteProductImageQuery)
+      .catch((err) => ({
+        err: err,
+      }))
+      .then((result) => {
+        return result;
+      });
+
+    if (deleteProductImage.err) {
+      maria.rollback();
+      return next(createSqlError(optionQuaryCheck.err));
+    }
+
+    // **쇼핑글 제품 이미지 등록**
+    let imageQueryCheck = {};
+
+    for (const productImage of productImageList) {
+      const optionQuery = `insert into t_product_write_product_image(t_product_write_num, t_product_write_product_img, t_product_write_product_img_desc) values('${productWriteNumber}', '${productImage.img}', '${productImage.desc}')`;
+      const insertImage = await awaitSql(optionQuery)
+        .catch((err) => ({
+          err: err,
+        }))
+        .then((result) => {
+          return result;
+        });
+
+      if (insertImage.err) {
+        imageQueryCheck = insertImage;
+        break;
+      }
+    }
+
+    if (imageQueryCheck.err) {
+      maria.rollback();
+      return next(createSqlError(imageQueryCheck.err));
+    }
+
+    if (
+      !checkProductWriteNumber.err &&
+      !updateProductWrite.err &&
+      !deleteOption.err &&
+      !optionQuaryCheck.err &&
+      !deleteProductImage.err &&
+      !imageQueryCheck.err
+    ) {
+      maria.commit();
+      return res.send(successStatus({ successStatus: "success" }));
+    }
+  });
 };
 
 // **쇼핑글지우기**
