@@ -407,7 +407,7 @@ const createQna = async (req, res, next) => {
   const contents = req.body.data.contents;
   const productWriteNum = req.body.data.productWriteNum;
 
-  const insertQnaQuery = `insert into t_product_qna(t_product_qna_category, t_product_qna_title, t_product_qna_contents, t_users_id, t_product_write_number) values('${category}','${title}','${contents}','${usersId}','${productWriteNum}')`;
+  const insertQnaQuery = `insert into product_qna(product_qna_category, product_qna_title, product_qna_contents, t_users_id, t_product_write_number) values('${category}','${title}','${contents}','${usersId}','${productWriteNum}')`;
   const insertQna = await awaitSql(insertQnaQuery)
     .catch((err) => {
       return { err: err };
@@ -419,6 +419,7 @@ const createQna = async (req, res, next) => {
   if (!checkSql(insertQna)) {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
+  console.log(insertQna);
 
   res.send("QNA");
 };
@@ -436,7 +437,7 @@ const deleteQna = async (req, res, next) => {
   const qnaNum = req.body.data.qnaNum;
   const user = req.body.user;
 
-  const checkQnaIdQuery = `select * from t_product_qna where t_product_qna_num = '${qnaNum}'`;
+  const checkQnaIdQuery = `select * from product_qna where product_qna_num = '${qnaNum}'`;
   const checkQnaId = await awaitSql(checkQnaIdQuery)
     .catch((err) => {
       return { err: err };
@@ -453,7 +454,7 @@ const deleteQna = async (req, res, next) => {
     return next(createError(403, "권한이 없습니다."));
   }
 
-  const deleteQnaQuery = `delete from t_product_qna where t_users_id = '${user}' AND t_product_qna_num = '${qnaNum}'`;
+  const deleteQnaQuery = `delete from product_qna where t_users_id = '${user}' AND product_qna_num = '${qnaNum}'`;
   const deleteQna = await awaitSql(deleteQnaQuery)
     .catch((err) => {
       return { err: err };
@@ -470,7 +471,50 @@ const deleteQna = async (req, res, next) => {
 };
 
 const createAnswer = async (req, res, next) => {
-  res.send("hello");
+  if (!checkReqBodyData(req, "qnaNum", "contents")) {
+    return next(createError(401, "값이없습니다."));
+  }
+
+  const qnaNum = req.body.data.qnaNum;
+  const contents = req.body.data.contents;
+
+  maria.beginTransaction(async (err) => {
+    if (err) return next(createError(501, "서버오류"));
+
+    const CreateAnswerQuery = `insert into product_qna_answer(product_qna_num, product_qna_answer_contents) values('${qnaNum}','${contents}')`;
+    const CreateAnswer = await awaitSql(CreateAnswerQuery)
+      .catch((err) => {
+        return { err: err };
+      })
+      .then((result) => {
+        return result;
+      });
+
+    if (!checkSql(CreateAnswer)) {
+      maria.rollback();
+      return next(createError(403, "변화에 문제가 생겼습니다."));
+    }
+
+    const updateQnaStatusQuery = `update product_qna set product_qna_status = 'Y' where product_qna_num =${qnaNum}`;
+    const updateQnaStatus = await awaitSql(updateQnaStatusQuery)
+      .catch((err) => {
+        return { err: err };
+      })
+      .then((result) => {
+        return result;
+      });
+
+    if (!checkSql(updateQnaStatus)) {
+      maria.rollback();
+      return next(createError(403, "변화에 문제가 생겼습니다."));
+    }
+
+    if (checkSql(CreateAnswer) && checkSql(updateQnaStatus)) {
+      maria.commit();
+
+      return res.send("hello");
+    }
+  });
 };
 
 module.exports = {

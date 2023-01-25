@@ -26,6 +26,7 @@ router.post("/deletecategory", deleteCategory);
 
 router.post("/createqna", verifyAccessToken, createQna);
 router.post("/deleteqna", verifyAccessToken, deleteQna);
-router.post("/createAnswer", verifyAccessToken, createAnswer);
+// 관리자
+router.post("/createanswer", createAnswer);
 
 module.exports = router;
