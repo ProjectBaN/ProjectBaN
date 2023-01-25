@@ -39,6 +39,7 @@ function JoinBody() {
   const [address, setAddress] = useState('');
   const [genderButton, setGenderButton] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
   const [validation, setValidationTest] = useState({
     id: '',
     password: '',
@@ -57,6 +58,7 @@ function JoinBody() {
     phone: '',
     age: '',
   });
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -130,7 +132,11 @@ function JoinBody() {
 
     const id = submitValueCheck('id', idRegex, '아이디를 다시 입력해주세요');
     const password = submitValueCheck('password', passwordRegex, '비밀번호를 다시 입력해주세요');
-    const passwordConfirm = submitValueCheck('passwordConfirm', '', '비밀번호 확인을 위해 다시 입력해주세요');
+    const passwordConfirm = submitValueCheck(
+      'passwordConfirm',
+      passwordRegex,
+      '비밀번호 확인을 위해 다시 입력해주세요',
+    );
     const name = submitValueCheck('name', nameRegex, '이름을 다시 입력해주세요');
     const email = submitValueCheck('email', emailRegex, '이메일을 다시 입력해주세요');
     const phone = submitValueCheck('phone', phoneRegex, '휴대폰 번호를 다시 입력해주세요');
