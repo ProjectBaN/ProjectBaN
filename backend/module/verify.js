@@ -16,7 +16,7 @@ const verifyAccessToken = async (req, res, next) => {
   const refreshToken = req.cookies.refresh_token;
 
   if (!accessToken && !refreshToken) {
-    return next(createError(401, "토큰이 없습니다."));
+    return next(createError(401, "login"));
   }
 
   maria.query(
@@ -79,7 +79,7 @@ const verifyAccessToken = async (req, res, next) => {
       }
       // console.log("엑세스 X, 리프레시 X");
       if (!check_acces_token && !check_refresh_token) {
-        return next(createError(500, "다시로그인해주세요"));
+        return next(createError(500, "logIn"));
       }
     }
   );

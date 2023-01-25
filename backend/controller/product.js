@@ -268,7 +268,6 @@ const updateProductWrite = async (req, res, next) => {
     }
   });
 };
-
 // **쇼핑글지우기**
 // 이미지 서버 로직추가
 const deleteProductWrite = async (req, res, next) => {
@@ -294,6 +293,7 @@ const deleteProductWrite = async (req, res, next) => {
 
   res.send(deleteProductWrite);
 };
+
 // **조회수 증가**
 const hitsUp = async (req, res, next) => {
   if (!req.query || !req.query.product_write_number) {
@@ -314,7 +314,7 @@ const hitsUp = async (req, res, next) => {
   }
   return res.send(successStatus({ success: "조회수증가성공" }));
 };
-
+// **카테고리 추가**
 const insertCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
     return next(createError(401, "값이없습니다."));
@@ -337,6 +337,7 @@ const insertCategory = async (req, res, next) => {
 
   return res.send(successStatus({ successStatus: true }));
 };
+// ** 카테고리 수정**
 const updateCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName", "updateCategoryName")) {
     return next(createError(401, "값이없습니다."));
@@ -358,6 +359,8 @@ const updateCategory = async (req, res, next) => {
   }
   return res.send(successStatus({ successStatus: true }));
 };
+
+// ** 카테고리 삭제**
 const deleteCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
     return next(createError(401, "값이없습니다."));
@@ -379,6 +382,56 @@ const deleteCategory = async (req, res, next) => {
   return res.send(successStatus({ successStatus: true }));
 };
 
+// ** qna 추가 **
+const createQna = async (req, res, next) => {
+  if (
+    !checkReqBodyData(req, "category", "title", "contents", "productWriteNum")
+  ) {
+    return next(createError(401, "값이없습니다."));
+  }
+  if (!req.body.user) {
+    return next(createError(401, "값이없습니다."));
+  }
+  // 외부키로 강제성 여부 추가
+  if (
+    req.body.data.category !== "배송" &&
+    req.body.data.category !== "상품" &&
+    req.body.data.category !== "기타"
+  ) {
+    return next(createError(403, "잘못된 값입니다."));
+  }
+
+  const usersId = req.body.user;
+  const category = req.body.data.category;
+  const title = req.body.data.title;
+  const contents = req.body.data.contents;
+  const productWriteNum = req.body.data.productWriteNum;
+
+  const insertQnaQuery = `insert into t_product_qna(t_product_qna_category, t_product_qna_title, t_product_qna_contents, t_users_id, t_product_write_number) values('${category}','${title}','${contents}','${usersId}','${productWriteNum}')`;
+  const insertQna = await awaitSql(insertQnaQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(insertQna)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  res.send("QNA");
+};
+
+// **qna삭제**
+const deleteQna = async (req, res, next) => {
+  // if (!checkReqBodyData(req, "title")) {
+  //   return next(createError(401, "값이없습니다."));
+  // }
+
+  return res.send("hello");
+};
+
 module.exports = {
   createProductWrite,
   hitsUp,
@@ -387,4 +440,5 @@ module.exports = {
   insertCategory,
   updateCategory,
   deleteCategory,
+  createQna,
 };
