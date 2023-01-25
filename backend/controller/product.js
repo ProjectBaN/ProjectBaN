@@ -425,11 +425,52 @@ const createQna = async (req, res, next) => {
 
 // **qna삭제**
 const deleteQna = async (req, res, next) => {
-  // if (!checkReqBodyData(req, "title")) {
-  //   return next(createError(401, "값이없습니다."));
-  // }
+  if (!req.body.user) {
+    return next(createError(401, "값이없습니다."));
+  }
+
+  if (!checkReqBodyData(req, "qnaNum")) {
+    return next(createError(401, "값이없습니다."));
+  }
+
+  const qnaNum = req.body.data.qnaNum;
+  const user = req.body.user;
+
+  const checkQnaIdQuery = `select * from t_product_qna where t_product_qna_num = '${qnaNum}'`;
+  const checkQnaId = await awaitSql(checkQnaIdQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(checkQnaId)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  if (checkQnaId[0].t_users_id !== user) {
+    return next(createError(403, "권한이 없습니다."));
+  }
+
+  const deleteQnaQuery = `delete from t_product_qna where t_users_id = '${user}' AND t_product_qna_num = '${qnaNum}'`;
+  const deleteQna = await awaitSql(deleteQnaQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(deleteQna)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
 
   return res.send("hello");
+};
+
+const createAnswer = async (req, res, next) => {
+  res.send("hello");
 };
 
 module.exports = {
@@ -441,4 +482,6 @@ module.exports = {
   updateCategory,
   deleteCategory,
   createQna,
+  deleteQna,
+  createAnswer,
 };

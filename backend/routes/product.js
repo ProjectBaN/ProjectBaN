@@ -8,6 +8,8 @@ const {
   updateCategory,
   deleteCategory,
   createQna,
+  deleteQna,
+  createAnswer,
 } = require("../controller/product");
 const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
@@ -23,5 +25,7 @@ router.post("/updatecategory", updateCategory);
 router.post("/deletecategory", deleteCategory);
 
 router.post("/createqna", verifyAccessToken, createQna);
+router.post("/deleteqna", verifyAccessToken, deleteQna);
+router.post("/createAnswer", verifyAccessToken, createAnswer);
 
 module.exports = router;

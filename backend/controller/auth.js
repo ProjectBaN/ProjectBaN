@@ -102,7 +102,7 @@ const signIn = async (req, res, next) => {
       if (results[0].users_leave_at) {
         return next(createError(500, "탈퇴한 유저입니다."));
       }
-      console.log(results);
+
       const dbId = results[0].users_id;
       const dbPassword = results[0].users_password;
 
