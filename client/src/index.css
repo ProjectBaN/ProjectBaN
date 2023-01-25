@@ -16,7 +16,7 @@
   @apply w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-gray-300 focus-within:ring-black focus-within:border-black  focus-within:outline-none pl-2;
 }
 .joinInputFail {
-  @apply w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-red-700  focus-within:outline-none pl-2;
+  @apply w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-red-500  focus-within:outline-none pl-2;
 }
 .joinListCommon {
   @apply mt-PcMd;

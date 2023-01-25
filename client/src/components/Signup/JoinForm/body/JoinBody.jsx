@@ -79,6 +79,20 @@ function JoinBody() {
     return () => {};
   });
 
+  const onToggleModal = (e) => {
+    //주소api 모달
+    e.preventDefault();
+    setIsOpen(!isOpen);
+  };
+
+  const onChange = (e) => {
+    //가입정보 입력 시 값 받아오기
+    e.preventDefault();
+    setSubmitMessage({ ...submitMessage, [e.target.name]: '' });
+    setInput({ ...input, [e.target.name]: e.target.value });
+    setGenderButton(e.target.value);
+  };
+
   const validationTest = (name, regex, message) => {
     console.log('실행됨 D_check');
 
@@ -91,11 +105,6 @@ function JoinBody() {
       setValidationTest({ ...validation, [name]: message });
     }
   };
-  const onToggleModal = (e) => {
-    //주소api 모달
-    e.preventDefault();
-    setIsOpen(!isOpen);
-  };
 
   const passwordCheck = () => {
     console.log('실행됨 pwCheck');
@@ -106,35 +115,34 @@ function JoinBody() {
       setValidationTest({ ...validation, passwordConfirm: '' });
     }
   };
-  const onChange = (e) => {
-    //가입정보 입력 시 값 받아오기
-    e.preventDefault();
-    setInput({ ...input, [e.target.name]: e.target.value });
-    setGenderButton(e.target.value);
-  };
 
-  const submitValueCheck = (name, regex) => {
-    if (input[name].length > 0 && !regex.test(input[name]) && input[name] === '') {
-      return '다시입력해주세요';
+  //가입 버튼 클릭시 가입정보의 빈값 및 정규식 체크
+  const submitValueCheck = (name, regex, message) => {
+    if (!input[name] || !regex.test(input[name])) {
+      return message;
     } else {
-      return input[name];
+      return '';
     }
   };
 
   const registerSumbit = (e) => {
     e.preventDefault();
 
-    const id = submitValueCheck('id', idRegex);
-    const password = submitValueCheck('password', passwordRegex);
+    const id = submitValueCheck('id', idRegex, '아이디를 다시 입력해주세요');
+    const password = submitValueCheck('password', passwordRegex, '비밀번호를 다시 입력해주세요');
+    const passwordConfirm = submitValueCheck('passwordConfirm', '', '비밀번호 확인을 위해 다시 입력해주세요');
+    const name = submitValueCheck('name', nameRegex, '이름을 다시 입력해주세요');
+    const email = submitValueCheck('email', emailRegex, '이메일을 다시 입력해주세요');
+    const phone = submitValueCheck('phone', phoneRegex, '휴대폰 번호를 다시 입력해주세요');
+    const age = submitValueCheck('age', ageRegex, '나이를 다시 입력해주세요');
 
-    console.log(id);
-    console.log(password);
+    setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
   };
 
   return (
-    <main className="max-w-signUpContainer m-auto mt-MbBase flex flex-col items-center">
+    <main className="max-w-signUpContainer m-auto mt-MbBase ">
       <form className="w-full px-2" action="">
-        <li className="mt-MbSm">
+        <li className="joinListCommon">
           <p className="font-bold">아이디</p>
           <input
             type="text"
@@ -142,31 +150,32 @@ function JoinBody() {
             placeholder="아이디를 입력하세요"
             value={input.id}
             onChange={onChange}
-            className={validation.id && input.id.length > 0 ? 'joinInputFail' : 'joinInput '}
+            className={(validation.id && input.id.length > 0) || submitMessage.id ? 'joinInputFail' : 'joinInput '}
           ></input>
-          {validation.id && input.id.length > 0 ? <p className="mt-PcSm text-red-500">{validation.id}</p> : ''}
-          {submitMessage.id && !idRegex.test(input.id) && input.id.length > 0 ? (
-            <p className="mt-PcSm text-red-500">{submitMessage.id}</p>
-          ) : (
-            ''
-          )}
+          <div className="w-full text-base text-red-500 mt-PcSm">
+            {validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
+            {submitMessage.id && <p className="">{submitMessage.id}</p>}
+          </div>
         </li>
         <li className="joinListCommon">
           <p className="font-bold">비밀번호</p>
-          <div className=" ">
+          <div className="">
             <input
               type="password"
               name="password"
-              className={validation.password && input.password > 0 ? 'joinInputFail' : 'joinInput '}
+              className={
+                (validation.password && input.password.length > 0) || submitMessage.password
+                  ? 'joinInputFail'
+                  : 'joinInput '
+              }
               placeholder="비밀번호를 입력하세요"
               value={input.password}
               onChange={onChange}
             ></input>
-            {validation.password && input.password.length > 0 ? (
-              <p className="mt-PcSm text-red-500">{validation.password}</p>
-            ) : (
-              ''
-            )}
+            <div className="w-full  text-base text-red-500">
+              {validation.password && input.password.length > 0 && <p>{validation.password}</p>}
+              {submitMessage.password && <p>{submitMessage.password}</p>}
+            </div>
           </div>
         </li>
         <li className="joinListCommon">
@@ -175,16 +184,24 @@ function JoinBody() {
             <input
               type="password"
               name="passwordConfirm"
-              className={validation.passwordConfirm && input.passwordConfirm.length > 0 ? 'joinInputFail' : 'joinInput'}
+              className={
+                (validation.passwordConfirm && input.passwordConfirm.length > 0) || submitMessage.passwordConfirm
+                  ? 'joinInputFail'
+                  : 'joinInput'
+              }
               placeholder="비밀번호를 입력하세요"
               value={input.passwordConfirm}
               onChange={onChange}
             ></input>
-            {validation.passwordConfirm && input.passwordConfirm.length > 0 ? (
-              <p className="mt-PcSm text-red-500">{validation.passwordConfirm}</p>
-            ) : (
-              ''
-            )}
+            <div className="w-full text-base text-red-500 ">
+              {validation.passwordConfirm && input.passwordConfirm.length > 0 ? (
+                <p>{validation.passwordConfirm}</p>
+              ) : (
+                ''
+              )}
+
+              <p>{submitMessage.passwordConfirm}</p>
+            </div>
           </div>
         </li>
         <li className="joinListCommon">
@@ -194,10 +211,15 @@ function JoinBody() {
             name="name"
             value={input.name}
             onChange={onChange}
-            className={validation.name && input.name.length > 0 ? 'joinInputFail' : 'joinInput '}
+            className={
+              (validation.name && input.name.length > 0) || submitMessage.name ? 'joinInputFail' : 'joinInput '
+            }
             placeholder="성함을 입력하세요"
           ></input>
-          {validation.name && input.name.length > 0 ? <p className="mt-PcSm text-red-500">{validation.name}</p> : ''}
+          <div className="w-full  text-base text-red-500 ">
+            {validation.name && input.name.length > 0 ? <p>{validation.name}</p> : ''}
+            {submitMessage.name && <p>{submitMessage.name}</p>}
+          </div>
         </li>
         <li className="joinListCommon">
           <p className="font-bold">이메일</p>
@@ -206,10 +228,15 @@ function JoinBody() {
             name="email"
             value={input.email}
             onChange={onChange}
-            className={validation.email && input.email.length > 0 ? 'joinInputFail' : 'joinInput '}
+            className={
+              (validation.email && input.email.length > 0) || submitMessage.email ? 'joinInputFail' : 'joinInput '
+            }
             placeholder="이메일을 입력하세요(ex:aaaa@aaaa.aa)"
           ></input>
-          {validation.email && input.email.length > 0 ? <p className="mt-PcSm text-red-500">{validation.email}</p> : ''}
+          <div className="w-full text-base text-red-500 ">
+            {validation.email && input.email.length > 0 ? <p>{validation.email}</p> : ''}
+            {submitMessage.email && <p>{submitMessage.email}</p>}
+          </div>
         </li>
         <li className="joinListCommon">
           <p className="font-bold">휴대폰번호</p>
@@ -218,10 +245,15 @@ function JoinBody() {
             name="phone"
             value={input.phone}
             onChange={onChange}
-            className={validation.phone && input.phone.length > 0 ? 'joinInputFail' : 'joinInput '}
+            className={
+              (validation.phone && input.phone.length > 0) || submitMessage.phone ? 'joinInputFail' : 'joinInput '
+            }
             placeholder="휴대전화 번호를 입력하세요(-를빼고 입력해주세요)"
           ></input>
-          {validation.phone && input.phone.length > 0 ? <p className="mt-PcSm text-red-500">{validation.phone}</p> : ''}
+          <div className="w-full  text-base text-red-500">
+            {validation.phone && input.phone.length > 0 ? <p>{validation.phone}</p> : ''}
+            {submitMessage.phone && <p>{submitMessage.phone}</p>}
+          </div>
         </li>
         <li className="joinListCommon">
           <p className="font-bold">주소</p>
@@ -259,10 +291,13 @@ function JoinBody() {
             name="age"
             value={input.age}
             onChange={onChange}
-            className={validation.age ? 'joinInputFail' : 'joinInput '}
+            className={validation.age || submitMessage.age ? 'joinInputFail' : 'joinInput '}
             placeholder="나이를 입력하세요"
           ></input>
-          {validation.age && <p className="mt-PcSm text-red-500">{validation.age}</p>}
+          <div className="w-full text-base text-red-500 ">
+            {validation.age && <p> {validation.age}</p>}
+            {submitMessage.age && <p>{submitMessage.age}</p>}
+          </div>
         </li>
         <li className="joinListCommon">
           <p className="font-bold">성별</p>
