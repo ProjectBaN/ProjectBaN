@@ -49,7 +49,13 @@ function JoinBody() {
     age: '',
   });
   const [submitMessage, setSubmitMessage] = useState({
-    message,
+    id: '',
+    password: '',
+    passwordConfirm: '',
+    name: '',
+    email: '',
+    phone: '',
+    age: '',
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -107,20 +113,22 @@ function JoinBody() {
     setGenderButton(e.target.value);
   };
 
+  const submitValueCheck = (name, regex) => {
+    if (input[name].length > 0 && !regex.test(input[name]) && input[name] === '') {
+      return '다시입력해주세요';
+    } else {
+      return input[name];
+    }
+  };
+
   const registerSumbit = (e) => {
     e.preventDefault();
 
-    // const id = !idRegex.test(input.id) ? '다시입력해주세요' : input.id;
+    const id = submitValueCheck('id', idRegex);
+    const password = submitValueCheck('password', passwordRegex);
 
-    // const id = !idRegex.test(input.id) ? '다시입력해주세요' : input.id;
-
-    // const id = !idRegex.test(input.id) ? '다시입력해주세요' : input.id;
-
-    // const id = !idRegex.test(input.id) ? '다시입력해주세요' : input.id;
-
-    // const id = !idRegex.test(input.id) ? '다시입력해주세요' : input.id;
-
-    alert(id);
+    console.log(id);
+    console.log(password);
   };
 
   return (
@@ -137,6 +145,11 @@ function JoinBody() {
             className={validation.id && input.id.length > 0 ? 'joinInputFail' : 'joinInput '}
           ></input>
           {validation.id && input.id.length > 0 ? <p className="mt-PcSm text-red-500">{validation.id}</p> : ''}
+          {submitMessage.id && !idRegex.test(input.id) && input.id.length > 0 ? (
+            <p className="mt-PcSm text-red-500">{submitMessage.id}</p>
+          ) : (
+            ''
+          )}
         </li>
         <li className="joinListCommon">
           <p className="font-bold">비밀번호</p>
