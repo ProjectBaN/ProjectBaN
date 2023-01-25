@@ -1,6 +1,6 @@
 import React from 'react';
 
-function GenderList({ genderList, OnChange, genderButton }) {
+function GenderList({ genderList, onChange, genderButton }) {
   return (
     <div className="w-full flex mt-PcSm border border-solid">
       {genderList.map((gender) => (
@@ -17,7 +17,7 @@ function GenderList({ genderList, OnChange, genderButton }) {
             className={genderButton === gender.value ? 'w-full h-10 bg-black text-white' : 'w-full h-10 hover:black'}
             name="gender"
             value={gender.value}
-            onClick={OnChange}
+            onClick={onChange}
           >
             {gender.title}
           </button>

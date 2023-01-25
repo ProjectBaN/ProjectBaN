@@ -1,12 +1,12 @@
 import React from 'react';
 import SignupHeader from '../../common/Signup/SignupHeader';
-import JoinFormBody from './body/JoinFormBody';
+import JoinBody from './body/JoinBody';
 
 function JoinFormMain() {
   return (
     <div>
       <SignupHeader />
-      <JoinFormBody />
+      <JoinBody />
     </div>
   );
 }
