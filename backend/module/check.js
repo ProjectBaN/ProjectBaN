@@ -11,6 +11,9 @@ const checkReqBodyData = (req, ...args) => {
       console.log(element);
 
       check = false;
+      if (req.body.data[element] === 0) {
+        check = true;
+      }
       return;
     }
   });
