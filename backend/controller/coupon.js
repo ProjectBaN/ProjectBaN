@@ -88,9 +88,84 @@ const deleteCouponCategory = async (req, res, next) => {
   return res.send(successStatus({ success: true }));
 };
 
+const createConponCategoryProduct = async (req, res, next) => {
+  if (!checkReqBodyData(req, "categoryName", "productNum")) {
+    return next(createError(401, "값이없습니다."));
+  }
+  const categoryName = req.body.data.categoryName;
+  const productNum = req.body.data.productNum;
+
+  const createCategoryQuery = `insert into coupon_sale_category_product(t_product_num,coupon_sale_category) values('${productNum}','${categoryName}')`;
+  const createCategory = await awaitSql(createCategoryQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(createCategory)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  return res.send(successStatus({ success: true }));
+};
+
+const readCouponCategoryProduct = async (req, res, next) => {
+  if (!checkReqBodyData(req, "categoryName")) {
+    return next(createError(401, "값이없습니다."));
+  }
+  const categoryName = req.body.data.categoryName;
+
+  const readCouponCategoryProductQuery = `select t_product_write_num, t_product_name, t_product_price, t_product_stock, t_product_thumbnail, t_product_discount, t_product_sell, t_product_create_at, t_product_update_at from coupon_sale_category_product as cp join t_product as p on p.t_product_num = cp.t_product_num where coupon_sale_category = '${categoryName}'`;
+  const readCouponCategoryProduct = await awaitSql(
+    readCouponCategoryProductQuery
+  )
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(readCouponCategoryProduct)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  return res.send(successStatus(readCouponCategoryProduct));
+};
+
+const deleteCouponCategoryProduct = async (req, res, next) => {
+  if (!checkReqBodyData(req, "categoryName", "productNum")) {
+    return next(createError(401, "값이없습니다."));
+  }
+  const categoryName = req.body.data.categoryName;
+  const productNum = req.body.data.productNum;
+
+  const deleteCouponCategoryProductQuery = `delete from coupon_sale_category_product where coupon_sale_category = '${categoryName}' and t_product_num = '${productNum}'`;
+  const deleteCouponCategoryProduct = await awaitSql(
+    deleteCouponCategoryProductQuery
+  )
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(deleteCouponCategoryProduct)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  return res.send(successStatus({ success: true }));
+};
+
 module.exports = {
   createCouponCategory,
   readCouponCategory,
   updateCouponCategory,
   deleteCouponCategory,
+  createConponCategoryProduct,
+  readCouponCategoryProduct,
+  deleteCouponCategoryProduct,
 };
