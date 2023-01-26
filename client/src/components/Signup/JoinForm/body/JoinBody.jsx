@@ -5,6 +5,7 @@ import { register } from '../../../../redux/reducer/registerSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
+import { debounce } from 'lodash';
 
 const genderList = [
   {
@@ -75,14 +76,12 @@ function JoinBody() {
     }
 
     passwordCheck();
-    console.log(reduxTest);
     validationTest('id', idRegex, '3 ~ 16자리의 숫자와 영문을 조합하여 입력하십시오');
     validationTest('password', passwordRegex, '4 ~ 10자리의 숫자와 영문을 조합하여 입력하십시오 ');
     validationTest('name', nameRegex, '성명은 한글 및 영어로 입력하십시오');
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
-
     return () => {};
   });
 
@@ -99,6 +98,10 @@ function JoinBody() {
     setInput({ ...input, [e.target.name]: e.target.value });
     setGenderButton(e.target.value);
   };
+
+  const debounceOnChange = debounce(() => {
+    axios.get(`http://localhost:8000/auth/signup/idcheck?id=${input.id}`).then((data) => console.log(data));
+  }, 1500);
 
   const validationTest = (name, regex, message) => {
     console.log('실행됨 D_check');
