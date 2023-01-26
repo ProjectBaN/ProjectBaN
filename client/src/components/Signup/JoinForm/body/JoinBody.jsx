@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { register } from '../../../../redux/reducer/registerSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
@@ -35,6 +37,7 @@ function JoinBody() {
     addr: '',
     age: '',
     gender: '',
+    fulladdress: '',
   });
   const [address, setAddress] = useState('');
   const [genderButton, setGenderButton] = useState(false);
@@ -61,6 +64,8 @@ function JoinBody() {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+  const reduxTest = useSelector((state) => state.user.registerState);
 
   useEffect(() => {
     if (!location.state) {
@@ -70,7 +75,7 @@ function JoinBody() {
     }
 
     passwordCheck();
-
+    console.log(reduxTest);
     validationTest('id', idRegex, '3 ~ 16자리의 숫자와 영문을 조합하여 입력하십시오');
     validationTest('password', passwordRegex, '4 ~ 10자리의 숫자와 영문을 조합하여 입력하십시오 ');
     validationTest('name', nameRegex, '성명은 한글 및 영어로 입력하십시오');
@@ -110,10 +115,18 @@ function JoinBody() {
 
   const passwordCheck = () => {
     console.log('실행됨 pwCheck');
-    if (input.password !== input.passwordConfirm && validation.passwordConfirm.length === 0) {
+    if (
+      input.password !== input.passwordConfirm &&
+      validation.passwordConfirm.length === 0 &&
+      !passwordRegex.test(input.passwordConfirm)
+    ) {
       setValidationTest({ ...validation, passwordConfirm: '비밀번호가 같지않습니다.' });
     }
-    if (input.password === input.passwordConfirm && validation.passwordConfirm.length !== 0) {
+    if (
+      input.password === input.passwordConfirm &&
+      validation.passwordConfirm.length !== 0 &&
+      passwordRegex.test(input.passwordConfirm)
+    ) {
       setValidationTest({ ...validation, passwordConfirm: '' });
     }
   };
@@ -143,6 +156,32 @@ function JoinBody() {
     const age = submitValueCheck('age', ageRegex, '나이를 다시 입력해주세요');
 
     setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
+    if (id || password || name || email || phone || age) {
+    } else {
+      let body = {
+        data: {
+          id: input.id,
+          password: input.password,
+          name: input.name,
+          email: input.email,
+          phone: input.phone,
+          addr: address.addressName + input.fulladdress,
+          age: input.age,
+          gender: input.gender,
+          termAge: location.state.checkListItem.termAge,
+          termUse: location.state.checkListItem.termUse,
+          termInfo: location.state.checkListItem.termInfo,
+          termEmailAd: location.state.checkListItem.termEmailAd,
+          termPrivateUse: location.state.checkListItem.termPrivateUse,
+          termAppPush: location.state.checkListItem.termAppPush,
+        },
+      };
+      dispatch(register(body));
+      axios
+        .post('http://localhost:8000/auth/signup', body)
+        .then(navigate('/'))
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
