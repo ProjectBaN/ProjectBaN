@@ -86,6 +86,9 @@ const updatePassword = (req, res, next) => {
   if (!checkReqBodyData(req, "password")) {
     return next(createError(400, "입력된 값이 없습니다."));
   }
+  if (!req.body.user) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
 
   const updatePassword = req.body.data.password;
 

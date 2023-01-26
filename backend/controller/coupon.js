@@ -315,8 +315,54 @@ const deleteCoupon = async (req, res, next) => {
   }
 
   return res.send(successStatus({ success: true }));
-  res.send("딜리트");
 };
+
+const createUserCoupons = async (req, res, next) => {
+  if (!req.body.user || !req.body.couponResult) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+  const coupon = req.body.couponResult;
+  const userId = req.body.user;
+
+  // 쿠폰 발급가능 횟수 확인
+  const couponValiedCount = coupon[0].coupon_valied_count;
+  const getUserCouponQuery = `select count(*) from coupon_users where t_users_id = '${userId}'`;
+  const getUserCoupon = await awaitSql(getUserCouponQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(getUserCoupon)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  if (getUserCoupon[0]["count(*)"] >= couponValiedCount) {
+    return next(createError(501, "발급제한을 초과하였습니다."));
+  }
+
+  console.log();
+
+  // 통과되면 유저에게 발급 > db에 관계추가
+  const useDate = "NOW() + INTERVAL " + coupon[0].coupon_use_date + " DAY";
+  console.log(useDate);
+  const createUserCouponQuery = `insert into coupon_users(coupon_num, t_users_id, coupon_users_valied_end) values('${coupon[0].coupon_num}','${userId}',${useDate})`;
+  const createUserCoupon = await awaitSql(createUserCouponQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  console.log(createUserCoupon);
+  if (!checkSql(createUserCoupon)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  return res.send("넘김");
+};
+
 module.exports = {
   createCouponCategory,
   readCouponCategory,
@@ -329,4 +375,5 @@ module.exports = {
   readCoupon,
   updateCoupon,
   deleteCoupon,
+  createUserCoupons,
 };

@@ -12,7 +12,10 @@ const {
   readCoupon,
   updateCoupon,
   deleteCoupon,
+  createUserCoupons,
 } = require("../controller/coupon");
+const { couponValiedCheck } = require("../module/check");
+const { verifyAccessToken } = require("../module/verify");
 
 const router = express.Router();
 
@@ -27,5 +30,11 @@ router.post("/createcoupon", createCoupon);
 router.get("/readcoupon", readCoupon);
 router.post("/updatecoupon", updateCoupon);
 router.post("/deletecoupon", deleteCoupon);
+router.post(
+  "/createusercoupons",
+  verifyAccessToken,
+  couponValiedCheck,
+  createUserCoupons
+);
 
 module.exports = router;
