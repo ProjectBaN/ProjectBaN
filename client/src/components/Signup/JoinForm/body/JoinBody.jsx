@@ -74,7 +74,6 @@ function JoinBody() {
       alert('약관동의를 체크하지 않으셨습니다.');
       navigate('/signup');
     }
-
     passwordCheck();
     validationTest('id', idRegex, '3 ~ 16자리의 숫자와 영문을 조합하여 입력하십시오');
     validationTest('password', passwordRegex, '4 ~ 10자리의 숫자와 영문을 조합하여 입력하십시오 ');
@@ -82,6 +81,7 @@ function JoinBody() {
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
+
     return () => {};
   });
 
@@ -97,11 +97,17 @@ function JoinBody() {
     setSubmitMessage({ ...submitMessage, [e.target.name]: '' });
     setInput({ ...input, [e.target.name]: e.target.value });
     setGenderButton(e.target.value);
+    debounceOnChange(input.id);
+  };
+  const idCheck = (value) => {
+    axios
+      .get(`http://localhost:8000/auth/signup/idcheck?id=${value}`)
+      .then((duplication) => console.log(duplication.data.data));
   };
 
-  const debounceOnChange = debounce(() => {
-    axios.get(`http://localhost:8000/auth/signup/idcheck?id=${input.id}`).then((data) => console.log(data));
-  }, 1500);
+  const debounceOnChange = debounce((value) => {
+    idCheck(value);
+  }, 3000);
 
   const validationTest = (name, regex, message) => {
     console.log('실행됨 D_check');
@@ -247,7 +253,6 @@ function JoinBody() {
               ) : (
                 ''
               )}
-
               <p>{submitMessage.passwordConfirm}</p>
             </div>
           </div>
