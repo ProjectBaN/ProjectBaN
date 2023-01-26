@@ -9,6 +9,7 @@ const app = express();
 const userRouter = require("./routes/user");
 const authRouter = require("./routes/auth");
 const productRouter = require("./routes/product");
+const couponRouter = require("./routes/coupon");
 
 app.use(cors());
 app.use(cookieParser());
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/product", productRouter);
+app.use("/coupon", couponRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

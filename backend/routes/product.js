@@ -10,6 +10,8 @@ const {
   createQna,
   deleteQna,
   createAnswer,
+  deleteAnswer,
+  updateAnswer,
 } = require("../controller/product");
 const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
@@ -28,5 +30,7 @@ router.post("/createqna", verifyAccessToken, createQna);
 router.post("/deleteqna", verifyAccessToken, deleteQna);
 // 관리자
 router.post("/createanswer", createAnswer);
+router.post("/deleteanswer", deleteAnswer);
+router.post("/updateanswer", updateAnswer);
 
 module.exports = router;
