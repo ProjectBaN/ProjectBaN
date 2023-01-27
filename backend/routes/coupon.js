@@ -13,8 +13,9 @@ const {
   updateCoupon,
   deleteCoupon,
   createUserCoupons,
+  useAbleCoupons,
 } = require("../controller/coupon");
-const { couponValiedCheck } = require("../module/check");
+const { couponValiedCheck } = require("../module/couponMiddleware");
 const { verifyAccessToken } = require("../module/verify");
 
 const router = express.Router();
@@ -36,5 +37,6 @@ router.post(
   couponValiedCheck,
   createUserCoupons
 );
+router.post("/useablecoupons", verifyAccessToken, useAbleCoupons);
 
 module.exports = router;

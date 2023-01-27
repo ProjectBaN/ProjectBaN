@@ -1,4 +1,4 @@
-const { checkReqBodyData } = require("../module/check");
+const { checkReqBodyData, checkCouponValied } = require("../module/check");
 const { createError } = require("../module/error");
 const { checkSql, awaitSql } = require("../module/sqlPromise");
 const { successStatus } = require("../module/statuscode");
@@ -167,7 +167,7 @@ const deleteCouponCategoryProduct = async (req, res, next) => {
   return res.send(successStatus({ success: true }));
 };
 
-// 쿠폰 발급
+// 쿠폰 발급 3분할 타입별로
 const createCoupon = async (req, res, next) => {
   if (
     !checkReqBodyData(
@@ -179,7 +179,10 @@ const createCoupon = async (req, res, next) => {
       "couponDiscount",
       "couponMaxDiscount",
       "couponValiedAt",
-      "couponValiedEnd"
+      "couponValiedEnd",
+      "couponUseDate",
+      "couponSaleCategoryName",
+      "couponValiedCount"
     )
   ) {
     return next(createError(401, "값이없습니다."));
@@ -193,7 +196,9 @@ const createCoupon = async (req, res, next) => {
   const couponMaxDiscount = req.body.data.couponMaxDiscount;
   const couponValiedAt = req.body.data.couponValiedAt;
   const couponValiedEnd = req.body.data.couponValiedEnd;
-
+  const couponUseDate = req.body.data.couponUseDate;
+  const couponSaleCategoryName = req.body.data.couponSaleCategoryName;
+  const couponValiedCount = req.body.data.couponValiedCount;
   if (
     couponType !== "ALL" &&
     couponType !== "DUAL" &&
@@ -206,7 +211,7 @@ const createCoupon = async (req, res, next) => {
     return next(createError(401, "잘못된 타입 입니다."));
   }
 
-  const createCouponQuery = `insert into coupon(coupon_name,coupon_type,coupon_discount_type,conpon_discount_rate,coupon_discount,coupon_max_discount,coupon_valied_at,coupon_valied_end) values('${couponName}','${couponType}','${couponDiscountType}','${conponDiscountRate}','${couponDiscount}','${couponMaxDiscount}','${couponValiedAt}','${couponValiedEnd}')`;
+  const createCouponQuery = `insert into coupon(coupon_name,coupon_type,coupon_discount_type,conpon_discount_rate,coupon_discount,coupon_max_discount,coupon_valied_at,coupon_valied_end, coupon_valied_count, coupon_use_date, coupon_sale_category_name) values('${couponName}','${couponType}','${couponDiscountType}','${conponDiscountRate}','${couponDiscount}','${couponMaxDiscount}','${couponValiedAt}','${couponValiedEnd}', '${couponValiedCount}', '${couponUseDate}','${couponSaleCategoryName}')`;
   const createCoupon = await awaitSql(createCouponQuery)
     .catch((err) => {
       return { err: err };
@@ -214,6 +219,7 @@ const createCoupon = async (req, res, next) => {
     .then((result) => {
       return result;
     });
+  console.log(createCoupon);
 
   if (!checkSql(createCoupon)) {
     return next(createError(403, "변화에 문제가 생겼습니다."));
@@ -317,6 +323,7 @@ const deleteCoupon = async (req, res, next) => {
   return res.send(successStatus({ success: true }));
 };
 
+// 유저 쿠폰
 const createUserCoupons = async (req, res, next) => {
   if (!req.body.user || !req.body.couponResult) {
     return next(createError(400, "입력된 값이 없습니다."));
@@ -326,7 +333,7 @@ const createUserCoupons = async (req, res, next) => {
 
   // 쿠폰 발급가능 횟수 확인
   const couponValiedCount = coupon[0].coupon_valied_count;
-  const getUserCouponQuery = `select count(*) from coupon_users where t_users_id = '${userId}'`;
+  const getUserCouponQuery = `select count(*) from coupon_users where t_users_id = '${userId}' and coupon_num = '${coupon[0].coupon_num}'`;
   const getUserCoupon = await awaitSql(getUserCouponQuery)
     .catch((err) => {
       return { err: err };
@@ -342,11 +349,8 @@ const createUserCoupons = async (req, res, next) => {
     return next(createError(501, "발급제한을 초과하였습니다."));
   }
 
-  console.log();
-
   // 통과되면 유저에게 발급 > db에 관계추가
   const useDate = "NOW() + INTERVAL " + coupon[0].coupon_use_date + " DAY";
-  console.log(useDate);
   const createUserCouponQuery = `insert into coupon_users(coupon_num, t_users_id, coupon_users_valied_end) values('${coupon[0].coupon_num}','${userId}',${useDate})`;
   const createUserCoupon = await awaitSql(createUserCouponQuery)
     .catch((err) => {
@@ -363,6 +367,72 @@ const createUserCoupons = async (req, res, next) => {
   return res.send("넘김");
 };
 
+// 사용가능한 쿠폰들
+const useAbleCoupons = async (req, res, next) => {
+  if (!req.body.user) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+  if (!checkReqBodyData(req, "productNum")) {
+    return next(createError(401, "값이없습니다."));
+  }
+
+  const userId = req.body.user;
+  const productnum = req.body.data.productNum;
+  // 프로덕트의 세일카테고리를 얻는다.
+  const getProductCategoryQuery = `select coupon_sale_category from coupon_sale_category_product where t_product_num = ${productnum}`;
+  const getProductCategory = await awaitSql(getProductCategoryQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(getProductCategory)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  // 유저가 가진 쿠폰 가져오기
+  ㅌ;
+  const readCouponsQuery = `select * from coupon_users as cu join coupon as c on cu.coupon_num = c.coupon_num where t_users_id = '${userId}'`;
+  const readCoupons = await awaitSql(readCouponsQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(readCoupons)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  // 쿠폰중 ALL,DUAL은 뽑고, 쿠폰의 세일카테고리와 물품의 세일카테고리가 같으면 출력 , 필요한 쿠폰정보 뽑기
+  const useCoupons = readCoupons.filter((coupons) => {
+    // 쿠폰유효기간 확인
+    if (!checkCouponValied(coupons.coupon_users_valied_end)) {
+      return;
+    }
+    // ALL, DUAL은 그냥 출력
+    if (coupons.coupon_type === "ALL" || coupons.coupon_type === "DUAL") {
+      return coupons;
+    }
+    //  카테고리는 세일카테고리가 같으면 출력
+    if (coupons.coupon_type === "CATEGORY") {
+      const equlsCategory = getProductCategory.filter((category) => {
+        if (
+          category.coupon_sale_category === coupons.coupon_sale_category_name
+        ) {
+          return category;
+        } else return;
+      });
+
+      if (equlsCategory.length !== 0) {
+        return coupons;
+      }
+    }
+  });
+  return res.send(useCoupons);
+};
+
 module.exports = {
   createCouponCategory,
   readCouponCategory,
@@ -376,4 +446,5 @@ module.exports = {
   updateCoupon,
   deleteCoupon,
   createUserCoupons,
+  useAbleCoupons,
 };
