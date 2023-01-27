@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../../../redux/reducer/registerSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -63,10 +63,13 @@ function JoinBody() {
     age: '',
   });
 
+  const [duplicationCheck, setDuplicationCheck] = useState({
+    id: '',
+    email: '',
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const reduxTest = useSelector((state) => state.user.registerState);
 
   useEffect(() => {
     if (!location.state) {
@@ -81,6 +84,7 @@ function JoinBody() {
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
+    debounceOnChange(input.id, input.email);
 
     return () => {};
   });
@@ -93,21 +97,39 @@ function JoinBody() {
 
   const onChange = (e) => {
     //가입정보 입력 시 값 받아오기
-    e.preventDefault();
     setSubmitMessage({ ...submitMessage, [e.target.name]: '' });
+    setDuplicationCheck({ ...duplicationCheck, id: '' });
     setInput({ ...input, [e.target.name]: e.target.value });
     setGenderButton(e.target.value);
-    debounceOnChange(input.id);
   };
   const idCheck = (value) => {
     axios
       .get(`http://localhost:8000/auth/signup/idcheck?id=${value}`)
-      .then((duplication) => console.log(duplication.data.data));
+
+      .then((duplication) =>
+        duplication.data.result.duplicate === false
+          ? setDuplicationCheck({ ...duplicationCheck, id: '사용 가능 합니다.' })
+          : setDuplicationCheck({ ...duplicationCheck, id: '중복된 아이디입니다.' }),
+      )
+      .catch((err) => console.log(err));
+  };
+  const emailCheck = (value) => {
+    console.log(`http://localhost:8000/auth/signup/emailcheck/?email=${value}`);
+    try {
+      const responce = axios.get(`http://localhost:8000/auth/signup/emailcheck?email=${value}`);
+      responce.then((dp) => console.log(dp));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const debounceOnChange = debounce((value) => {
-    idCheck(value);
-  }, 3000);
+  const debounceOnChange = useCallback(
+    debounce((id, email) => {
+      // idCheck(id);
+      emailCheck(email);
+    }, 500),
+    [],
+  );
 
   const validationTest = (name, regex, message) => {
     console.log('실행됨 D_check');
@@ -210,6 +232,7 @@ function JoinBody() {
             {validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
             {submitMessage.id && <p className="">{submitMessage.id}</p>}
           </div>
+          {idRegex.test(input.id) && <span className="text-sm font-bold">{duplicationCheck.id}</span>}
         </li>
         <li className="joinListCommon">
           <p className="font-bold">비밀번호</p>
@@ -290,6 +313,7 @@ function JoinBody() {
             {validation.email && input.email.length > 0 ? <p>{validation.email}</p> : ''}
             {submitMessage.email && <p>{submitMessage.email}</p>}
           </div>
+          {idRegex.test(input.email) && <span className="text-sm font-bold">{duplicationCheck.email}</span>}
         </li>
         <li className="joinListCommon">
           <p className="font-bold">휴대폰번호</p>
