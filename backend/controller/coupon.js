@@ -433,6 +433,43 @@ const useAbleCoupons = async (req, res, next) => {
   return res.send(useCoupons);
 };
 
+// 유저가 가진 쿠폰들
+const readUserCoupons = async (req, res, next) => {
+  if (!req.body.user) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+
+  const userId = req.body.user;
+
+  const readCouponsQuery = `select * from coupon_users as cu join coupon as c on cu.coupon_num = c.coupon_num where t_users_id = '${userId}'`;
+  const readCoupons = await awaitSql(readCouponsQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(readCoupons)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  // 쿠폰중 ALL,DUAL은 뽑고, 쿠폰의 세일카테고리와 물품의 세일카테고리가 같으면 출력 , 필요한 쿠폰정보 뽑기
+  const useCoupons = readCoupons.filter((coupons) => {
+    // 쿠폰유효기간 확인
+    if (!checkCouponValied(coupons.coupon_users_valied_end)) {
+      return;
+    }
+
+    //  사용했는지 체크
+    if (coupons.coupon_status === "Y") {
+      return;
+    }
+    return coupons;
+  });
+  return res.send(useCoupons);
+};
+
 module.exports = {
   createCouponCategory,
   readCouponCategory,
@@ -447,4 +484,5 @@ module.exports = {
   deleteCoupon,
   createUserCoupons,
   useAbleCoupons,
+  readUserCoupons,
 };
