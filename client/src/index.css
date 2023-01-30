@@ -18,6 +18,12 @@
 .joinInputFail {
   @apply w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-red-500  focus-within:outline-none pl-2;
 }
+.idInput {
+  @apply w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300  focus:outline-none;
+}
+.IdInputFail {
+  @apply w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm border-red-500  focus:outline-none;
+}
 .joinListCommon {
   @apply mt-PcMd;
 }

@@ -6,7 +6,6 @@ function AddressSearch({ setIsOpen, setAddress, address }) {
 
     setAddress({ ...address, addressName: fullAddress });
     setIsOpen(false);
-    console.log(data);
   };
   const onClick = (e) => {
     e.preventDefault();
