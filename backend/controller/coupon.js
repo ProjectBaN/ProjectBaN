@@ -466,7 +466,30 @@ const readUserCoupons = async (req, res, next) => {
     }
     return coupons;
   });
-  return res.send(useCoupons);
+  return res.send(successStatus(useCoupons));
+};
+
+// 만료된 쿠폰들 삭제
+const deleteUserConpons = async (req, res, next) => {
+  if (!req.body.user) {
+    return next(createError(400, "입력된 값이 없습니다."));
+  }
+  const userId = req.body.user;
+
+  const deleteUserConponsQuery = `delete from coupon_users where t_users_id = '${userId}' and coupon_users_valied_end < now()`;
+  const deleteUserConpons = await awaitSql(deleteUserConponsQuery)
+    .catch((err) => {
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+
+  if (!checkSql(deleteUserConpons)) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  return next();
 };
 
 module.exports = {
@@ -484,4 +507,5 @@ module.exports = {
   createUserCoupons,
   useAbleCoupons,
   readUserCoupons,
+  deleteUserConpons,
 };
