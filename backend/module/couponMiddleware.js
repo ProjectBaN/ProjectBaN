@@ -2,6 +2,7 @@ const { checkReqBodyData } = require("./check");
 const { createError } = require("./error");
 const { awaitSql, checkSql } = require("./sqlPromise");
 
+// 쿠폰 유효기관 미들웨어
 const couponValiedCheck = async (req, res, next) => {
   if (!checkReqBodyData(req, "couponNum")) {
     return next(createError(400, "입력된 값이 없습니다."));

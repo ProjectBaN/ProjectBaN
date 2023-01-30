@@ -3,6 +3,7 @@ const { createError } = require("../module/error");
 const { awaitSql, checkSql } = require("../module/sqlPromise");
 const { successStatus } = require("../module/statuscode");
 
+// 장바구니추가
 const createCart = async (req, res, next) => {
   if (!req.body.user) {
     return next(createError(400, "입력된 값이 없습니다."));
@@ -30,7 +31,7 @@ const createCart = async (req, res, next) => {
 
   return res.send(successStatus({ success: true }));
 };
-
+// 장바구니 가져오기
 const readCart = async (req, res, next) => {
   if (!req.body.user) {
     return next(createError(400, "입력된 값이 없습니다."));
@@ -53,6 +54,7 @@ const readCart = async (req, res, next) => {
 
   return res.send(successStatus(getCart));
 };
+// 장바구니 수량변경
 const updateCart = async (req, res, next) => {
   if (!req.body.user) {
     return next(createError(403, "입력된 값이 없습니다."));
@@ -85,6 +87,7 @@ const updateCart = async (req, res, next) => {
 
   return res.send("update카트테스트");
 };
+// 장바구니삭제
 const deleteCart = async (req, res, next) => {
   if (!req.body.user) {
     return next(createError(400, "입력된 값이 없습니다."));

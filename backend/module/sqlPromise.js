@@ -3,6 +3,7 @@ require("dotenv").config();
 const maria = require("../database/maria");
 const { createSqlError, createError } = require("./error");
 
+// mysql2 cafe24 오류로 인해 코드가독성을 위해 mysql await 모듈 구현
 const awaitSql = (query) => {
   return new Promise((resolve, reject) => {
     maria.query(query, (err, results) => {
@@ -14,7 +15,7 @@ const awaitSql = (query) => {
     });
   });
 };
-
+// sql 문 체크 모듈
 const checkSql = (result) => {
   if (result.err) {
     return false;

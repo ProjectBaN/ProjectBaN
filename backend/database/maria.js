@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const maria = require("mysql");
 
+// multipleStatements:
+// typeCast: 위의 설저은 마리아 db cafe24 한글깨짐으로 인해 설정한 값입니다.
 const conn = maria.createConnection({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,

@@ -15,6 +15,7 @@ const {
   createTemporarilyAccessToken,
 } = require("../module/token");
 
+// 보안코드 생성
 const authNumber = () => {
   let str = "";
   for (let i = 0; i < 6; i++) {

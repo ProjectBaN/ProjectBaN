@@ -1,6 +1,7 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
+// 이메일 보내기 모듈 세팅
 const transporter = nodemailer.createTransport({
   service: "naver",
   host: "smtp.naver.com", // SMTP 서버명
@@ -10,6 +11,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.NODEMAILER_PASS, // 네이버 비밀번호
   },
 });
+// 이메일 보내기 모듈
 
 const emailSend = (email, token) => {
   const emailOptions = {

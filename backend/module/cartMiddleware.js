@@ -1,6 +1,7 @@
 const { checkReqBodyData } = require("./check");
 const { createError } = require("./error");
 const { awaitSql, checkSql } = require("./sqlPromise");
+// 중복 장바구니 체크 미들웨어
 
 const cartDuplicateCheck = async (req, res, next) => {
   if (!req.body.user) {

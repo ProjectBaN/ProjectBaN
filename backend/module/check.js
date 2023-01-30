@@ -1,3 +1,4 @@
+//req 안의 데이터  확인
 const checkReqBodyData = (req, ...args) => {
   let check = true;
 
@@ -22,7 +23,7 @@ const checkReqBodyData = (req, ...args) => {
   });
   return check;
 };
-
+// 쿠폰 유표기간 확인
 const checkCouponValied = (valiedEnd) => {
   const today = new Date();
   // 쿠폰유효기간 확인

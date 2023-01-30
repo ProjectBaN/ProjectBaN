@@ -1,3 +1,4 @@
+// mysql2 대비 파일
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");

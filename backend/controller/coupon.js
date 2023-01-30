@@ -3,7 +3,7 @@ const { createError } = require("../module/error");
 const { checkSql, awaitSql } = require("../module/sqlPromise");
 const { successStatus } = require("../module/statuscode");
 
-// 쿠폰 세일 카테고리
+// 쿠폰 세일 카테고리 생성
 const createCouponCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
     return next(createError(401, "값이없습니다."));
@@ -167,7 +167,7 @@ const deleteCouponCategoryProduct = async (req, res, next) => {
   return res.send(successStatus({ success: true }));
 };
 
-// 쿠폰 발급 3분할 타입별로
+// 쿠폰 발급 > 카테고리가 없으면 NULL이라는 카테고리로
 const createCoupon = async (req, res, next) => {
   if (
     !checkReqBodyData(
@@ -181,7 +181,6 @@ const createCoupon = async (req, res, next) => {
       "couponValiedAt",
       "couponValiedEnd",
       "couponUseDate",
-      "couponSaleCategoryName",
       "couponValiedCount"
     )
   ) {
@@ -211,7 +210,10 @@ const createCoupon = async (req, res, next) => {
     return next(createError(401, "잘못된 타입 입니다."));
   }
 
-  const createCouponQuery = `insert into coupon(coupon_name,coupon_type,coupon_discount_type,conpon_discount_rate,coupon_discount,coupon_max_discount,coupon_valied_at,coupon_valied_end, coupon_valied_count, coupon_use_date, coupon_sale_category_name) values('${couponName}','${couponType}','${couponDiscountType}','${conponDiscountRate}','${couponDiscount}','${couponMaxDiscount}','${couponValiedAt}','${couponValiedEnd}', '${couponValiedCount}', '${couponUseDate}','${couponSaleCategoryName}')`;
+  const createCouponQuery = couponSaleCategoryName
+    ? `insert into coupon(coupon_name,coupon_type,coupon_discount_type,conpon_discount_rate,coupon_discount,coupon_max_discount,coupon_valied_at,coupon_valied_end, coupon_valied_count, coupon_use_date, coupon_sale_category_name) values('${couponName}','${couponType}','${couponDiscountType}','${conponDiscountRate}','${couponDiscount}','${couponMaxDiscount}','${couponValiedAt}','${couponValiedEnd}', '${couponValiedCount}', '${couponUseDate}','${couponSaleCategoryName}')`
+    : `insert into coupon(coupon_name,coupon_type,coupon_discount_type,conpon_discount_rate,coupon_discount,coupon_max_discount,coupon_valied_at,coupon_valied_end, coupon_valied_count, coupon_use_date, coupon_sale_category_name) values('${couponName}','${couponType}','${couponDiscountType}','${conponDiscountRate}','${couponDiscount}','${couponMaxDiscount}','${couponValiedAt}','${couponValiedEnd}', '${couponValiedCount}', '${couponUseDate}','NULL')`;
+
   const createCoupon = await awaitSql(createCouponQuery)
     .catch((err) => {
       return { err: err };
@@ -227,7 +229,7 @@ const createCoupon = async (req, res, next) => {
 
   return res.send("createCoupon");
 };
-
+// 현재 쿠폰 보기
 const readCoupon = async (req, res, next) => {
   const readCouponQuery = `select * from coupon `;
   const readCoupon = await awaitSql(readCouponQuery)
@@ -244,7 +246,7 @@ const readCoupon = async (req, res, next) => {
 
   return res.send(successStatus(readCoupon));
 };
-
+//  쿠폰수정
 const updateCoupon = async (req, res, next) => {
   if (
     !checkReqBodyData(
@@ -300,7 +302,7 @@ const updateCoupon = async (req, res, next) => {
 
   res.send("hello");
 };
-
+//  쿠폰삭제
 const deleteCoupon = async (req, res, next) => {
   if (!checkReqBodyData(req, "couponNum")) {
     return next(createError(401, "값이없습니다."));
@@ -323,7 +325,7 @@ const deleteCoupon = async (req, res, next) => {
   return res.send(successStatus({ success: true }));
 };
 
-// 유저 쿠폰
+// 유저 쿠폰 생성
 const createUserCoupons = async (req, res, next) => {
   if (!req.body.user || !req.body.couponResult) {
     return next(createError(400, "입력된 값이 없습니다."));
