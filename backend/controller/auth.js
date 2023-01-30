@@ -322,7 +322,7 @@ const temporarilyUpdatePassword = (req, res, next) => {
           sameSite: "none",
           secure: true,
         })
-        .send(successStatus(results));
+        .send(successStatus(successStatus({ success: true })));
     }
   );
 };

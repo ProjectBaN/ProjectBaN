@@ -14,6 +14,7 @@ const createCart = async (req, res, next) => {
 
   const userId = req.body.user;
   const productNum = req.body.data.productNum;
+  const count = req.body.data.count;
 
   const createCouponsQuery = `insert into cart(t_users_id, t_product_num, count) values('${userId}', '${productNum}','${count}' )`;
 
@@ -31,6 +32,7 @@ const createCart = async (req, res, next) => {
 
   return res.send(successStatus({ success: true }));
 };
+
 // 장바구니 가져오기
 const readCart = async (req, res, next) => {
   if (!req.body.user) {
@@ -54,6 +56,7 @@ const readCart = async (req, res, next) => {
 
   return res.send(successStatus(getCart));
 };
+
 // 장바구니 수량변경
 const updateCart = async (req, res, next) => {
   if (!req.body.user) {
@@ -71,9 +74,9 @@ const updateCart = async (req, res, next) => {
   const productNum = req.body.data.productNum;
   const count = req.body.data.count;
 
-  const updateCouponsQuery = `update cart set count = '${count}' where t_users_id = '${userId}' and t_product_num ='${productNum}'`;
+  const updateCartQuery = `update cart set count = '${count}' where t_users_id = '${userId}' and t_product_num ='${productNum}'`;
 
-  const updateCoupons = await awaitSql(updateCouponsQuery)
+  const updateCart = await awaitSql(updateCartQuery)
     .catch((err) => {
       return { err: err };
     })
@@ -81,12 +84,13 @@ const updateCart = async (req, res, next) => {
       return result;
     });
 
-  if (!checkSql(updateCoupons)) {
+  if (!checkSql(updateCart)) {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  return res.send("update카트테스트");
+  return res.send(successStatus({ success: true }));
 };
+
 // 장바구니삭제
 const deleteCart = async (req, res, next) => {
   if (!req.body.user) {

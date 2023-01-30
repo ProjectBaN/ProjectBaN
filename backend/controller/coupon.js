@@ -108,7 +108,7 @@ const createConponCategoryProduct = async (req, res, next) => {
     .then((result) => {
       return result;
     });
-
+  console.log(createCategory);
   if (!checkSql(createCategory)) {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
@@ -227,7 +227,7 @@ const createCoupon = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  return res.send("createCoupon");
+  return res.send(successStatus({ success: true }));
 };
 // 현재 쿠폰 보기
 const readCoupon = async (req, res, next) => {
@@ -300,7 +300,7 @@ const updateCoupon = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  res.send("hello");
+  return res.send(successStatus({ success: true }));
 };
 //  쿠폰삭제
 const deleteCoupon = async (req, res, next) => {
@@ -366,7 +366,7 @@ const createUserCoupons = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  return res.send("넘김");
+  return res.send(successStatus({ success: true }));
 };
 
 // 사용가능한 쿠폰들
