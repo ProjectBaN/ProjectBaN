@@ -37,8 +37,7 @@ app.use((err, req, res, next) => {
 app.listen(8000, console.log("server started"));
 
 app.get("/", async (req, res, next) => {
-  logger.error("SQLERROR");
-  res.send("성공");
+  res.status(403).send("성공");
 });
 
 app.get("/test", (req, res) => {

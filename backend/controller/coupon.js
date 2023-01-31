@@ -1,3 +1,4 @@
+const { logger } = require("../config/logger");
 const { checkReqBodyData, checkCouponValied } = require("../module/check");
 const { createError } = require("../module/error");
 const { checkSql, awaitSql } = require("../module/sqlPromise");
@@ -437,6 +438,7 @@ const useAbleCoupons = async (req, res, next) => {
 // 유저가 가진 쿠폰들
 const readUserCoupons = async (req, res, next) => {
   if (!req.body.user) {
+    logger.warn("유저데이터값이 없습니다.");
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -452,6 +454,8 @@ const readUserCoupons = async (req, res, next) => {
     });
 
   if (!checkSql(readCoupons)) {
+    logger.warn(readCoupons.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -474,6 +478,7 @@ const readUserCoupons = async (req, res, next) => {
 // 만료된 쿠폰들 삭제
 const deleteUserConpons = async (req, res, next) => {
   if (!req.body.user) {
+    logger.warn("유저데이터 값이 없습니다.");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   const userId = req.body.user;
@@ -488,6 +493,8 @@ const deleteUserConpons = async (req, res, next) => {
     });
 
   if (!checkSql(deleteUserConpons)) {
+    logger.warn(deleteUserConpons.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 

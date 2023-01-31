@@ -3,6 +3,7 @@ const maria = require("../database/maria");
 const { createSqlError, createError } = require("../module/error");
 const { successStatus } = require("../module/statuscode");
 const { checkReqBodyData } = require("../module/check");
+const { logger } = require("../config/logger");
 
 require("dotenv").config();
 
@@ -22,6 +23,8 @@ const createProductWrite = async (req, res, next) => {
       "productImageList"
     )
   ) {
+    logger.warn("데이터값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
 
@@ -36,7 +39,11 @@ const createProductWrite = async (req, res, next) => {
   const productImageList = req.body.data.productImageList || [];
 
   maria.beginTransaction(async (err) => {
-    if (err) return next(createError(500, err));
+    if (err) {
+      logger.warn(err.message);
+
+      return next(createError(500, err));
+    }
 
     // **쇼핑글**
 
@@ -51,6 +58,8 @@ const createProductWrite = async (req, res, next) => {
       });
 
     if (insertProductWrite.err) {
+      logger.warn(insertProductWrite.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중 에러가 발생하였습니다."));
     }
@@ -77,6 +86,8 @@ const createProductWrite = async (req, res, next) => {
     }
 
     if (optionQuaryCheck.err) {
+      logger.warn(optionQuaryCheck.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중 에러가 발생하였습니다."));
     }
@@ -101,6 +112,8 @@ const createProductWrite = async (req, res, next) => {
     }
 
     if (imageQueryCheck.err) {
+      logger.warn(imageQueryCheck.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중 에러가 발생하였습니다."));
     }
@@ -110,6 +123,8 @@ const createProductWrite = async (req, res, next) => {
       !optionQuaryCheck.err &&
       !insertProductWrite.err
     ) {
+      logger.warn("변화중 에러가 발생했습니다.");
+
       maria.commit();
       res.send(successStatus({ susccess: "성공" }));
     }
@@ -131,6 +146,8 @@ const updateProductWrite = async (req, res, next) => {
       "productImageList"
     )
   ) {
+    logger.warn("데이터 값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
 
@@ -145,7 +162,11 @@ const updateProductWrite = async (req, res, next) => {
   const productImageList = req.body.data.productImageList || [];
 
   maria.beginTransaction(async (err) => {
-    if (err) return next(createError(500, err));
+    if (err) {
+      logger.warn(err.message);
+
+      return next(createError(500, err));
+    }
 
     // 전체적 트랜잭션
     // 쇼핑글 있는지 체크
@@ -158,10 +179,13 @@ const updateProductWrite = async (req, res, next) => {
         return result;
       });
     if (checkProductWriteNumber.err) {
+      logger.warn(checkProductWriteNumber.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중문제가 발생하였습니다."));
     }
     if (checkProductWriteNumber.length === 0) {
+      logger.warn("결과 값이 없습니다.");
       maria.rollback();
       return next(createError(403, "쇼핑 글이 존재하지 않습니다."));
     }
@@ -174,6 +198,7 @@ const updateProductWrite = async (req, res, next) => {
         return result;
       });
     if (updateProductWrite.err) {
+      logger.warn(updateProductWrite.err.message);
       maria.rollback();
       return next(createError(403, "변화중문제가 발생하였습니다."));
     }
@@ -187,6 +212,8 @@ const updateProductWrite = async (req, res, next) => {
       });
 
     if (deleteOption.err) {
+      logger.warn(deleteOption.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중문제가 발생하였습니다."));
     }
@@ -212,6 +239,8 @@ const updateProductWrite = async (req, res, next) => {
     }
 
     if (optionQuaryCheck.err) {
+      logger.warn(optionQuaryCheck.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중문제가 발생하였습니다."));
     }
@@ -227,6 +256,8 @@ const updateProductWrite = async (req, res, next) => {
       });
 
     if (deleteProductImage.err) {
+      logger.warn(deleteProductImage.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중문제가 발생하였습니다."));
     }
@@ -251,6 +282,8 @@ const updateProductWrite = async (req, res, next) => {
     }
 
     if (imageQueryCheck.err) {
+      logger.warn(imageQueryCheck.err.message);
+
       maria.rollback();
       return next(createError(403, "변화중문제가 발생하였습니다."));
     }
@@ -272,6 +305,8 @@ const updateProductWrite = async (req, res, next) => {
 // 이미지 서버 로직추가
 const deleteProductWrite = async (req, res, next) => {
   if (!checkReqBodyData(req, "productWriteNumber")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
 
@@ -288,6 +323,8 @@ const deleteProductWrite = async (req, res, next) => {
     });
 
   if (deleteProductWrite.err) {
+    logger.warn(deleteProductWrite.err.message);
+
     return next(createError(403, "변화중문제가 발생하였습니다."));
   }
 
@@ -297,6 +334,8 @@ const deleteProductWrite = async (req, res, next) => {
 // **조회수 증가**
 const hitsUp = async (req, res, next) => {
   if (!req.query || !req.query.product_write_number) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "상품번호가없습니다."));
   }
   const product_write_number = req.query.product_write_number;
@@ -310,6 +349,7 @@ const hitsUp = async (req, res, next) => {
     });
 
   if (hitsUp.err) {
+    logger.warn(hitsUp.err.message);
     return next(createError(501, "조회수증가에서문제가생겼습니다."));
   }
   return res.send(successStatus({ success: "조회수증가성공" }));
@@ -317,6 +357,7 @@ const hitsUp = async (req, res, next) => {
 // **카테고리 추가**
 const insertCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
+    logger.warn("데이터값이 없습니다.");
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -332,6 +373,8 @@ const insertCategory = async (req, res, next) => {
     });
 
   if (insertCategory.err) {
+    logger.warn(insertCategory.err.message);
+
     return next(createError(403, "변화중문제가 발생하였습니다."));
   }
 
@@ -340,6 +383,8 @@ const insertCategory = async (req, res, next) => {
 // ** 카테고리 수정**
 const updateCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName", "updateCategoryName")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -355,6 +400,8 @@ const updateCategory = async (req, res, next) => {
     });
 
   if (!checkSql(updateCategory)) {
+    logger.warn(updateCategory.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   return res.send(successStatus({ successStatus: true }));
@@ -363,6 +410,7 @@ const updateCategory = async (req, res, next) => {
 // ** 카테고리 삭제**
 const deleteCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
+    logger.warn("데이터값이 없습니다.");
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -376,6 +424,8 @@ const deleteCategory = async (req, res, next) => {
     });
 
   if (!checkSql(deleteCategory)) {
+    logger.warn(deleteCategory.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -387,9 +437,13 @@ const createQna = async (req, res, next) => {
   if (
     !checkReqBodyData(req, "category", "title", "contents", "productWriteNum")
   ) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
   if (!req.body.user) {
+    logger.warn("유저 값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
   // 외부키로 강제성 여부 추가
@@ -398,6 +452,8 @@ const createQna = async (req, res, next) => {
     req.body.data.category !== "상품" &&
     req.body.data.category !== "기타"
   ) {
+    logger.warn("잘못된 값 입니다.");
+
     return next(createError(403, "잘못된 값입니다."));
   }
 
@@ -417,6 +473,8 @@ const createQna = async (req, res, next) => {
     });
 
   if (!checkSql(insertQna)) {
+    logger.warn(insertQna.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -426,10 +484,14 @@ const createQna = async (req, res, next) => {
 // **qna삭제**
 const deleteQna = async (req, res, next) => {
   if (!req.body.user) {
+    logger.warn("유저 값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
 
   if (!checkReqBodyData(req, "qnaNum")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
 
@@ -446,12 +508,17 @@ const deleteQna = async (req, res, next) => {
     });
 
   if (!checkSql(checkQnaId)) {
+    logger.warn(checkQnaId.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   if (checkQnaId.length === 0) {
+    logger.warn("결과 값이 없습니다.");
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   if (checkQnaId[0].t_users_id !== user) {
+    logger.warn("권한이 없습니다.");
     return next(createError(403, "권한이 없습니다."));
   }
 
@@ -465,6 +532,8 @@ const deleteQna = async (req, res, next) => {
     });
 
   if (!checkSql(deleteQna)) {
+    logger.warn(deleteQna.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -474,6 +543,7 @@ const deleteQna = async (req, res, next) => {
 // **qna대답** 대답했는지 안했는지 쿼리 추가 확인
 const createAnswer = async (req, res, next) => {
   if (!checkReqBodyData(req, "qnaNum", "contents")) {
+    logger.warn("값이 부족합니다.");
     return next(createError(401, "값이없습니다."));
   }
 
@@ -490,6 +560,8 @@ const createAnswer = async (req, res, next) => {
     });
 
   if (!checkSql(CreateAnswer)) {
+    logger.warn(CreateAnswer.err.message);
+
     maria.rollback();
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
@@ -500,6 +572,8 @@ const createAnswer = async (req, res, next) => {
 // ** 대답삭제**
 const deleteAnswer = async (req, res, next) => {
   if (!checkReqBodyData(req, "answerNum")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "값이없습니다."));
   }
   const answerNum = req.body.data.answerNum;
@@ -514,6 +588,8 @@ const deleteAnswer = async (req, res, next) => {
     });
 
   if (!checkSql(deleteAnswer)) {
+    logger.warn(deleteAnswer.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -523,6 +599,7 @@ const deleteAnswer = async (req, res, next) => {
 // ** 대답수정** 추후 회의로 생각
 const updateAnswer = async (req, res, next) => {
   if (!checkReqBodyData(req, "answerNum", "contents")) {
+    logger.warn("값이 부족합니다.");
     return next(createError(401, "값이없습니다."));
   }
   const answerNum = req.body.data.answerNum;
@@ -538,6 +615,8 @@ const updateAnswer = async (req, res, next) => {
     });
 
   if (!checkSql(updateAnswer)) {
+    logger.warn(updateAnswer.err.message);
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   return res.send(successStatus({ success: true }));

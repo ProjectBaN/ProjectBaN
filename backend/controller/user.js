@@ -7,10 +7,12 @@ const jwt = require("jsonwebtoken");
 const { createError, createSqlError } = require("../module/error");
 const { successStatus } = require("../module/statuscode");
 const { checkReqBodyData } = require("../module/check");
+const { logger } = require("../config/logger");
 
 // 비밀번호 제외한 유저 정보를 찾아옴
 const getUserInfo = (req, res, next) => {
   if (!req.body.user) {
+    logger.warn("유저 값이 부족합니다.");
     return next(createError(401, "값이없습니다."));
   }
   maria.query(
@@ -18,9 +20,13 @@ const getUserInfo = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.message);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (results.length === 0) {
+        logger.warn("결과 값이 없습니다.");
+
         return next(createError(401, "결과가없습니다."));
       }
       const { users_password, ...others } = results[0];
@@ -32,10 +38,13 @@ const getUserInfo = (req, res, next) => {
 // 미들웨어로 토큰체크후 토큰 id와 입력 id이용해 업데이트
 const updateId = (req, res, next) => {
   if (!req.body.data || !req.body.data.id) {
+    logger.warn("값이 부족합니다.");
     return res.status(401).send("값이 없습니다.");
   }
 
   if (req.body.data.id === req.body.user) {
+    logger.warn("유저 값이 부족합니다.");
+
     return res.status(401).send("동일한 아이디 입니다.");
   }
   const updateId = req.body.data.id;
@@ -45,6 +54,8 @@ const updateId = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.message);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       maria.query(
@@ -52,6 +63,8 @@ const updateId = (req, res, next) => {
         [updateId, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.message);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
           const token = jwt.sign({ id: updateId }, process.env.JWT);
@@ -67,6 +80,8 @@ const updateId = (req, res, next) => {
             [refreshToken, updateId],
             (err, result) => {
               if (err) {
+                logger.warn(err.message);
+
                 return next(createError(403, "변화중문제가 발생하였습니다."));
               }
             }
@@ -90,9 +105,11 @@ const deleteId = (req, res) => {};
 // 비밀번호 변경
 const updatePassword = (req, res, next) => {
   if (!checkReqBodyData(req, "password")) {
+    logger.warn("값이 부족합니다.");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   if (!req.body.user) {
+    logger.warn("유저 값이 부족합니다.");
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -103,6 +120,8 @@ const updatePassword = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       const salt = bcrypt.genSaltSync(10);
@@ -113,6 +132,8 @@ const updatePassword = (req, res, next) => {
         [hash, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
           // const token = jwt.sign({ id: updateId }, process.env.JWT);
@@ -131,6 +152,8 @@ const updatePassword = (req, res, next) => {
 // 이름 변경
 const updateName = (req, res, next) => {
   if (!checkReqBodyData(req, "name")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -141,6 +164,8 @@ const updateName = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
@@ -149,6 +174,8 @@ const updateName = (req, res, next) => {
         [updateName, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
@@ -161,6 +188,8 @@ const updateName = (req, res, next) => {
 // 성별 변경
 const updateGender = (req, res, next) => {
   if (!checkReqBodyData(req, "gender")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(400, "입력된 값이 없습니다."));
   }
   if (
@@ -168,6 +197,8 @@ const updateGender = (req, res, next) => {
     req.body.data.gender !== "M" &&
     req.body.data.gender !== "F"
   ) {
+    logger.warn("잘못된 값 입니다.");
+
     return next(createError(401, "잘못됩 입력값입니다."));
   }
   const updateGender = req.body.data.gender;
@@ -177,6 +208,8 @@ const updateGender = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
@@ -185,6 +218,8 @@ const updateGender = (req, res, next) => {
         [updateGender, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
@@ -197,6 +232,8 @@ const updateGender = (req, res, next) => {
 //email변경
 const updateEmail = (req, res, next) => {
   if (!checkReqBodyData(req, "email")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -207,6 +244,8 @@ const updateEmail = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
@@ -215,6 +254,8 @@ const updateEmail = (req, res, next) => {
         [updateEmail, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
@@ -227,6 +268,8 @@ const updateEmail = (req, res, next) => {
 //주소 변경
 const updateAddr = (req, res, next) => {
   if (!checkReqBodyData(req, "addr")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -237,6 +280,8 @@ const updateAddr = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
@@ -245,6 +290,8 @@ const updateAddr = (req, res, next) => {
         [updateAddr, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
@@ -257,6 +304,8 @@ const updateAddr = (req, res, next) => {
 //udate
 const updateAge = (req, res, next) => {
   if (!checkReqBodyData(req, "age")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -267,6 +316,8 @@ const updateAge = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
@@ -275,6 +326,8 @@ const updateAge = (req, res, next) => {
         [updateAge, req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
@@ -288,10 +341,14 @@ const updateAge = (req, res, next) => {
 // 유저삭제 협의후 결졍
 const deleteUser = (req, res, next) => {
   if (!checkReqBodyData(req, "agree")) {
+    logger.warn("값이 부족합니다.");
+
     return next(createError(401, "입력된 값이 없습니다."));
   }
 
   if (req.body.data.agree === "F") {
+    logger.warn("동의되지 않은 값입니다.");
+
     return next(createError(401, "동의가 되지않았습니다."));
   }
 
@@ -300,6 +357,8 @@ const deleteUser = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
+        logger.warn(err.massage);
+
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
@@ -308,6 +367,8 @@ const deleteUser = (req, res, next) => {
         [req.body.user],
         (err, results) => {
           if (err) {
+            logger.warn(err.massage);
+
             return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
