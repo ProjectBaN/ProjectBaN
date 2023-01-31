@@ -52,7 +52,7 @@ const createProductWrite = async (req, res, next) => {
 
     if (insertProductWrite.err) {
       maria.rollback();
-      return next(createSqlError(insertProductWrite.err));
+      return next(createError(403, "변화중 에러가 발생하였습니다."));
     }
 
     // **상품등록**
@@ -78,7 +78,7 @@ const createProductWrite = async (req, res, next) => {
 
     if (optionQuaryCheck.err) {
       maria.rollback();
-      return next(createSqlError(optionQuaryCheck.err));
+      return next(createError(403, "변화중 에러가 발생하였습니다."));
     }
 
     // **쇼핑글 제품 이미지 등록**
@@ -102,7 +102,7 @@ const createProductWrite = async (req, res, next) => {
 
     if (imageQueryCheck.err) {
       maria.rollback();
-      return next(createSqlError(imageQueryCheck.err));
+      return next(createError(403, "변화중 에러가 발생하였습니다."));
     }
 
     if (
@@ -291,7 +291,7 @@ const deleteProductWrite = async (req, res, next) => {
     return next(createSqlError(deleteProductWrite.err));
   }
 
-  res.send(deleteProductWrite);
+  return res.send(successStatus({ success: true }));
 };
 
 // **조회수 증가**
@@ -448,7 +448,9 @@ const deleteQna = async (req, res, next) => {
   if (!checkSql(checkQnaId)) {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
-
+  if (checkQnaId.length === 0) {
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
   if (checkQnaId[0].t_users_id !== user) {
     return next(createError(403, "권한이 없습니다."));
   }
@@ -466,7 +468,7 @@ const deleteQna = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  return res.send(successStatus({ successStatus: true }));
+  return res.send(successStatus({ success: true }));
 };
 
 // **qna대답** 대답했는지 안했는지 쿼리 추가 확인
@@ -492,7 +494,7 @@ const createAnswer = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  return res.send(successStatus({ successStatus: true }));
+  return res.send(successStatus({ success: true }));
 };
 
 // ** 대답삭제**
@@ -515,7 +517,7 @@ const deleteAnswer = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
-  res.send(successStatus({ successStatus: true }));
+  res.send(successStatus({ success: true }));
 };
 
 // ** 대답수정** 추후 회의로 생각
@@ -538,7 +540,7 @@ const updateAnswer = async (req, res, next) => {
   if (!checkSql(updateAnswer)) {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
-  res.send("hellow");
+  return res.send(successStatus({ success: true }));
 };
 
 module.exports = {

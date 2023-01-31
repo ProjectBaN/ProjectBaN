@@ -10,15 +10,22 @@ const { checkReqBodyData } = require("../module/check");
 
 // 비밀번호 제외한 유저 정보를 찾아옴
 const getUserInfo = (req, res, next) => {
+  if (!req.body.user) {
+    return next(createError(401, "값이없습니다."));
+  }
   maria.query(
-    "select * from t_users where (users_id)=(?)",
-    [req.user.id],
+    "select * from t_users where (users_id)=( ? )",
+    [req.body.user],
     (err, results) => {
       if (err) {
         return next(createSqlError(err));
       }
+      if (results.length === 0) {
+        return next(createError(401, "결과가없습니다."));
+      }
+      console.log(results);
       const { users_password, ...others } = results[0];
-      res.status(200).send(successStatus(others));
+      return res.status(200).send(successStatus(others));
     }
   );
 };

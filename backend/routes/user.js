@@ -15,9 +15,10 @@ const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
 
 // 로그인후 > 유저정보 가져오기
-router.get("/getuserinfo", verifyAccessToken, getUserInfo);
-// 로그인후 > id수정
-router.post("/updateuserid", verifyAccessToken, updateId);
+router.post("/getuserinfo", verifyAccessToken, getUserInfo);
+// 로그인후 > id수정 삭제 논의
+// router.post("/updateuserid", verifyAccessToken, updateId);
+
 // 로그인후 > pw수정
 router.post("/updateuserpassword", verifyAccessToken, updatePassword);
 // 로그인후 > 이름 수정
