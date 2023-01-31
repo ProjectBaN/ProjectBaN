@@ -9,7 +9,10 @@ export const registerSlice = createSlice({
   initialState,
   reducers: {
     register: (state, action) => {
-      state.registerState = action.payload;
+      console.log('레지스터실행됨');
+      console.log(action.payload.data);
+      state.registerState = 'naver.com';
+      console.log(state.registerState);
     },
   },
 });

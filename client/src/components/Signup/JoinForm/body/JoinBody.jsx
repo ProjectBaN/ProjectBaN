@@ -2,10 +2,9 @@ import axios from 'axios';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { register } from '../../../../redux/reducer/registerSlice';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useInRouterContext, useLocation, useNavigate } from 'react-router-dom';
 import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
-import { emailCheck, idCheck } from '../../../../module/register';
 
 const genderList = [
   {
@@ -37,7 +36,6 @@ function JoinBody() {
     phone: '',
     addr: '',
     age: '',
-    gender: '',
     fulladdress: '',
   });
   const [address, setAddress] = useState('');
@@ -104,7 +102,6 @@ function JoinBody() {
     setDuplicationCheckMessage({ ...duplicationCheckMessage, [e.target.name]: '' });
     setDuplicateResult({ ...duplicateResult, [e.target.name]: false });
     setInput({ ...input, [e.target.name]: e.target.value });
-    setGenderButton(e.target.value);
   };
 
   const idCheck = (e) => {
@@ -117,7 +114,6 @@ function JoinBody() {
           setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '사용 가능 아이디입니다.' }),
       )
       .catch((err) => {
-        console.log(err);
         setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '중복된 아이디입니다.' });
         setDuplicateResult({ ...duplicateResult, id: true });
       });
@@ -131,10 +127,10 @@ function JoinBody() {
           duplication.data.data.duplicate === false &&
           setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '사용 가능 이메일입니다.' }),
       )
-      .catch(
-        (err) => setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '중복된 이메일입니다.' }),
-        setDuplicateResult({ ...duplicateResult, email: true }),
-      );
+      .catch((err) => {
+        setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '중복된 이메일입니다.' });
+        setDuplicateResult({ ...duplicateResult, email: true });
+      });
   };
 
   const validationTest = (name, regex, message) => {
@@ -197,12 +193,13 @@ function JoinBody() {
         data: {
           id: input.id,
           password: input.password,
+          passwordConfirm: input.passwordConfirm,
           name: input.name,
           email: input.email,
           phone: input.phone,
           addr: address.addressName + input.fulladdress,
           age: input.age,
-          gender: input.gender,
+          gender: genderButton,
           termAge: location.state.checkListItem.termAge,
           termUse: location.state.checkListItem.termUse,
           termInfo: location.state.checkListItem.termInfo,
@@ -211,12 +208,13 @@ function JoinBody() {
           termAppPush: location.state.checkListItem.termAppPush,
         },
       };
-      dispatch(register(body));
 
       if (duplicationCheckMessage.id === '' || duplicationCheckMessage.email === '') {
-        console.log('중복체크 해주세요' + duplicationCheckMessage.id + duplicationCheckMessage.email);
+        console.log('중복확인을 해주세요');
+      } else if (duplicateResult.id === true || duplicateResult.email === true) {
+        console.log('중복된 값이 존재합니다.');
       } else {
-        console.log('넘김');
+        console.log(body);
         // axios
         //   .post('http://localhost:8000/auth/signup', body)
         //   .then(navigate('/signup'))
@@ -224,7 +222,6 @@ function JoinBody() {
       }
     }
   };
-  console.log(duplicateResult);
   return (
     <main className="max-w-signUpContainer m-auto mt-MbBase ">
       <form className="w-full px-2" action="">
@@ -236,7 +233,11 @@ function JoinBody() {
             placeholder="아이디를 입력하세요"
             value={input.id}
             onChange={onChange}
-            className={(validation.id && input.id.length > 0) || submitMessage.id ? 'IdInputFail' : 'idInput '}
+            className={
+              (validation.id && input.id.length > 0) || submitMessage.id || duplicateResult.id
+                ? 'IdInputFail'
+                : 'idInput '
+            }
           ></input>
           <button onClick={idCheck} className="w-24 p-3.5 ml-4 mt-PcSm bg-black text-white">
             중복확인
@@ -246,7 +247,13 @@ function JoinBody() {
             {validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
             {submitMessage.id && <p className="">{submitMessage.id}</p>}
           </div>
-          {idRegex.test(input.id) && <span className="text-sm font-bold">{duplicationCheckMessage.id}</span>}
+          {idRegex.test(input.id) && (
+            <span
+              className={duplicateResult.id ? 'text-sm font-bold   text-red-500' : 'text-sm font-bold   text-black'}
+            >
+              {duplicationCheckMessage.id}
+            </span>
+          )}
         </li>
         <li className="joinListCommon">
           <p className="font-bold">비밀번호</p>
@@ -276,7 +283,7 @@ function JoinBody() {
               type="password"
               name="passwordConfirm"
               className={
-                (validation.passwordConfirm && input.passwordConfirm.length > 0) || submitMessage.passwordConfirm
+                input.password !== input.passwordConfirm && input.passwordConfirm.length > 0
                   ? 'joinInputFail'
                   : 'joinInput'
               }
@@ -285,11 +292,8 @@ function JoinBody() {
               onChange={onChange}
             ></input>
             <div className="w-full text-base text-red-500 mt-PcSm ">
-              {validation.passwordConfirm && input.passwordConfirm.length > 0 ? (
-                <p>{validation.passwordConfirm}</p>
-              ) : (
-                ''
-              )}
+              {validation.passwordConfirm && input.passwordConfirm.length > 0 && <p>{validation.passwordConfirm}</p>}
+
               <p>{submitMessage.passwordConfirm}</p>
             </div>
           </div>
@@ -318,7 +322,11 @@ function JoinBody() {
             name="email"
             value={input.email}
             onChange={onChange}
-            className={(validation.email && input.email.length > 0) || submitMessage.email ? 'IdInputFail' : 'idInput '}
+            className={
+              (validation.email && input.email.length > 0) || submitMessage.email || duplicateResult.email
+                ? 'IdInputFail'
+                : 'idInput '
+            }
             placeholder="이메일을 입력하세요(ex:aaaa@aaaa.aa)"
           ></input>
           <button onClick={emailCheck} className="w-24 p-3.5 ml-4 mt-PcSm bg-black text-white">
@@ -328,7 +336,13 @@ function JoinBody() {
             {validation.email && input.email.length > 0 ? <p>{validation.email}</p> : ''}
             {submitMessage.email && <p>{submitMessage.email}</p>}
           </div>
-          {emailRegex.test(input.email) && <span className="text-sm font-bold">{duplicationCheckMessage.email}</span>}
+          {emailRegex.test(input.email) && (
+            <span
+              className={duplicateResult.email ? 'text-sm font-bold   text-red-500' : 'text-sm font-bold   text-black'}
+            >
+              {duplicationCheckMessage.email}
+            </span>
+          )}
         </li>
         <li className="joinListCommon">
           <p className="font-bold">휴대폰번호</p>
@@ -357,6 +371,7 @@ function JoinBody() {
             className="
             addressInput"
             placeholder="주소를 입력하세요"
+            disabled={true}
           ></input>
 
           <button onClick={onToggleModal} className="w-24 p-3.5 ml-4 bg-black text-white">
@@ -393,7 +408,7 @@ function JoinBody() {
         </li>
         <li className="joinListCommon">
           <p className="font-bold">성별</p>
-          <GenderList genderList={genderList} onChange={onChange} genderButton={genderButton} />
+          <GenderList genderList={genderList} genderButton={genderButton} setGenderButton={setGenderButton} />
         </li>
       </form>
       <button
