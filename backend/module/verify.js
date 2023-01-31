@@ -23,7 +23,8 @@ const verifyAccessToken = async (req, res, next) => {
     "select users_refresh_token from t_users where users_refresh_token=(?)",
     [refreshToken],
     (err, result) => {
-      if (err) return next(createSqlError(err));
+      if (err) return next(createError(403, "변화중문제가 발생하였습니다."));
+
       // 토큰 초기화 고려
       if (
         result.length === 0 ||
@@ -67,7 +68,7 @@ const verifyAccessToken = async (req, res, next) => {
           [refreshToken, check_acces_token.id],
           (err, result) => {
             if (err) {
-              return next(createSqlError(err));
+              return next(createError(403, "변화중문제가 발생하였습니다."));
             }
             res.cookie("refresh_token", refreshToken, { httpOnly: true });
 

@@ -159,7 +159,7 @@ const updateProductWrite = async (req, res, next) => {
       });
     if (checkProductWriteNumber.err) {
       maria.rollback();
-      return next(createSqlError(checkProductWriteNumber.err));
+      return next(createError(403, "변화중문제가 발생하였습니다."));
     }
     if (checkProductWriteNumber.length === 0) {
       maria.rollback();
@@ -175,7 +175,7 @@ const updateProductWrite = async (req, res, next) => {
       });
     if (updateProductWrite.err) {
       maria.rollback();
-      return next(createSqlError(updateProductWrite.err));
+      return next(createError(403, "변화중문제가 발생하였습니다."));
     }
 
     // 옵션 상품은 기존에꺼 삭제후 다시 등록
@@ -188,7 +188,7 @@ const updateProductWrite = async (req, res, next) => {
 
     if (deleteOption.err) {
       maria.rollback();
-      return next(createSqlError(deleteOption.err));
+      return next(createError(403, "변화중문제가 발생하였습니다."));
     }
 
     let optionQuaryCheck = {};
@@ -213,7 +213,7 @@ const updateProductWrite = async (req, res, next) => {
 
     if (optionQuaryCheck.err) {
       maria.rollback();
-      return next(createSqlError(optionQuaryCheck.err));
+      return next(createError(403, "변화중문제가 발생하였습니다."));
     }
 
     // 이미지 또한 기존에꺼 삭제후 다시 등록
@@ -228,7 +228,7 @@ const updateProductWrite = async (req, res, next) => {
 
     if (deleteProductImage.err) {
       maria.rollback();
-      return next(createSqlError(optionQuaryCheck.err));
+      return next(createError(403, "변화중문제가 발생하였습니다."));
     }
 
     // **쇼핑글 제품 이미지 등록**
@@ -252,7 +252,7 @@ const updateProductWrite = async (req, res, next) => {
 
     if (imageQueryCheck.err) {
       maria.rollback();
-      return next(createSqlError(imageQueryCheck.err));
+      return next(createError(403, "변화중문제가 발생하였습니다."));
     }
 
     if (
@@ -288,7 +288,7 @@ const deleteProductWrite = async (req, res, next) => {
     });
 
   if (deleteProductWrite.err) {
-    return next(createSqlError(deleteProductWrite.err));
+    return next(createError(403, "변화중문제가 발생하였습니다."));
   }
 
   return res.send(successStatus({ success: true }));
@@ -332,7 +332,7 @@ const insertCategory = async (req, res, next) => {
     });
 
   if (insertCategory.err) {
-    return next(createSqlError(insertCategory.err));
+    return next(createError(403, "변화중문제가 발생하였습니다."));
   }
 
   return res.send(successStatus({ successStatus: true }));

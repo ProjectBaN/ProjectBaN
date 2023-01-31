@@ -18,12 +18,11 @@ const getUserInfo = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (results.length === 0) {
         return next(createError(401, "결과가없습니다."));
       }
-      console.log(results);
       const { users_password, ...others } = results[0];
       return res.status(200).send(successStatus(others));
     }
@@ -46,14 +45,14 @@ const updateId = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       maria.query(
         "update t_users set users_id=? where users_id=?",
         [updateId, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
           const token = jwt.sign({ id: updateId }, process.env.JWT);
           const refreshToken = jwt.sign(
@@ -68,7 +67,7 @@ const updateId = (req, res, next) => {
             [refreshToken, updateId],
             (err, result) => {
               if (err) {
-                return next(createSqlError(err));
+                return next(createError(403, "변화중문제가 발생하였습니다."));
               }
             }
           );
@@ -104,7 +103,7 @@ const updatePassword = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(updatePassword, salt);
@@ -114,7 +113,7 @@ const updatePassword = (req, res, next) => {
         [hash, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
           // const token = jwt.sign({ id: updateId }, process.env.JWT);
           // return res
@@ -142,7 +141,7 @@ const updateName = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
       maria.query(
@@ -150,7 +149,7 @@ const updateName = (req, res, next) => {
         [updateName, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
           return res.send(successStatus({ message: "성공하였습니다." }));
@@ -178,7 +177,7 @@ const updateGender = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
       maria.query(
@@ -186,7 +185,7 @@ const updateGender = (req, res, next) => {
         [updateGender, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
           return res.send(successStatus({ message: "성공하였습니다." }));
@@ -208,7 +207,7 @@ const updateEmail = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
       maria.query(
@@ -216,7 +215,7 @@ const updateEmail = (req, res, next) => {
         [updateEmail, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
           return res.send(successStatus({ message: "성공하였습니다." }));
@@ -238,7 +237,7 @@ const updateAddr = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
       maria.query(
@@ -246,7 +245,7 @@ const updateAddr = (req, res, next) => {
         [updateAddr, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
           return res.send(successStatus({ message: "성공하였습니다." }));
@@ -268,7 +267,7 @@ const updateAge = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
       maria.query(
@@ -276,7 +275,7 @@ const updateAge = (req, res, next) => {
         [updateAge, req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
           return res.send(successStatus({ message: "성공하였습니다." }));
@@ -301,7 +300,7 @@ const deleteUser = (req, res, next) => {
     [req.body.user],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
 
       maria.query(
@@ -309,7 +308,7 @@ const deleteUser = (req, res, next) => {
         [req.body.user],
         (err, results) => {
           if (err) {
-            return next(createSqlError(err));
+            return next(createError(403, "변화중문제가 발생하였습니다."));
           }
 
           return res.send(successStatus({ message: "성공하였습니다." }));

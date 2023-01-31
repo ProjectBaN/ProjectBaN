@@ -75,7 +75,7 @@ const signUp = async (req, res, next) => {
       if (!err) {
         return res.status(200).send(successStatus({ results: "가입성공" }));
       } else {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
     }
   );
@@ -95,7 +95,7 @@ const signIn = async (req, res, next) => {
     [id],
     function (err, results) {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
         return res.send("아이디가 없습니다.");
@@ -118,7 +118,7 @@ const signIn = async (req, res, next) => {
           [refreshToken, dbId],
           (err, result) => {
             if (err) {
-              return next(createSqlError(err));
+              return next(createError(403, "변화중문제가 발생하였습니다."));
             }
             console.log(result);
           }
@@ -273,7 +273,7 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
     [id],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err, results));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (results.length === 0) {
         return next(createError(500, "값이 존재하지않습니다."));
@@ -312,7 +312,7 @@ const temporarilyUpdatePassword = (req, res, next) => {
     [hash, id],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
         return next(createError(500, "변경 실패하였습니다."));
@@ -341,7 +341,7 @@ const forgetIdNamePhone = (req, res, next) => {
     [name, phone],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
@@ -369,7 +369,7 @@ const forgetIdEmail = (req, res, next) => {
     [email],
     (err, results) => {
       if (err) {
-        return next(createSqlError(err));
+        return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
         return next(createError(400, "값이존재하지않습니다."));
