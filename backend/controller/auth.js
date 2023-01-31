@@ -120,7 +120,6 @@ const signIn = async (req, res, next) => {
             if (err) {
               return next(createError(403, "변화중문제가 발생하였습니다."));
             }
-            console.log(result);
           }
         );
 

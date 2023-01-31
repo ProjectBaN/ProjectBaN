@@ -11,11 +11,13 @@ const authRouter = require("./routes/auth");
 const productRouter = require("./routes/product");
 const couponRouter = require("./routes/coupon");
 const cartRouter = require("./routes/cart");
+const { morganMiddleware } = require("./config/morgen");
+const { logger } = require("./config/logger");
 
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
-
+app.use(morganMiddleware);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/product", productRouter);
@@ -35,6 +37,7 @@ app.use((err, req, res, next) => {
 app.listen(8000, console.log("server started"));
 
 app.get("/", async (req, res, next) => {
+  logger.error("SQLERROR");
   res.send("성공");
 });
 
