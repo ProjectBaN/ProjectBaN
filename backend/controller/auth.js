@@ -83,7 +83,6 @@ const signUp = async (req, res, next) => {
     }
   );
 };
-
 // 로그인 ++데이터 확인 서버에서 한번 더 할꺼면 추가하세요!
 const signIn = async (req, res, next) => {
   const id = req.body.data.id;

@@ -8,6 +8,7 @@ const {
   checkAccessToken,
   checkRefreshToken,
 } = require("./token");
+const { logger } = require("../config/logger");
 
 // 토큰확인
 const verifyAccessToken = async (req, res, next) => {
@@ -30,7 +31,7 @@ const verifyAccessToken = async (req, res, next) => {
         result.length === 0 ||
         refreshToken !== result[0].users_refresh_token
       ) {
-        console.log("비정상적 토큰");
+        logger.warn("비정상적토큰");
         return next(createError(401, "비정상적 토큰"));
       }
 
