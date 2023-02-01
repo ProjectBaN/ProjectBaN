@@ -79,13 +79,13 @@ function JoinBody() {
       navigate('/signup');
     }
     passwordCheck();
+
     validationTest('id', idRegex, '3 ~ 16자리의 숫자와 영문을 조합하여 입력하십시오');
     validationTest('password', passwordRegex, '4 ~ 10자리의 숫자와 영문을 조합하여 입력하십시오 ');
     validationTest('name', nameRegex, '성명은 한글 및 영어로 입력하십시오');
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
-
     return () => {};
   });
 
@@ -145,6 +145,13 @@ function JoinBody() {
   };
 
   const passwordCheck = () => {
+    if (
+      input.password !== input.passwordConfirm &&
+      input.passwordConfirm.length > 0 &&
+      validation.passwordConfirm.length === 0
+    ) {
+      setValidationTest({ ...validation, passwordConfirm: '비밀번호가 일치하지 않습니다.' });
+    }
     if (
       input.password !== input.passwordConfirm &&
       validation.passwordConfirm.length === 0 &&
@@ -213,12 +220,12 @@ function JoinBody() {
         console.log('중복확인을 해주세요');
       } else if (duplicateResult.id === true || duplicateResult.email === true) {
         console.log('중복된 값이 존재합니다.');
-      } else {
-        console.log(body);
-        // axios
-        //   .post('http://localhost:8000/auth/signup', body)
-        //   .then(navigate('/signup'))
-        //   .catch((err) => console.log(err));
+      } else if (input.password !== input.passwordConfirm) return validation.passwordConfirm;
+      else {
+        axios
+          .post('http://localhost:8000/auth/signup', body)
+          .then(navigate('/signup'))
+          .catch((err) => console.log(err));
       }
     }
   };
@@ -292,7 +299,7 @@ function JoinBody() {
               onChange={onChange}
             ></input>
             <div className="w-full text-base text-red-500 mt-PcSm ">
-              {validation.passwordConfirm && input.passwordConfirm.length > 0 && <p>{validation.passwordConfirm}</p>}
+              {input.passwordConfirm.length > 0 && <p>{validation.passwordConfirm}</p>}
 
               <p>{submitMessage.passwordConfirm}</p>
             </div>
