@@ -14,9 +14,8 @@ morgan.token("status", function (req, res) {
 
 morgan.token("makeLine", function () {
   let line =
-    "-----------------------------------------------*(੭*ˊᵕˋ)੭* 응답 결과 ╰(*'v'*)╯-----------------------------------------------";
-  let blank = "                                   ";
-  return line + "\n" + blank;
+    "-----------------------------------------------🙂 응답 결과야!! ╰(*'v'*)╯-----------------------------------------------";
+  return line + "\n";
 });
 
 morgan.token("request", function (req, res) {
@@ -24,7 +23,7 @@ morgan.token("request", function (req, res) {
 });
 
 const morganMiddleware = morgan(
-  ":makeLine 요청_:method | url_':url' | :request | Status_:status | 응답시간_:response-time ms (:res[content-length]줄)",
+  ":makeLine 🔍 요청 -> [:method] | 🔗 url  -> ':url' \n 🧺 보낸값 -> :request   \n 💚 Status ->[:status] | ⏰ 응답시간 -> [:response-time ms] (:res[content-length]줄)",
   { stream: logger.stream }
 );
 

@@ -37,6 +37,7 @@ app.use((err, req, res, next) => {
 app.listen(8000, console.log("server started"));
 
 app.get("/", async (req, res, next) => {
+  console.log("😀 서버에 접속했어!");
   res.status(403).send("성공");
 });
 

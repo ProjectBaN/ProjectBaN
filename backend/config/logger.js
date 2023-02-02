@@ -9,7 +9,7 @@ const logDir = `${process.cwd()}/logs`;
 
 //* log 출력 포맷 정의 함수
 const logFormat = printf(({ level, message, label, timestamp }) => {
-  return `${level}: ${timestamp} ${message}`;
+  return `\n ${level}: ${timestamp} ${message} `;
 });
 const logger = winston.createLogger({
   format: combine(

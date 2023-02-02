@@ -7,11 +7,11 @@ const { successStatus } = require("../module/statuscode");
 // 장바구니추가
 const createCart = async (req, res, next) => {
   if (!req.body.user) {
-    logger.warn("유저 데이터값이 부족합니다.");
+    logger.warn("유저 😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   if (!checkReqBodyData(req, "productNum", "count")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
 
     return next(createError(400, "입력된 값이 없습니다."));
   }
@@ -41,7 +41,7 @@ const createCart = async (req, res, next) => {
 // 장바구니 가져오기
 const readCart = async (req, res, next) => {
   if (!req.body.user) {
-    logger.warn("유저 데이터값이 부족합니다.");
+    logger.warn("유저 😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -68,13 +68,13 @@ const readCart = async (req, res, next) => {
 // 장바구니 수량변경
 const updateCart = async (req, res, next) => {
   if (!req.body.user) {
-    logger.warn("유저 데이터값이 부족합니다.");
+    logger.warn("유저 😵‍💫 들어온 데이터 값이 부족해...");
 
     return next(createError(403, "입력된 값이 없습니다."));
   }
 
   if (!checkReqBodyData(req, "productNum", "count")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
 
     return next(createError(400, "입력된 값이 없습니다."));
   }
@@ -109,11 +109,11 @@ const updateCart = async (req, res, next) => {
 // 장바구니삭제
 const deleteCart = async (req, res, next) => {
   if (!req.body.user) {
-    logger.warn("유저 데이터값이 부족합니다.");
+    logger.warn("유저 😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   if (!checkReqBodyData(req, "productNum")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
 

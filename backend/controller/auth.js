@@ -46,8 +46,8 @@ const signUp = async (req, res, next) => {
       "termAppPush"
     )
   ) {
-    logger.warn("데이터값이 부족합니다.");
-    return next(createError(400, "데이터값이 부족합니다."));
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+    return next(createError(400, "들어온 데이터 값이 부족합니다."));
   }
 
   const salt = bcrypt.genSaltSync(10);
@@ -75,9 +75,9 @@ const signUp = async (req, res, next) => {
     ],
     (err, rows, fields) => {
       if (!err) {
-        return res.status(200).send(successStatus({ results: "가입성공" }));
+        return res.status(200).send(successStatus({ success: true }));
       } else {
-        logger.error(err.message);
+        logger.error("🤬 회원가입 sql중 오류가 발생했어!! -> " + err.message);
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
     }
@@ -89,7 +89,7 @@ const signIn = async (req, res, next) => {
   const password = req.body.data.password;
 
   if (!checkReqBodyData(req, "id", "password")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -98,15 +98,17 @@ const signIn = async (req, res, next) => {
     [id],
     function (err, results) {
       if (err) {
-        logger.error(err.message);
+        logger.error(
+          "🤬 로그인->아이디 확인 sql중 오류가 발생했어!! -> " + err.message
+        );
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
-        logger.warn(`${id}의 검색결과가 없습니다.`);
+        logger.warn(`😵‍💫 ${id}의 검색결과 아이디가 없어..`);
         return res.send("아이디가 없습니다.");
       }
       if (results[0].users_leave_at) {
-        logger.warn(`${id}는 탈퇴유저입니다.`);
+        logger.warn(`😮 ${id}는 탈퇴유저였어!`);
         return next(createError(500, "탈퇴한 유저입니다."));
       }
 
@@ -124,7 +126,10 @@ const signIn = async (req, res, next) => {
           [refreshToken, dbId],
           (err, result) => {
             if (err) {
-              logger.error(err.message);
+              logger.error(
+                "🤬 로그인 -> 리프레시토큰 sql중 오류가 발생했어!! -> " +
+                  err.message
+              );
               return next(createError(403, "변화중문제가 발생하였습니다."));
             }
           }
@@ -165,7 +170,7 @@ const idCheck = (req, res, next) => {
   const id = req.query.id;
 
   if (!id) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -174,7 +179,7 @@ const idCheck = (req, res, next) => {
     [id],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.error("😡 id 중복체크 중 SQL오류가 났어! -> " + err.message);
         return next(createError(500, "서버오류"));
       }
       if (results.length === 0) {
@@ -191,7 +196,7 @@ const emailCheck = (req, res, next) => {
   const email = req.query.email;
 
   if (!email) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -200,7 +205,8 @@ const emailCheck = (req, res, next) => {
     [email],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.error("😡 email 중복체크 중 SQL오류가 났어! -> " + err.message);
+
         return next(createError(500, "서버오류"));
       }
       if (results.length === 0) {
@@ -217,7 +223,7 @@ const phoneCheck = (req, res, next) => {
   const phone = req.query.phone;
 
   if (!phone) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -226,8 +232,9 @@ const phoneCheck = (req, res, next) => {
     [phone],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
-
+        logger.error(
+          "😡 [phone] 중복체크 중 SQL오류가 났어! -> " + err.message
+        );
         return next(createError(500, "서버오류"));
       }
       if (results.length === 0) {
@@ -244,7 +251,7 @@ const forgetPasswordAuthEmail = (req, res, next) => {
   const id = req.body.data.id;
   const authNum = authNumber();
   if (!checkReqBodyData(req, "id")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("보낸 값이 없습니다.");
   }
 
@@ -254,18 +261,20 @@ const forgetPasswordAuthEmail = (req, res, next) => {
     [id],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.error(
+          "😡 이메일 비밀번호 찾기 ID 체크 중 SQL오류가 났어! -> " + err.message
+        );
       }
       if (results.length === 0) {
-        logger.warn(`${id}가 존재 하지 않습니다.`);
+        logger.warn(`😵‍💫 ${id}의 검색결과 아이디가 없어..`);
+
         return res.send({
           idCheck: false,
           message: "아이디가 존해하지 않습니다.",
         });
       }
       if (results[0].users_leave_at) {
-        logger.warn(`${id}는 탈퇴한 유저입니다.`);
-
+        logger.warn(`😮 ${id}는 탈퇴유저였어!`);
         return next(createError(500, "탈퇴한 유저의 아이디입니다."));
       }
       if (results.length !== 0) {
@@ -300,14 +309,18 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
     [id],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.warn(
+          "😡 이메일 비밀번호 찾기 액세스토큰 발급 -> ID 체크 중 SQL오류가 났어! -> " +
+            err.message
+        );
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (results.length === 0) {
-        logger.warn(`${id} 검색결과가 없습니다.`);
+        logger.warn(`😵‍💫 ${id}의 검색결과 아이디가 없어..`);
         return next(createError(500, "값이 존재하지않습니다."));
       }
       if (results[0].users_leave_at) {
+        logger.warn(`😮 ${id}는 탈퇴유저였어!`);
         logger.warn(`${id} 탈퇴한유저입니다.`);
 
         return next(createError(500, "탈퇴한 유저의 아이디입니다."));
@@ -333,7 +346,7 @@ const forgetPasswordAuthCheckEmail = (req, res, next) => {
 // 비밀번호 찾기 후 변경
 const temporarilyUpdatePassword = (req, res, next) => {
   if (!checkReqBodyData(req, "password", "user")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send();
   }
   const id = req.body.data.user.id;
@@ -344,12 +357,15 @@ const temporarilyUpdatePassword = (req, res, next) => {
     [hash, id],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.warn(
+          "😡 이메일 비밀번호 찾기 -> 비밀번호 변경 중 SQL오류가 났어! -> " +
+            err.message
+        );
 
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
-        logger.warn(`${id}변경 실패`);
+        logger.warn(`😵‍💫 ${id}의 비밀번호 변경이 실패했어..`);
         return next(createError(500, "변경 실패하였습니다."));
       }
       return res
@@ -365,7 +381,7 @@ const temporarilyUpdatePassword = (req, res, next) => {
 // 아이디찾기 이름,폰
 const forgetIdNamePhone = (req, res, next) => {
   if (!checkReqBodyData(req, "name", "phone")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -377,11 +393,14 @@ const forgetIdNamePhone = (req, res, next) => {
     [name, phone],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.warn(
+          "😡 이름과 폰으로 ID 찾기 중 SQL오류가 났어! -> " + err.message
+        );
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
-        logger.warn(`검색결과가 없습니다.`);
+        logger.warn(`😵‍💫 검색결과가 없어..`);
+
         return next(createError(400, "값이존재하지않습니다."));
       }
       if (results[0].users_leave_at) {
@@ -398,7 +417,7 @@ const forgetIdNamePhone = (req, res, next) => {
 // 아이디찾기 이메일
 const forgetIdEmail = (req, res, next) => {
   if (!checkReqBodyData(req, "email")) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return res.status(401).send("값이 없습니다.");
   }
 
@@ -408,12 +427,13 @@ const forgetIdEmail = (req, res, next) => {
     [email],
     (err, results) => {
       if (err) {
-        logger.warn(err.message);
+        logger.warn("😡 이메일로 ID 찾기 중 SQL오류가 났어! -> " + err.message);
 
         return next(createError(403, "변화중문제가 발생하였습니다."));
       }
       if (!results || results.length === 0) {
-        logger.warn("값이존재하지않습니다.");
+        logger.warn(`😵‍💫 검색결과가 없어..`);
+
         return next(createError(400, "값이존재하지않습니다."));
       }
       if (results[0].users_leave_at) {

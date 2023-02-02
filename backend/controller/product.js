@@ -23,7 +23,7 @@ const createProductWrite = async (req, res, next) => {
       "productImageList"
     )
   ) {
-    logger.warn("데이터값이 부족합니다.");
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
 
     return next(createError(401, "값이없습니다."));
   }
