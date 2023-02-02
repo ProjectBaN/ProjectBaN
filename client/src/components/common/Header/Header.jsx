@@ -33,11 +33,13 @@ function Header() {
       </div>
 
       <div className="px-MbSm mt-MbMedium lg:w-PcContainer lg:mt-PcSm lg:mx-auto">
-        <div className="lg:w-full flex lg:items-baseline gap-PcMd">
+        <div className=" lg:w-full flex lg:items-baseline gap-PcMd">
           <div className="hidden lg:block">
             <CategoryMenu />
           </div>
-          <HeaderMenu />
+          <div className="hidden md:block">
+            <HeaderMenu />
+          </div>
         </div>
       </div>
     </header>

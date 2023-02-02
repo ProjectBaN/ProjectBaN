@@ -11,7 +11,6 @@ function AddressSearch({ setIsOpen, setAddress, address }) {
     e.preventDefault();
     setIsOpen(false);
   };
-  console.log(address);
   return (
     <div className="w-full h-full left-0  top-0 fixed text-center  bg-black/20">
       <div className="w-2/6 m-auto fixed top-1/4 left-1/3">

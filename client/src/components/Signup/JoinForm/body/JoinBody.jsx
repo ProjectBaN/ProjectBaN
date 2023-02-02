@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { register } from '../../../../redux/reducer/registerSlice';
-import { useInRouterContext, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
+import Loading from '../../../common/loading/Loading';
 
 const genderList = [
   {
@@ -66,8 +66,13 @@ function JoinBody() {
     email: '',
   });
 
+  const [submitDuplicateMessage, setSubmitDuplicateMessage] = useState({
+    id: '',
+    email: '',
+  });
   const [duplicateResult, setDuplicateResult] = useState({ id: false, email: false });
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -86,8 +91,55 @@ function JoinBody() {
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
+
     return () => {};
   });
+
+  const validationTest = (name, regex, message) => {
+    // 가입정보 입력 시 유효성 체크 함수
+    if (input[name].length > 0 && regex.test(input[name]) && validation[name].length !== 0) {
+      setValidationTest({ ...validation, [name]: '' });
+    }
+
+    if (input[name].length > 0 && !regex.test(input[name]) && validation[name].length === 0) {
+      setValidationTest({ ...validation, [name]: message });
+    }
+  };
+
+  const idCheck = (e) => {
+    const id = e.target.value;
+
+    if (id.length > 0) {
+      axios
+        .get(`http://localhost:8000/auth/signup/idcheck?id=${id}`)
+        .then((duplication) => {
+          duplication.data.data.duplicate === false &&
+            setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '사용 가능 아이디입니다.' });
+          setSubmitDuplicateMessage({ ...submitDuplicateMessage, id: '' });
+        })
+        .catch((err) => {
+          setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '중복된 아이디입니다.' });
+          setDuplicateResult({ ...duplicateResult, id: true });
+        });
+    }
+  };
+
+  const emailCheck = (e) => {
+    const email = e.target.value;
+    if (email.length > 0) {
+      axios
+        .get(`http://localhost:8000/auth/signup/emailcheck?email=${email}`)
+        .then((duplication) => {
+          duplication.data.data.duplicate === false &&
+            setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '사용 가능 이메일입니다.' });
+          setSubmitDuplicateMessage({ ...submitDuplicateMessage, email: '' });
+        })
+        .catch((err) => {
+          setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '중복된 이메일입니다.' });
+          setDuplicateResult({ ...duplicateResult, email: true });
+        });
+    }
+  };
 
   const onToggleModal = (e) => {
     //주소api 모달
@@ -101,47 +153,8 @@ function JoinBody() {
     setSubmitMessage({ ...submitMessage, [e.target.name]: '' });
     setDuplicationCheckMessage({ ...duplicationCheckMessage, [e.target.name]: '' });
     setDuplicateResult({ ...duplicateResult, [e.target.name]: false });
+    setSubmitDuplicateMessage({ ...submitDuplicateMessage, [e.target.name]: '' });
     setInput({ ...input, [e.target.name]: e.target.value });
-  };
-
-  const idCheck = (e) => {
-    e.preventDefault();
-    axios
-      .get(`http://localhost:8000/auth/signup/idcheck?id=${input.id}`)
-      .then(
-        (duplication) =>
-          duplication.data.data.duplicate === false &&
-          setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '사용 가능 아이디입니다.' }),
-      )
-      .catch((err) => {
-        setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '중복된 아이디입니다.' });
-        setDuplicateResult({ ...duplicateResult, id: true });
-      });
-  };
-  const emailCheck = (e) => {
-    e.preventDefault();
-    axios
-      .get(`http://localhost:8000/auth/signup/emailcheck?email=${input.email}`)
-      .then(
-        (duplication) =>
-          duplication.data.data.duplicate === false &&
-          setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '사용 가능 이메일입니다.' }),
-      )
-      .catch((err) => {
-        setDuplicationCheckMessage({ ...duplicationCheckMessage, email: '중복된 이메일입니다.' });
-        setDuplicateResult({ ...duplicateResult, email: true });
-      });
-  };
-
-  const validationTest = (name, regex, message) => {
-    // 가입정보 입력 시 유효성 체크 함수
-    if (input[name].length > 0 && regex.test(input[name]) && validation[name].length !== 0) {
-      setValidationTest({ ...validation, [name]: '' });
-    }
-
-    if (input[name].length > 0 && !regex.test(input[name]) && validation[name].length === 0) {
-      setValidationTest({ ...validation, [name]: message });
-    }
   };
 
   const passwordCheck = () => {
@@ -194,6 +207,8 @@ function JoinBody() {
 
     setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
 
+    if (duplicateResult.id === true || duplicateResult.email === true) {
+    }
     if (id || password || name || email || phone || age) {
     } else {
       let body = {
@@ -215,22 +230,20 @@ function JoinBody() {
           termAppPush: location.state.checkListItem.termAppPush,
         },
       };
+      // setLoading(true);
 
-      if (duplicationCheckMessage.id === '' || duplicationCheckMessage.email === '') {
-        console.log('중복확인을 해주세요');
-      } else if (duplicateResult.id === true || duplicateResult.email === true) {
-        console.log('중복된 값이 존재합니다.');
-      } else if (input.password !== input.passwordConfirm) return validation.passwordConfirm;
-      else {
-        axios
-          .post('http://localhost:8000/auth/signup', body)
-          .then(navigate('/signup'))
-          .catch((err) => console.log(err));
-      }
+      // axios
+      //   .post('http://localhost:8000/auth/signup', body)
+      //   .then(() => {
+      //     setLoading(false);
+      //   })
+      //   .catch((err) => console.log(err));
     }
   };
-  return (
+
+  return !loading ? (
     <main className="max-w-signUpContainer m-auto mt-MbBase ">
+      <h2 className="pl-MbSm font-bold text-xl">회원가입</h2>
       <form className="w-full px-2" action="">
         <li className="joinListCommon">
           <p className="font-bold">아이디</p>
@@ -239,6 +252,7 @@ function JoinBody() {
             name="id"
             placeholder="아이디를 입력하세요"
             value={input.id}
+            onBlur={idCheck}
             onChange={onChange}
             className={
               (validation.id && input.id.length > 0) || submitMessage.id || duplicateResult.id
@@ -246,9 +260,6 @@ function JoinBody() {
                 : 'idInput '
             }
           ></input>
-          <button onClick={idCheck} className="w-24 p-3.5 ml-4 mt-PcSm bg-black text-white">
-            중복확인
-          </button>
 
           <div className="w-full text-base text-red-500 mt-PcSm">
             {validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
@@ -290,7 +301,8 @@ function JoinBody() {
               type="password"
               name="passwordConfirm"
               className={
-                input.password !== input.passwordConfirm && input.passwordConfirm.length > 0
+                (input.password !== input.passwordConfirm && input.passwordConfirm.length > 0) ||
+                submitMessage.passwordConfirm
                   ? 'joinInputFail'
                   : 'joinInput'
               }
@@ -301,7 +313,7 @@ function JoinBody() {
             <div className="w-full text-base text-red-500 mt-PcSm ">
               {input.passwordConfirm.length > 0 && <p>{validation.passwordConfirm}</p>}
 
-              <p>{submitMessage.passwordConfirm}</p>
+              {submitMessage.password && <p>{submitMessage.passwordConfirm}</p>}
             </div>
           </div>
         </li>
@@ -329,6 +341,7 @@ function JoinBody() {
             name="email"
             value={input.email}
             onChange={onChange}
+            onBlur={emailCheck}
             className={
               (validation.email && input.email.length > 0) || submitMessage.email || duplicateResult.email
                 ? 'IdInputFail'
@@ -336,9 +349,7 @@ function JoinBody() {
             }
             placeholder="이메일을 입력하세요(ex:aaaa@aaaa.aa)"
           ></input>
-          <button onClick={emailCheck} className="w-24 p-3.5 ml-4 mt-PcSm bg-black text-white">
-            중복확인
-          </button>
+
           <div className="w-full text-base text-red-500 mt-PcSm">
             {validation.email && input.email.length > 0 ? <p>{validation.email}</p> : ''}
             {submitMessage.email && <p>{submitMessage.email}</p>}
@@ -350,6 +361,7 @@ function JoinBody() {
               {duplicationCheckMessage.email}
             </span>
           )}
+          {duplicationCheckMessage.email ? '' : <span className="text-red-500"> {submitDuplicateMessage.email}</span>}
         </li>
         <li className="joinListCommon">
           <p className="font-bold">휴대폰번호</p>
@@ -361,7 +373,7 @@ function JoinBody() {
             className={
               (validation.phone && input.phone.length > 0) || submitMessage.phone ? 'joinInputFail' : 'joinInput '
             }
-            placeholder="휴대전화 번호를 입력하세요(-를빼고 입력해주세요)"
+            placeholder="휴대전화 번호를 입력하세요"
           ></input>
           <div className="w-full  text-base text-red-500 mt-PcSm">
             {validation.phone && input.phone.length > 0 ? <p>{validation.phone}</p> : ''}
@@ -376,12 +388,11 @@ function JoinBody() {
             value={address.addressName || ''}
             onChange={onChange}
             className="
-            addressInput"
+            w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm text-gray-500 border-gray-300  focus:outline-none bg-[#cccccc] "
             placeholder="주소를 입력하세요"
             disabled={true}
           ></input>
-
-          <button onClick={onToggleModal} className="w-24 p-3.5 ml-4 bg-black text-white">
+          <button onClick={onToggleModal} className="w-24 h-11 p-3.5 ml-4 bg-black text-white">
             주소찾기
           </button>
           {isOpen && <AddressSearch setIsOpen={setIsOpen} setAddress={setAddress} address={address} />}
@@ -427,6 +438,10 @@ function JoinBody() {
         회원 가입 하기
       </button>
     </main>
+  ) : (
+    <div>
+      <Loading />
+    </div>
   );
 }
 

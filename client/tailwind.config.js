@@ -36,6 +36,7 @@ module.exports = {
         MbBase: '40px',
       },
       maxWidth: {
+        signInContainer: '500px',
         signUpContainer: '480px',
         mbContainer: '450px',
       },
@@ -48,6 +49,7 @@ module.exports = {
         mbContainer: '450px',
         PcSearchForm: '440px',
         signUpContainer: '480px',
+        signInContainer: '480px',
       },
       height: {
         BannerSlideImage: '400px',

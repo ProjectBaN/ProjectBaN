@@ -19,16 +19,13 @@
   @apply w-full h-11 flex items-center mt-PcSm border-solid border-2  rounded-sm  border-red-500  focus-within:outline-none pl-2;
 }
 .idInput {
-  @apply w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300   focus-within:ring-black focus-within:border-black  focus-within:outline-none;
+  @apply w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-gray-300   focus-within:ring-black focus-within:border-black  focus-within:outline-none;
 }
 .IdInputFail {
-  @apply w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm border-red-500  focus:outline-none;
+  @apply w-full mt-PcSm text-sm border-2 p-2.5 rounded-sm border-red-500  focus:outline-none;
 }
 .joinListCommon {
   @apply mt-PcMd;
-}
-.addressInput {
-  @apply w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm text-gray-500 border-gray-300  focus:outline-none bg-[#cccccc];
 }
 
 .dropDown:hover .dropDownMenu {

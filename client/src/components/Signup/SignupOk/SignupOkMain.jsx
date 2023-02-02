@@ -1,13 +1,18 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SignupHeader from '../../common/Signup/SignupHeader';
 
 function SignupOkMain() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const ReduxSelect = useSelector((state) => state.user.loading);
+
   useEffect(() => {
-    // if (!location.state) {
-    //   alert('비정상적인 접근입니다.');
-    //   navigate('/signup');
-    // }
+    if (!location.state) {
+      alert('비정상적인 접근입니다.');
+      navigate('/signup');
+    }
 
     return () => {};
   });
@@ -26,7 +31,7 @@ function SignupOkMain() {
         <Link to={'/'}>
           <button className="w-1/2 h-10 bg-black text-white"> 홈으로</button>
         </Link>
-        <Link to={'/'}>
+        <Link to={'/login'}>
           <button className="w-1/2 h-10 border-2 border-solid border-black">로그인</button>
         </Link>
       </div>
