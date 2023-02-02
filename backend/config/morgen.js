@@ -3,13 +3,29 @@ const { logger } = require("./logger");
 
 morgan.token("status", function (req, res) {
   let color;
-  if (res.statusCode < 300) color = "\x1B[32m"; //green
-  else if (res.statusCode < 400) color = "\x1B[36m"; //cyan
-  else if (res.statusCode < 500) color = "\x1B[33m"; //yellow
-  else if (res.statusCode < 600) color = "\x1B[31m"; //red
-  else color = "\033[0m"; /*글자색 초기화*/
+  let emoge = "🤪 ";
+  if (res.statusCode < 300) {
+    color = "\x1B[32m";
+    emoge = "👍 ";
+  } //green
+  else if (res.statusCode < 400) {
+    color = "\x1B[36m";
+    emoge = "💥 ";
+  } //cyan
+  else if (res.statusCode < 500) {
+    color = "\x1B[33m";
+    emoge = "✋ ";
+  } //yellow
+  else if (res.statusCode < 600) {
+    color = "\x1B[31m";
+    emoge = "🚫 ";
+  } //red
+  else {
+    color = "\033[0m";
+    emoge = "🤪 ";
+  } /*글자색 초기화*/
 
-  return color + res.statusCode + "\033[35m" /*보라색*/;
+  return emoge + color + res.statusCode + "\033[35m" /*보라색*/;
 });
 
 morgan.token("makeLine", function () {

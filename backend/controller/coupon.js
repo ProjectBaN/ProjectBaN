@@ -7,13 +7,18 @@ const { successStatus } = require("../module/statuscode");
 // 쿠폰 세일 카테고리 생성
 const createCouponCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
+
   const categoryName = req.body.data.categoryName;
 
   const createCategoryQuery = `insert into coupon_sale_category(coupon_sale_category_name) values('${categoryName}')`;
   const createCategory = await awaitSql(createCategoryQuery)
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 생성 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -21,6 +26,8 @@ const createCouponCategory = async (req, res, next) => {
     });
 
   if (!checkSql(createCategory)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -32,6 +39,9 @@ const readCouponCategory = async (req, res, next) => {
   const readCategoryQuery = `select coupon_sale_category_name from coupon_sale_category `;
   const readCategory = await awaitSql(readCategoryQuery)
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 read 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -41,6 +51,7 @@ const readCouponCategory = async (req, res, next) => {
   const result = { data: readCategory };
 
   if (!checkSql(readCategory)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   return res.send(successStatus(result));
@@ -49,6 +60,7 @@ const readCouponCategory = async (req, res, next) => {
 // 업데이트 쿠폰 세일 카테고리
 const updateCouponCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName", "updateCategoryName")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -57,6 +69,9 @@ const updateCouponCategory = async (req, res, next) => {
   const updateCategoryQuery = `update coupon_sale_category set coupon_sale_category_name = '${updateCategoryName}' where coupon_sale_category_name = '${categoryName}'`;
   const updateCategory = await awaitSql(updateCategoryQuery)
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 업데이트 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -64,6 +79,7 @@ const updateCouponCategory = async (req, res, next) => {
     });
 
   if (!checkSql(updateCategory)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -73,6 +89,7 @@ const updateCouponCategory = async (req, res, next) => {
 // 쿠폰카테고리 삭제
 const deleteCouponCategory = async (req, res, next) => {
   if (!checkReqBodyData(req, "deleteCategoryName")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
   const deleteCategoryName = req.body.data.deleteCategoryName;
@@ -80,6 +97,9 @@ const deleteCouponCategory = async (req, res, next) => {
   const deleteCategoryQuery = `delete from coupon_sale_category where coupon_sale_category_name = '${deleteCategoryName}'`;
   const deleteCategory = await awaitSql(deleteCategoryQuery)
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 삭제 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -87,6 +107,7 @@ const deleteCouponCategory = async (req, res, next) => {
     });
 
   if (!checkSql(deleteCategory)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -96,6 +117,7 @@ const deleteCouponCategory = async (req, res, next) => {
 // 쿠폰카테고리 상품추가
 const createConponCategoryProduct = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName", "productNum")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -104,13 +126,16 @@ const createConponCategoryProduct = async (req, res, next) => {
   const createCategoryQuery = `insert into coupon_sale_category_product(t_product_num,coupon_sale_category) values('${productNum}','${categoryName}')`;
   const createCategory = await awaitSql(createCategoryQuery)
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 상품추가 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
       return result;
     });
-  console.log(createCategory);
   if (!checkSql(createCategory)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -120,6 +145,7 @@ const createConponCategoryProduct = async (req, res, next) => {
 // 쿠폰카테고리 상품들고오기
 const readCouponCategoryProduct = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -129,6 +155,10 @@ const readCouponCategoryProduct = async (req, res, next) => {
     readCouponCategoryProductQuery
   )
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 상품들고오기 중 SQL오류가 났어! -> " +
+          err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -136,6 +166,7 @@ const readCouponCategoryProduct = async (req, res, next) => {
     });
 
   if (!checkSql(readCouponCategoryProduct)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -145,6 +176,8 @@ const readCouponCategoryProduct = async (req, res, next) => {
 // 쿠폰카테고리 상품 삭제
 const deleteCouponCategoryProduct = async (req, res, next) => {
   if (!checkReqBodyData(req, "categoryName", "productNum")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+
     return next(createError(401, "값이없습니다."));
   }
   const categoryName = req.body.data.categoryName;
@@ -155,6 +188,9 @@ const deleteCouponCategoryProduct = async (req, res, next) => {
     deleteCouponCategoryProductQuery
   )
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 세일 카테고리 상품삭제 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -162,6 +198,7 @@ const deleteCouponCategoryProduct = async (req, res, next) => {
     });
 
   if (!checkSql(deleteCouponCategoryProduct)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -185,6 +222,8 @@ const createCoupon = async (req, res, next) => {
       "couponValiedCount"
     )
   ) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+
     return next(createError(401, "값이없습니다."));
   }
 
@@ -217,14 +256,15 @@ const createCoupon = async (req, res, next) => {
 
   const createCoupon = await awaitSql(createCouponQuery)
     .catch((err) => {
+      logger.error("😡 쿠폰 발급 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
       return result;
     });
-  console.log(createCoupon);
 
   if (!checkSql(createCoupon)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -235,6 +275,7 @@ const readCoupon = async (req, res, next) => {
   const readCouponQuery = `select * from coupon `;
   const readCoupon = await awaitSql(readCouponQuery)
     .catch((err) => {
+      logger.error("😡 현재 쿠폰 보기 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
@@ -242,6 +283,7 @@ const readCoupon = async (req, res, next) => {
     });
 
   if (!checkSql(readCoupon)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -263,6 +305,7 @@ const updateCoupon = async (req, res, next) => {
       "couponValiedEnd"
     )
   ) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
 
@@ -281,16 +324,20 @@ const updateCoupon = async (req, res, next) => {
     couponType !== "DUAL" &&
     couponType !== "CATEGORY"
   ) {
+    logger.warn("😵‍💫 잘못된 타입을 보냈어...");
+
     return next(createError(401, "잘못된 타입 입니다."));
   }
 
   if (couponDiscountType !== "RATE" && couponDiscountType !== "AMOUNT") {
+    logger.warn("😵‍💫 잘못된 타입을 보냈어...");
     return next(createError(401, "잘못된 타입 입니다."));
   }
 
   const updateCouponQuery = `update coupon set coupon_name = '${couponName}',coupon_type ='${couponType}',coupon_discount_type='${couponDiscountType}',conpon_discount_rate='${conponDiscountRate}',coupon_discount='${couponDiscount}',coupon_max_discount='${couponMaxDiscount}',coupon_valied_at='${couponValiedAt}',coupon_valied_end='${couponValiedEnd}' where coupon_num='${couponNum}'`;
   const updateCoupon = await awaitSql(updateCouponQuery)
     .catch((err) => {
+      logger.error("😡 현재 쿠폰 수정 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
@@ -298,6 +345,7 @@ const updateCoupon = async (req, res, next) => {
     });
 
   if (!checkSql(updateCoupon)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -306,6 +354,8 @@ const updateCoupon = async (req, res, next) => {
 //  쿠폰삭제
 const deleteCoupon = async (req, res, next) => {
   if (!checkReqBodyData(req, "couponNum")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+
     return next(createError(401, "값이없습니다."));
   }
   const couponNum = req.body.data.couponNum;
@@ -313,6 +363,8 @@ const deleteCoupon = async (req, res, next) => {
   const deleteCouponQuery = `delete from coupon where coupon_num = '${couponNum}' `;
   const deleteCoupon = await awaitSql(deleteCouponQuery)
     .catch((err) => {
+      logger.error("😡 현재 쿠폰 삭제 중 SQL오류가 났어! -> " + err.message);
+
       return { err: err };
     })
     .then((result) => {
@@ -320,6 +372,7 @@ const deleteCoupon = async (req, res, next) => {
     });
 
   if (!checkSql(deleteCoupon)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -329,6 +382,7 @@ const deleteCoupon = async (req, res, next) => {
 // 유저 쿠폰 생성
 const createUserCoupons = async (req, res, next) => {
   if (!req.body.user || !req.body.couponResult) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   const coupon = req.body.couponResult;
@@ -339,6 +393,9 @@ const createUserCoupons = async (req, res, next) => {
   const getUserCouponQuery = `select count(*) from coupon_users where t_users_id = '${userId}' and coupon_num = '${coupon[0].coupon_num}'`;
   const getUserCoupon = await awaitSql(getUserCouponQuery)
     .catch((err) => {
+      logger.error(
+        "😡 쿠폰 발급가능 횟수 확인 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -346,9 +403,12 @@ const createUserCoupons = async (req, res, next) => {
     });
 
   if (!checkSql(getUserCoupon)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   if (getUserCoupon[0]["count(*)"] >= couponValiedCount) {
+    logger.warn("😵‍💫 유저의 쿠폰 발급 제한 이 초과했어!!");
+
     return next(createError(501, "발급제한을 초과하였습니다."));
   }
 
@@ -357,13 +417,16 @@ const createUserCoupons = async (req, res, next) => {
   const createUserCouponQuery = `insert into coupon_users(coupon_num, t_users_id, coupon_users_valied_end) values('${coupon[0].coupon_num}','${userId}',${useDate})`;
   const createUserCoupon = await awaitSql(createUserCouponQuery)
     .catch((err) => {
+      logger.error("😡 유저 쿠폰 생성 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
       return result;
     });
-  console.log(createUserCoupon);
+
   if (!checkSql(createUserCoupon)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
+
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -373,9 +436,11 @@ const createUserCoupons = async (req, res, next) => {
 // 사용가능한 쿠폰들
 const useAbleCoupons = async (req, res, next) => {
   if (!req.body.user) {
+    logger.warn("😵‍💫 들어온 유저 데이터 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   if (!checkReqBodyData(req, "productNum")) {
+    logger.warn("😵‍💫 들어온 유저 값이 부족해...");
     return next(createError(401, "값이없습니다."));
   }
 
@@ -385,6 +450,9 @@ const useAbleCoupons = async (req, res, next) => {
   const getProductCategoryQuery = `select coupon_sale_category from coupon_sale_category_product where t_product_num = ${productnum}`;
   const getProductCategory = await awaitSql(getProductCategoryQuery)
     .catch((err) => {
+      logger.error(
+        "😡 프로덕트의 세일카테고리를 얻는 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -392,12 +460,16 @@ const useAbleCoupons = async (req, res, next) => {
     });
 
   if (!checkSql(getProductCategory)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   // 유저가 가진 쿠폰 가져오기
   const readCouponsQuery = `select * from coupon_users as cu join coupon as c on cu.coupon_num = c.coupon_num where t_users_id = '${userId}'`;
   const readCoupons = await awaitSql(readCouponsQuery)
     .catch((err) => {
+      logger.error(
+        "😡 유저가 가진 쿠폰 가져오는 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -405,6 +477,7 @@ const useAbleCoupons = async (req, res, next) => {
     });
 
   if (!checkSql(readCoupons)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   // 쿠폰중 ALL,DUAL은 뽑고, 쿠폰의 세일카테고리와 물품의 세일카테고리가 같으면 출력 , 필요한 쿠폰정보 뽑기
@@ -438,7 +511,7 @@ const useAbleCoupons = async (req, res, next) => {
 // 유저가 가진 쿠폰들
 const readUserCoupons = async (req, res, next) => {
   if (!req.body.user) {
-    logger.warn("유저데이터값이 없습니다.");
+    logger.warn("😵‍💫 들어온 유저 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
 
@@ -447,6 +520,9 @@ const readUserCoupons = async (req, res, next) => {
   const readCouponsQuery = `select * from coupon_users as cu join coupon as c on cu.coupon_num = c.coupon_num where t_users_id = '${userId}'`;
   const readCoupons = await awaitSql(readCouponsQuery)
     .catch((err) => {
+      logger.error(
+        "😡 유저가 가진 쿠폰 가져오는 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -454,8 +530,7 @@ const readUserCoupons = async (req, res, next) => {
     });
 
   if (!checkSql(readCoupons)) {
-    logger.warn(readCoupons.err.message);
-
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -478,7 +553,7 @@ const readUserCoupons = async (req, res, next) => {
 // 만료된 쿠폰들 삭제
 const deleteUserConpons = async (req, res, next) => {
   if (!req.body.user) {
-    logger.warn("유저데이터 값이 없습니다.");
+    logger.warn("😵‍💫 들어온 유저 값이 부족해...");
     return next(createError(400, "입력된 값이 없습니다."));
   }
   const userId = req.body.user;
@@ -486,6 +561,9 @@ const deleteUserConpons = async (req, res, next) => {
   const deleteUserConponsQuery = `delete from coupon_users where t_users_id = '${userId}' and coupon_users_valied_end < now()`;
   const deleteUserConpons = await awaitSql(deleteUserConponsQuery)
     .catch((err) => {
+      logger.error(
+        "😡 만료된 쿠폰들 삭제 중 SQL오류가 났어! -> " + err.message
+      );
       return { err: err };
     })
     .then((result) => {
@@ -493,7 +571,7 @@ const deleteUserConpons = async (req, res, next) => {
     });
 
   if (!checkSql(deleteUserConpons)) {
-    logger.warn(deleteUserConpons.err.message);
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
 
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }

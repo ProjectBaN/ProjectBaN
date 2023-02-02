@@ -20,18 +20,19 @@ const createCart = async (req, res, next) => {
   const productNum = req.body.data.productNum;
   const count = req.body.data.count;
 
-  const createCouponsQuery = `insert into cart(t_users_id, t_product_num, count) values('${userId}', '${productNum}','${count}' )`;
+  const createCartQuery = `insert into cart(t_users_id, t_product_num, count) values('${userId}', '${productNum}','${count}' )`;
 
-  const createCoupons = await awaitSql(createCouponsQuery)
+  const createCart = await awaitSql(createCartQuery)
     .catch((err) => {
+      logger.error("😡 장바구니 추가 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
       return result;
     });
 
-  if (!checkSql(createCoupons)) {
-    logger.warn(createCoupons.err.message);
+  if (!checkSql(createCart)) {
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -50,6 +51,7 @@ const readCart = async (req, res, next) => {
   const getCartQuery = `select * from cart where t_users_id = '${userId}' `;
   const getCart = await awaitSql(getCartQuery)
     .catch((err) => {
+      logger.error("😡 장바구니 가져오기 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
@@ -57,7 +59,7 @@ const readCart = async (req, res, next) => {
     });
 
   if (!checkSql(getCart)) {
-    logger.warn(getCart.err.message);
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
 
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
@@ -80,6 +82,7 @@ const updateCart = async (req, res, next) => {
   }
 
   if (req.body.data.count <= 0) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
     return next(createError(403, "입력된 값이 없습니다."));
   }
 
@@ -91,6 +94,8 @@ const updateCart = async (req, res, next) => {
 
   const updateCart = await awaitSql(updateCartQuery)
     .catch((err) => {
+      logger.error("😡 장바구니 수량변경 중 SQL오류가 났어! -> " + err.message);
+
       return { err: err };
     })
     .then((result) => {
@@ -98,7 +103,7 @@ const updateCart = async (req, res, next) => {
     });
 
   if (!checkSql(updateCart)) {
-    logger.warn(updateCart.err.message);
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
 
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
@@ -124,6 +129,7 @@ const deleteCart = async (req, res, next) => {
 
   const deleteCart = await awaitSql(deleteCartQuery)
     .catch((err) => {
+      logger.error("😡 장바구니 삭제 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
@@ -131,7 +137,7 @@ const deleteCart = async (req, res, next) => {
     });
 
   if (!checkSql(deleteCart)) {
-    logger.warn(deleteCart.err.message);
+    logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
 
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }

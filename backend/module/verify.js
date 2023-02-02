@@ -17,6 +17,8 @@ const verifyAccessToken = async (req, res, next) => {
   const refreshToken = req.cookies.refresh_token;
 
   if (!accessToken && !refreshToken) {
+    logger.error("😡 다시 로그인해!");
+
     return next(createError(401, "login"));
   }
 
@@ -24,14 +26,21 @@ const verifyAccessToken = async (req, res, next) => {
     "select users_refresh_token from t_users where users_refresh_token=(?)",
     [refreshToken],
     (err, result) => {
-      if (err) return next(createError(403, "변화중문제가 발생하였습니다."));
+      if (err) {
+        logger.error(
+          "😡 리프레시 토큰을 찾는 중 SQL오류가 났어! -> " + err.message
+        );
+
+        return next(createError(403, "변화중문제가 발생하였습니다."));
+      }
 
       // 토큰 초기화 고려
       if (
         result.length === 0 ||
         refreshToken !== result[0].users_refresh_token
       ) {
-        logger.warn("비정상적토큰");
+        logger.error("😡 비정상적 토큰인거같아!");
+
         return next(createError(401, "비정상적 토큰"));
       }
 
@@ -69,6 +78,11 @@ const verifyAccessToken = async (req, res, next) => {
           [refreshToken, check_acces_token.id],
           (err, result) => {
             if (err) {
+              logger.error(
+                "😡 리프레시 토큰을 업데이트 중 SQL오류가 났어! -> " +
+                  err.message
+              );
+
               return next(createError(403, "변화중문제가 발생하였습니다."));
             }
             res.cookie("refresh_token", refreshToken, { httpOnly: true });
@@ -81,6 +95,7 @@ const verifyAccessToken = async (req, res, next) => {
       }
       // console.log("엑세스 X, 리프레시 X");
       if (!check_acces_token && !check_refresh_token) {
+        logger.error("😡 다시 로그인해!");
         return next(createError(500, "logIn"));
       }
     }
@@ -90,7 +105,10 @@ const verifyAccessToken = async (req, res, next) => {
 // 임시 비밀번호 변경 토큰확인
 const verifyTemporarilyAccessToken = (req, res, next) => {
   const accessToken = req.cookies.temporarily_access_token;
-  if (!accessToken) return next(createError(401, "토큰이없습니다."));
+  if (!accessToken) {
+    logger.error("😡 토큰이 없어!");
+    return next(createError(401, "토큰이없습니다."));
+  }
 
   jwt.verify(accessToken, process.env.JWT, (err, user) => {
     if (err) return next(createError(403, "token is not valid"));
@@ -118,6 +136,8 @@ const verifyForgetIdToken = (req, res, next) => {
 
       next();
     } else {
+      logger.error("😡 인증번호가 잘못됬어!");
+
       next(createError(403, "token is not valid"));
     }
   });
