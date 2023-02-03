@@ -118,8 +118,8 @@ const signIn = async (req, res, next) => {
       const compare = bcrypt.compareSync(password, `` + dbPassword);
 
       if (compare) {
-        const token = createAccessToken(dbId);
-        const refreshToken = createRefreshToken(dbId);
+        const token = createAccessToken(dbId, dbPassword);
+        const refreshToken = createRefreshToken(dbId, dbPassword);
 
         maria.query(
           "update t_users set users_refresh_token=? where users_id=?",

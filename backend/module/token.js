@@ -2,15 +2,15 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 // 액세스토큰생성
-const createAccessToken = (id) => {
-  return jwt.sign({ id: id }, process.env.JWT, {
+const createAccessToken = (id, pw) => {
+  return jwt.sign({ id: id, pw: pw }, process.env.JWT, {
     expiresIn: "1h",
   });
 };
 // 리프레시토큰생성
-const createRefreshToken = (id) => {
-  return jwt.sign({ id: id }, process.env.JWT_REFRESH, {
-    expiresIn: "14d",
+const createRefreshToken = (id, pw) => {
+  return jwt.sign({ id: id, pw: pw }, process.env.JWT_REFRESH, {
+    expiresIn: "14m",
   });
 };
 // 이메일인증토큰생성

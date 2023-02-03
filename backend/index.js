@@ -11,6 +11,9 @@ const authRouter = require("./routes/auth");
 const productRouter = require("./routes/product");
 const couponRouter = require("./routes/coupon");
 const cartRouter = require("./routes/cart");
+const payRouter = require("./routes/pay");
+const orderRouter = require("./routes/order");
+
 const { morganMiddleware } = require("./config/morgen");
 const { logger } = require("./config/logger");
 
@@ -23,6 +26,8 @@ app.use("/auth", authRouter);
 app.use("/product", productRouter);
 app.use("/coupon", couponRouter);
 app.use("/cart", cartRouter);
+app.use("/pay", payRouter);
+app.use("/order", orderRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
