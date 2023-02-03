@@ -34,6 +34,9 @@ module.exports = {
         MbMedium: '16px',
         MbLarge: '20px',
         MbBase: '40px',
+        DaumPostcodeTopWidth: '350px',
+        DaumPostCodeHeader: '16.5%',
+        DaumPostCodeBody: '22.5%',
       },
       maxWidth: {
         signInContainer: '500px',
@@ -50,9 +53,11 @@ module.exports = {
         PcSearchForm: '440px',
         signUpContainer: '480px',
         signInContainer: '480px',
+        AddressWindthContainer: '598px',
       },
       height: {
         BannerSlideImage: '400px',
+        pcAddressHeight: ' 650px',
       },
       backgroundImage: {
         'hero-pattern':

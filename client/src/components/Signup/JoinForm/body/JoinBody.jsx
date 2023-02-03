@@ -146,7 +146,7 @@ function JoinBody() {
     e.preventDefault();
     setIsOpen(!isOpen);
   };
-
+  console.log(isOpen);
   const onChange = (e) => {
     e.preventDefault();
     //가입정보 입력 시 값 받아오기
@@ -242,7 +242,7 @@ function JoinBody() {
   };
 
   return !loading ? (
-    <main className="max-w-signUpContainer m-auto mt-MbBase ">
+    <main className="max-w-signUpContainer m-auto mt-MbBase  ">
       <h2 className="pl-MbSm font-bold text-xl">회원가입</h2>
       <form className="w-full px-2" action="">
         <li className="joinListCommon">
@@ -382,19 +382,21 @@ function JoinBody() {
         </li>
         <li className="joinListCommon">
           <p className="font-bold">주소</p>
-          <input
-            type="text"
-            name="addr"
-            value={address.addressName || ''}
-            onChange={onChange}
-            className="
-            w-3/4 mt-PcSm text-sm border-2 p-2.5 rounded-sm text-gray-500 border-gray-300  focus:outline-none bg-[#cccccc] "
-            placeholder="주소를 입력하세요"
-            disabled={true}
-          ></input>
-          <button onClick={onToggleModal} className="w-24 h-11 p-3.5 ml-4 bg-black text-white">
-            주소찾기
-          </button>
+          <div className="flex flex-row  justify-between items-center w-full h-11 mt-PcSm text-sm border  rounded-sm text-gray-500 border-gray-300 focus:outline-none ">
+            <input
+              type="text"
+              name="addr"
+              value={address.addressName || ''}
+              onChange={onChange}
+              className=" w-full h-11 border border-gray-300 bg-[#f1f1f1] p-2.5"
+              placeholder="주소를 입력하세요"
+              disabled={true}
+            ></input>
+            <button onClick={onToggleModal} className="w-24 h-11 ml-2 bg-black text-white">
+              <span>주소찾기</span>
+            </button>
+          </div>
+
           {isOpen && <AddressSearch setIsOpen={setIsOpen} setAddress={setAddress} address={address} />}
         </li>
         <li className="joinListCommon">
