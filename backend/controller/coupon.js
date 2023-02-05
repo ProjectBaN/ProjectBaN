@@ -464,7 +464,7 @@ const useAbleCoupons = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   // 유저가 가진 쿠폰 가져오기
-  const readCouponsQuery = `select * from coupon_users as cu join coupon as c on cu.coupon_num = c.coupon_num where t_users_id = '${userId}'`;
+  const readCouponsQuery = `select * from coupon_users as cu join coupon as c on cu.coupon_num = c.coupon_num where t_users_id = '${userId}' and cu.coupon_status= 'N'`;
   const readCoupons = await awaitSql(readCouponsQuery)
     .catch((err) => {
       logger.error(
@@ -475,7 +475,7 @@ const useAbleCoupons = async (req, res, next) => {
     .then((result) => {
       return result;
     });
-
+  console.log(readCoupons);
   if (!checkSql(readCoupons)) {
     logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
