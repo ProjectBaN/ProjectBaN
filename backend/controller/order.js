@@ -39,6 +39,8 @@ const createOrder = async (req, res, next) => {
   const totalPrice = productPriceList.reduce((sum, currvalue) => {
     return sum + currvalue;
   }, 0);
+  let productPriceListIndex = 0;
+
   maria.beginTransaction((err) => {
     if (err) {
       maria.rollback();
@@ -66,12 +68,101 @@ const createOrder = async (req, res, next) => {
     // 유저 쿠폰 듀얼,기본 쿠폰을 들고 온다 -> 그 쿠폰번호로 업데이트 -> orderproduct 생성;
     let couponUsersNum = null;
     let couponDualUsersNum = null;
+    // 쿠폰사용도 넣기
+    if (product.nomalCoupon) {
+      const getUserCouponNumQuery = `select * from coupon_users where coupon_num = '${product.nomalCoupon.couponNum}'`;
+      const getUserCouponNum = await awaitSql(getUserCouponNumQuery)
+        .catch((err) => {
+          maria.rollback();
+          logger.error(
+            "😡 쿠폰갯수를 얻는 중 SQL오류가 났어! -> " + err.message
+          );
+          return { err: err };
+        })
+        .then((result) => {
+          return result;
+        });
+      if (!checkSql(getUserCouponNum)) {
+        maria.rollback();
+        logger.warn("😵‍💫getUserCouponNumQuery SQL에러 또는 변화된것이 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+      if (getUserCouponNum.length === 0) {
+        maria.rollback();
+        logger.warn("😵‍💫getUserCouponNumQuery 데이터가 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+      couponUsersNum = getUserCouponNum[0].coupon_users_num;
 
-    const createOrderProductQuery = `insert into t_users_order_product(t_users_order_uuid,t_product_num,coupon_users_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','45',${couponUsersNum},${couponDualUsersNum},'2','${productPriceList[0]}')`;
+      const updateCouponStatusQuery = `update coupon_users set coupon_status = 'Y' where coupon_users_num = '${couponUsersNum}'`;
+      const updateCouponStatus = await awaitSql(updateCouponStatusQuery)
+        .catch((err) => {
+          maria.rollback();
+          logger.error(
+            "😡 updateCouponStatus 중 SQL오류가 났어! -> " + err.message
+          );
+          return { err: err };
+        })
+        .then((result) => {
+          return result;
+        });
+      if (!checkSql(updateCouponStatus)) {
+        maria.rollback();
+        logger.warn("updateCouponStatus SQL에러 또는 변화된것이 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+    }
+
+    if (product.dualCoupon) {
+      const getUserDualCouponNumQuery = `select * from coupon_users where coupon_num = '${product.dualCoupon.couponNum}'`;
+      const getUserDualCouponNum = await awaitSql(getUserDualCouponNumQuery)
+        .catch((err) => {
+          maria.rollback();
+          logger.error(
+            "😡 updateCouponStatus 중 SQL오류가 났어! -> " + err.message
+          );
+          return { err: err };
+        })
+        .then((result) => {
+          return result;
+        });
+      if (!checkSql(getUserDualCouponNum)) {
+        maria.rollback();
+        logger.warn("getUserDualCouponNum SQL에러 또는 변화된것이 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+      if (getUserDualCouponNum.length === 0) {
+        maria.rollback();
+        logger.warn("getUserDualCouponNum 데이터가 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+      couponDualUsersNum = getUserDualCouponNum[0].coupon_users_num;
+
+      const updateDualCouponStatusQuery = `update coupon_users set coupon_status = 'Y' where coupon_users_num = '${couponDualUsersNum}'`;
+      const updateDualCouponStatus = await awaitSql(updateDualCouponStatusQuery)
+        .catch((err) => {
+          maria.rollback();
+          logger.error(
+            "😡 updateDualCouponStatus 중 SQL오류가 났어! -> " + err.message
+          );
+          return { err: err };
+        })
+        .then((result) => {
+          return result;
+        });
+      if (!checkSql(updateDualCouponStatus)) {
+        maria.rollback();
+        logger.warn("updateDualCouponStatus SQL에러 또는 변화된것이 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+    }
+    const createOrderProductQuery = `insert into t_users_order_product(t_users_order_uuid,t_product_num,coupon_users_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','45',${couponUsersNum},${couponDualUsersNum},'2','${productPriceList[productPriceListIndex]}')`;
     const createOrderProduct = await awaitSql(createOrderProductQuery)
       .catch((err) => {
         maria.rollback();
-        logger.error("😡 쿠폰갯수를 얻는 중 SQL오류가 났어! -> " + err.message);
+        logger.error(
+          "😡 createOrderProduct 중 SQL오류가 났어! -> " + err.message
+        );
         return { err: err };
       })
       .then((result) => {
@@ -79,9 +170,10 @@ const createOrder = async (req, res, next) => {
       });
     if (!checkSql(createOrderProduct)) {
       maria.rollback();
-      logger.warn("😵‍💫쿠폰갯수 SQL에러 또는 변화된것이 없어!");
+      logger.warn("😵‍💫createOrderProduct SQL에러 또는 변화된것이 없어!");
       return next(createError(403, "변화에 문제가 생겼습니다."));
     }
+    productPriceListIndex += 1;
   }
   maria.commit();
   return res.send("order");
