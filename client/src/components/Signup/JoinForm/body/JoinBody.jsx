@@ -146,7 +146,6 @@ function JoinBody() {
     e.preventDefault();
     setIsOpen(!isOpen);
   };
-  console.log(isOpen);
   const onChange = (e) => {
     e.preventDefault();
     //가입정보 입력 시 값 받아오기
@@ -230,14 +229,14 @@ function JoinBody() {
           termAppPush: location.state.checkListItem.termAppPush,
         },
       };
-      // setLoading(true);
+      setLoading(true);
 
-      // axios
-      //   .post('http://localhost:8000/auth/signup', body)
-      //   .then(() => {
-      //     setLoading(false);
-      //   })
-      //   .catch((err) => console.log(err));
+      axios
+        .post('http://localhost:8000/auth/signup', body)
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((err) => console.log(err));
     }
   };
 
