@@ -1,14 +1,21 @@
 const express = require("express");
-const {
-  orderTest,
-  orderCouponCheck,
-  checkCouponCategoryCheck,
-} = require("../controller/order");
+const { createOrder } = require("../controller/order");
 const { payTest } = require("../controller/pay");
+const {
+  orderCouponCheck,
+  orderCouponCategoryCheck,
+  totalCouponPrice,
+} = require("../module/ordderMiddleware");
+const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
 
-router.get("/ordertest", orderTest);
-router.post("/ordercouponcheck", orderCouponCheck);
-router.post("/checkcouponcategorycheck", checkCouponCategoryCheck);
+router.post(
+  "/createorder",
+  verifyAccessToken,
+  orderCouponCheck,
+  orderCouponCategoryCheck,
+  totalCouponPrice,
+  createOrder
+);
 
 module.exports = router;

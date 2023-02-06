@@ -15,7 +15,6 @@ const payRouter = require("./routes/pay");
 const orderRouter = require("./routes/order");
 
 const { morganMiddleware } = require("./config/morgen");
-const { logger } = require("./config/logger");
 
 app.use(cors());
 app.use(cookieParser());
