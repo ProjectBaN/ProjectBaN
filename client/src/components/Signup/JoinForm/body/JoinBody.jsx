@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AddressSearch from './AddressSearch';
 import GenderList from './GenderList';
 import Loading from '../../../common/loading/Loading';
+import { asyncRegisterUser } from '../../../../redux/reducer/registerSlice';
 
 const genderList = [
   {
@@ -34,12 +35,11 @@ function JoinBody() {
     name: '',
     email: '',
     phone: '',
-    addr: '',
     age: '',
     fulladdress: '',
   });
   const [address, setAddress] = useState('');
-  const [genderButton, setGenderButton] = useState(false);
+  const [genderButton, setGenderButton] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   const [validation, setValidationTest] = useState({
@@ -72,10 +72,13 @@ function JoinBody() {
   });
   const [duplicateResult, setDuplicateResult] = useState({ id: false, email: false });
 
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const loading = useSelector((state) => state.user.loading);
+
+  const status = useSelector((state) => state.user.status);
 
   useEffect(() => {
     if (!location.state) {
@@ -91,7 +94,6 @@ function JoinBody() {
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
-
     return () => {};
   });
 
@@ -206,15 +208,22 @@ function JoinBody() {
 
     setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
 
-    if (duplicateResult.id === true || duplicateResult.email === true) {
-    }
     if (id || password || name || email || phone || age) {
+    }
+    if (
+      duplicateResult.id === true ||
+      duplicateResult.email === true ||
+      input.passwordConfirm === '' ||
+      input.password !== input.passwordConfirm ||
+      genderButton === '' ||
+      input.fulladdress === '' ||
+      address === ''
+    ) {
     } else {
       let body = {
         data: {
           id: input.id,
           password: input.password,
-          passwordConfirm: input.passwordConfirm,
           name: input.name,
           email: input.email,
           phone: input.phone,
@@ -229,18 +238,15 @@ function JoinBody() {
           termAppPush: location.state.checkListItem.termAppPush,
         },
       };
-      setLoading(true);
-
-      axios
-        .post('http://localhost:8000/auth/signup', body)
-        .then(() => {
-          setLoading(false);
-        })
-        .catch((err) => console.log(err));
+      dispatch(asyncRegisterUser(body));
     }
   };
 
-  return !loading ? (
+  return loading ? (
+    <div>
+      <Loading />
+    </div>
+  ) : (
     <main className="max-w-signUpContainer m-auto mt-MbBase  ">
       <h2 className="pl-MbSm font-bold text-xl">회원가입</h2>
       <form className="w-full px-2" action="">
@@ -439,10 +445,6 @@ function JoinBody() {
         회원 가입 하기
       </button>
     </main>
-  ) : (
-    <div>
-      <Loading />
-    </div>
   );
 }
 
