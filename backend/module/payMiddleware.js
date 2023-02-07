@@ -22,7 +22,9 @@ const checkUserPayment = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   if (checkOrder.length === 0) {
-    logger.warn("😵‍💫 checkOrderQuery의 결과값이 없어!");
+    logger.warn(
+      "😵‍💫 checkOrderQuery의 결과값이 없어! 또는 잘못된 금액을 적었어!"
+    );
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   return next();

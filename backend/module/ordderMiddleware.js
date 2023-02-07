@@ -10,7 +10,9 @@ const orderCouponCheck = async (req, res, next) => {
 
     return next(createError(401, "값이없습니다."));
   }
+
   const productList = req.body.data.productList;
+
   if (!Array.isArray(productList) || productList.length === 0) {
     logger.warn("😵‍💫 잘못된 물품 리스트야...");
     return next(createError(401, "잘못된 리스트입니다."));

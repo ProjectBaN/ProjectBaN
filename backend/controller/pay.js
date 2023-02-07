@@ -36,11 +36,14 @@ const cardUserPaymentConfirm = async (req, res, next) => {
         err: "결제실패입니다.",
       };
     });
+
   if (tossResults.err) {
     return next(createError(500, tossResults.err));
   }
+
   if (!tossResults.status === "DONE") {
     logger.error("😡 돈이 들어오지 않았어!");
+    return next(createError(500, "결제가 되지 않으셨습니다"));
   }
   // 결제 정보 업데이트
   const updateOrderStatusQuery = `update t_user_order set t_order_pay_status = "T",t_order_status = '결제완료',t_order_paymentKey = '${tossResults.paymentKey}' where t_order_uuid = '${orderId}'`;

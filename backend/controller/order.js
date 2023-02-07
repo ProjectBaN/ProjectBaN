@@ -1,3 +1,6 @@
+require("dotenv").config();
+
+const { default: axios } = require("axios").default;
 const { logger } = require("../config/logger");
 const { checkReqBodyData } = require("../module/check");
 const { createError } = require("../module/error");
@@ -157,7 +160,8 @@ const createUserOrder = async (req, res, next) => {
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
     }
-    const createOrderProductQuery = `insert into t_user_order_product(t_order_uuid,t_product_num,coupon_users_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','45',${couponUsersNum},${couponDualUsersNum},'2','${productPriceList[productPriceListIndex]}')`;
+
+    const createOrderProductQuery = `insert into t_user_order_product(t_order_uuid,t_product_num, t_users_id, coupon_users_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','${product.productNum}','${userId}',${couponUsersNum},${couponDualUsersNum},'${product.count}','${productPriceList[productPriceListIndex]}')`;
     const createOrderProduct = await awaitSql(createOrderProductQuery)
       .catch((err) => {
         maria.rollback();
@@ -179,9 +183,91 @@ const createUserOrder = async (req, res, next) => {
   maria.commit();
   return res.send("order");
 };
-//  토스 결제신청후  맞는지 확인
+// 현금영수증 추가 등
+const cancelUserOrder = async (req, res, next) => {
+  if (!checkReqBodyData(req, "paymentKey")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+    return res.status(401).send();
+  }
+  if (!req.body.user) {
+    logger.warn("😵‍💫 들어온 유저 데이터 값이 부족해...");
 
-//  결제 완료 리턴
+    return next(createError(401, "값이없습니다."));
+  }
+  const paymentKey = req.body.data.paymentKey;
+  const userId = req.body.user;
+
+  const checkPaymentKeyQuery = `select * from t_user_order where t_order_paymentKey = '${paymentKey}'`;
+  const checkPaymentKey = await awaitSql(checkPaymentKeyQuery)
+    .catch((err) => {
+      logger.error(
+        "😡 checkPaymentKeyQuery 중 SQL오류가 났어! -> " + err.message
+      );
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  if (!checkSql(checkPaymentKey)) {
+    logger.warn("😵‍💫 checkPaymentKeyQuery SQL에러 또는 변화된것이 없어!");
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  if (checkPaymentKey[0].t_users_id !== userId) {
+    logger.warn(
+      `😵‍💫 ${checkPaymentKey[0].t_users_id} 유저가 다른 주문을 취소 할려고해요!`
+    );
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  // 주문상태에 따라 취소 불가
+  const options = {
+    method: "POST",
+    url: `https://api.tosspayments.com/v1/payments/${paymentKey}/cancel`,
+    headers: {
+      Authorization: process.env.TOSSPAYMENTS_SECRIT_KEY,
+      "Content-Type": "application/json",
+    },
+    data: { cancelReason: "고객이 취소를 원함" },
+  };
+
+  const tossResults = await axios
+    .request(options)
+    .then(function (response) {
+      return response.data;
+    })
+    .catch(function (error) {
+      logger.error("😡 토스 결제 취소가 실패했어! \n" + error);
+      return {
+        err: "취소 실패 입니다.",
+      };
+    });
+
+  if (tossResults.err) {
+    return next(createError(500, tossResults.err));
+  }
+
+  if (!tossResults.status === "PARTIAL_CANCELED") {
+    logger.error("😡 결제 취소되지 않았어!");
+    return next(createError(500, "결제취소가 되지 않으셨습니다"));
+  }
+
+  const updateCancelOrderQuery = `update t_user_order set t_order_status = '취소됨' where t_order_paymentKey='${paymentKey}'`;
+  const updateCancelOrder = await awaitSql(updateCancelOrderQuery)
+    .catch((err) => {
+      logger.error(
+        "😡 updateCancelOrderQuery 중 SQL오류가 났어! -> " + err.message
+      );
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  if (!checkSql(updateCancelOrder)) {
+    logger.warn("😵‍💫 updateCancelOrderQuery SQL에러 또는 변화된것이 없어!");
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+
+  return res.send("캔슬오더");
+};
 
 // 현금영수증 추가 등
 
@@ -189,4 +275,5 @@ const createUserOrder = async (req, res, next) => {
 
 module.exports = {
   createUserOrder,
+  cancelUserOrder,
 };
