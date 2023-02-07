@@ -18,10 +18,10 @@ function App() {
         <Route path="/nail" element={<h2>네일</h2>}></Route>
         <Route path="/search" element={<ProductSearch />}></Route>
         <Route path="/signup" element={<Signup />}></Route>
-        <Route path="/login" element={<SignIn />}></Route>
         <Route path="/signup/term" element={<Term />}></Route>
         <Route path="/signup/joinform" element={<JoinForm />}></Route>
         <Route path="/signup/ok" element={<SignupOk />}></Route>
+        <Route path="/login" element={<SignIn />}></Route>
       </Routes>
     </div>
   );

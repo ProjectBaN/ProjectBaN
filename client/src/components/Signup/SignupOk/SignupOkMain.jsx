@@ -6,7 +6,6 @@ import SignupHeader from '../../common/Signup/SignupHeader';
 function SignupOkMain() {
   const location = useLocation();
   const navigate = useNavigate();
-  const ReduxSelect = useSelector((state) => state.user.loading);
 
   useEffect(() => {
     if (!location.state) {

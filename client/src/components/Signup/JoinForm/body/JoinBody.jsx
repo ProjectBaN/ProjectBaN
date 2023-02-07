@@ -80,6 +80,8 @@ function JoinBody() {
 
   const status = useSelector((state) => state.user.status);
 
+  const duplicateMessage = useSelector((state) => state.user.duplicateMessage);
+
   useEffect(() => {
     if (!location.state) {
       // 약관동의 값이 없을 경우 가입으로 넘어 오지못하도록 설정
@@ -88,12 +90,14 @@ function JoinBody() {
     }
     passwordCheck();
 
-    validationTest('id', idRegex, '3 ~ 16자리의 숫자와 영문을 조합하여 입력하십시오');
-    validationTest('password', passwordRegex, '4 ~ 10자리의 숫자와 영문을 조합하여 입력하십시오 ');
+    validationTest('id', idRegex, '3자 이상의 숫자와 영문을 조합하여 입력하십시오');
+    validationTest('password', passwordRegex, '4자 이상의 숫자와 영문을 조합하여 입력하십시오 ');
+
     validationTest('name', nameRegex, '성명은 한글 및 영어로 입력하십시오');
     validationTest('email', emailRegex, '정확한 이메일을 입력하십시오');
     validationTest('phone', phoneRegex, '정확한 번호를 입력하십시오.');
     validationTest('age', ageRegex, '숫자만 입력하십시오 ');
+
     return () => {};
   });
 
@@ -111,19 +115,18 @@ function JoinBody() {
   const idCheck = (e) => {
     const id = e.target.value;
 
-    if (id.length > 0) {
-      axios
-        .get(`http://localhost:8000/auth/signup/idcheck?id=${id}`)
-        .then((duplication) => {
-          duplication.data.data.duplicate === false &&
-            setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '사용 가능 아이디입니다.' });
-          setSubmitDuplicateMessage({ ...submitDuplicateMessage, id: '' });
-        })
-        .catch((err) => {
-          setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '중복된 아이디입니다.' });
-          setDuplicateResult({ ...duplicateResult, id: true });
-        });
-    }
+    // dispatch(asyncDuplciataUser(id));
+    axios
+      .get(`http://localhost:8000/auth/signup/idcheck?id=${id}`)
+      .then((duplication) => {
+        duplication.data.data.duplicate === false &&
+          setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '사용 가능 아이디입니다.' });
+        setSubmitDuplicateMessage({ ...submitDuplicateMessage, id: '' });
+      })
+      .catch((err) => {
+        setDuplicationCheckMessage({ ...duplicationCheckMessage, id: '중복된 아이디입니다.' });
+        setDuplicateResult({ ...duplicateResult, id: true });
+      });
   };
 
   const emailCheck = (e) => {
@@ -166,6 +169,7 @@ function JoinBody() {
     ) {
       setValidationTest({ ...validation, passwordConfirm: '비밀번호가 일치하지 않습니다.' });
     }
+
     if (
       input.password !== input.passwordConfirm &&
       validation.passwordConfirm.length === 0 &&
@@ -205,19 +209,18 @@ function JoinBody() {
     const email = submitValueCheck('email', emailRegex, '이메일을 다시 입력해주세요');
     const phone = submitValueCheck('phone', phoneRegex, '휴대폰 번호를 다시 입력해주세요');
     const age = submitValueCheck('age', ageRegex, '나이를 다시 입력해주세요');
-
     setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
 
-    if (id || password || name || email || phone || age) {
+    if (id || password || name || email || phone || age || passwordConfirm) {
     }
     if (
       duplicateResult.id === true ||
       duplicateResult.email === true ||
-      input.passwordConfirm === '' ||
       input.password !== input.passwordConfirm ||
       genderButton === '' ||
       input.fulladdress === '' ||
-      address === ''
+      address === '' ||
+      !passwordRegex.test(input.password)
     ) {
     } else {
       let body = {
@@ -238,7 +241,12 @@ function JoinBody() {
           termAppPush: location.state.checkListItem.termAppPush,
         },
       };
-      dispatch(asyncRegisterUser(body));
+      console.log('디스패쳐');
+      // dispatch(asyncRegisterUser(body)).then((result) => {
+      //   if (result.payload.success) {
+      //     navigate('/signup/ok', { state: result.payload.success });
+      //   }
+      // });
     }
   };
 
@@ -256,7 +264,6 @@ function JoinBody() {
             type="text"
             name="id"
             placeholder="아이디를 입력하세요"
-            value={input.id}
             onBlur={idCheck}
             onChange={onChange}
             className={
@@ -265,10 +272,9 @@ function JoinBody() {
                 : 'idInput '
             }
           ></input>
-
           <div className="w-full text-base text-red-500 mt-PcSm">
             {validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
-            {submitMessage.id && <p className="">{submitMessage.id}</p>}
+            {submitMessage.id && <p>{submitMessage.id}</p>}
           </div>
           {idRegex.test(input.id) && (
             <span
@@ -290,7 +296,6 @@ function JoinBody() {
                   : 'joinInput '
               }
               placeholder="비밀번호를 입력하세요"
-              value={input.password}
               onChange={onChange}
             ></input>
             <div className="w-full  text-base text-red-500 mt-PcSm">
@@ -312,12 +317,12 @@ function JoinBody() {
                   : 'joinInput'
               }
               placeholder="비밀번호를 입력하세요"
-              value={input.passwordConfirm}
               onChange={onChange}
             ></input>
             <div className="w-full text-base text-red-500 mt-PcSm ">
-              {input.passwordConfirm.length > 0 && <p>{validation.passwordConfirm}</p>}
-
+              {input.passwordConfirm.length > 0 && input.password !== input.passwordConfirm && (
+                <p>{validation.passwordConfirm}</p>
+              )}
               {submitMessage.password && <p>{submitMessage.passwordConfirm}</p>}
             </div>
           </div>
@@ -327,7 +332,6 @@ function JoinBody() {
           <input
             type="text"
             name="name"
-            value={input.name}
             onChange={onChange}
             className={
               (validation.name && input.name.length > 0) || submitMessage.name ? 'joinInputFail' : 'joinInput '
@@ -344,7 +348,6 @@ function JoinBody() {
           <input
             type="text"
             name="email"
-            value={input.email}
             onChange={onChange}
             onBlur={emailCheck}
             className={
@@ -373,7 +376,6 @@ function JoinBody() {
           <input
             type="text"
             name="phone"
-            value={input.phone}
             onChange={onChange}
             className={
               (validation.phone && input.phone.length > 0) || submitMessage.phone ? 'joinInputFail' : 'joinInput '
@@ -391,11 +393,11 @@ function JoinBody() {
             <input
               type="text"
               name="addr"
-              value={address.addressName || ''}
               onChange={onChange}
-              className=" w-full h-11 border border-gray-300 bg-[#f1f1f1] p-2.5"
+              className=" w-full h-11 border-2 border-gray-300 bg-[#f1f1f1] p-2.5"
               placeholder="주소를 입력하세요"
               disabled={true}
+              value={address.addressName || ''}
             ></input>
             <button onClick={onToggleModal} className="w-24 h-11 ml-2 bg-black text-white">
               <span>주소찾기</span>
@@ -409,7 +411,6 @@ function JoinBody() {
           <input
             type="text"
             name="fulladdress"
-            value={input.fulladdress}
             onChange={onChange}
             className="
             joinInput"
@@ -421,7 +422,6 @@ function JoinBody() {
           <input
             type="text"
             name="age"
-            value={input.age}
             onChange={onChange}
             className={validation.age || submitMessage.age ? 'joinInputFail' : 'joinInput '}
             placeholder="나이를 입력하세요"
@@ -436,12 +436,7 @@ function JoinBody() {
           <GenderList genderList={genderList} genderButton={genderButton} setGenderButton={setGenderButton} />
         </li>
       </form>
-      <button
-        className="w-full h-20 mt-PcBase bg-black text-white"
-        onClick={registerSumbit}
-        type="submit"
-        value={'서브밋'}
-      >
+      <button className="w-full h-20 mt-PcBase bg-black text-white" onClick={registerSumbit} type="submit">
         회원 가입 하기
       </button>
     </main>
