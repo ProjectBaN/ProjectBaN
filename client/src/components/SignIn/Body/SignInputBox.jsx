@@ -8,7 +8,7 @@ function SignInputBox({ sign }) {
         type="text"
         name={sign.name}
         placeholder={sign.placeHolder}
-        className="mt-MbSm h-8 border-b border-b-gray-300 focus:outline-none focus:border-b-black"
+        className="mt-MbSm h-8 border-b-2 border-b-gray-300 focus:outline-none focus:border-b-black"
       ></input>
     </div>
   );

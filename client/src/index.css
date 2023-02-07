@@ -28,6 +28,13 @@
   @apply mt-PcMd;
 }
 
+.joinHeader {
+  @apply h-24 flex items-center justify-center border-solid border-b-2 border-gray-200;
+}
+.joinFormContainer {
+  @apply max-w-signUpContainer m-auto mt-MbBase;
+}
+
 .dropDown:hover .dropDownMenu {
   display: block;
   z-index: 5;

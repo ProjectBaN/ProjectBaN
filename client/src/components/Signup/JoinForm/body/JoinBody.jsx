@@ -255,7 +255,7 @@ function JoinBody() {
       <Loading />
     </div>
   ) : (
-    <main className="max-w-signUpContainer m-auto mt-MbBase  ">
+    <main className="joinFormContainer ">
       <h2 className="pl-MbSm font-bold text-xl">회원가입</h2>
       <form className="w-full px-2" action="">
         <li className="joinListCommon">
@@ -423,11 +423,12 @@ function JoinBody() {
             type="text"
             name="age"
             onChange={onChange}
-            className={validation.age || submitMessage.age ? 'joinInputFail' : 'joinInput '}
+            className={(validation.age && submitMessage.age) || input.age.length > 0 ? 'joinInputFail' : 'joinInput '}
             placeholder="나이를 입력하세요"
+            maxLength={2}
           ></input>
           <div className="w-full text-base text-red-500 mt-PcSm">
-            {validation.age && <p> {validation.age}</p>}
+            {validation.age && input.age.length > 0 && <p> {validation.age}</p>}
             {submitMessage.age && <p>{submitMessage.age}</p>}
           </div>
         </li>
