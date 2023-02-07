@@ -1,5 +1,5 @@
 const express = require("express");
-const { createOrder } = require("../controller/order");
+const { createUserOrder } = require("../controller/order");
 const { payTest } = require("../controller/pay");
 const {
   orderCouponCheck,
@@ -10,12 +10,12 @@ const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
 
 router.post(
-  "/createorder",
+  "/createuserorder",
   verifyAccessToken,
   orderCouponCheck,
   orderCouponCategoryCheck,
   totalCouponPrice,
-  createOrder
+  createUserOrder
 );
 
 module.exports = router;

@@ -66,6 +66,9 @@ const orderCouponCategoryCheck = async (req, res, next) => {
   // 쿠폰이 카테고리 쿠폰인지 확인
 
   for (const product of productList) {
+    if (!product.nomalCoupon || !product.nomalCoupon.couponNum) {
+      continue;
+    }
     const nomalCouponNum = product.nomalCoupon.couponNum;
     const productNum = product.productNum;
 

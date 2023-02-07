@@ -4,7 +4,7 @@ const { createError } = require("../module/error");
 const { awaitSql, checkSql } = require("../module/sqlPromise");
 const maria = require("../database/maria");
 
-const createOrder = async (req, res, next) => {
+const createUserOrder = async (req, res, next) => {
   if (
     !checkReqBodyData(
       req,
@@ -20,13 +20,14 @@ const createOrder = async (req, res, next) => {
 
     return next(createError(401, "값이없습니다."));
   }
-  if (!req.body.user) {
-    logger.warn("😵‍💫 유저데이터가 없어...");
-    return next(createError(401, "유저 값이없습니다."));
-  }
+
   if (!req.body.productPriceList) {
     logger.warn("😵‍💫 productPriceList 데이터가 없어...");
     return next(createError(401, "총금액이 없습니다."));
+  }
+  if (!req.body.user) {
+    logger.warn("😵‍💫 유저 데이터가 없어...");
+    return next(createError(401, "유저데이터가 없습니다."));
   }
   const productList = req.body.data.productList;
   const userId = req.body.user;
@@ -48,11 +49,11 @@ const createOrder = async (req, res, next) => {
     }
   });
 
-  const createOrderQuery = `insert into t_users_order(t_order_uuid,t_order_status,t_order_pay_status,t_users_id,t_order_name,t_order_phone,t_order_addr,t_order_request,t_order_total_price) values ('${uuid}','결제중','F','${userId}','${name}','${phone}','${addr}','${request}','${totalPrice}')`;
+  const createOrderQuery = `insert into t_user_order(t_order_uuid,t_order_status,t_order_pay_status,t_users_id,t_order_name,t_order_phone,t_order_addr,t_order_request,t_order_total_price) values ('${uuid}','결제중','F','${userId}','${name}','${phone}','${addr}','${request}','${totalPrice}')`;
   const createOrder = await awaitSql(createOrderQuery)
     .catch((err) => {
       maria.rollback();
-      logger.error("😡 쿠폰갯수를 얻는 중 SQL오류가 났어! -> " + err.message);
+      logger.error("😡 createOrderQuery 중 SQL오류가 났어! -> " + err.message);
       return { err: err };
     })
     .then((result) => {
@@ -60,7 +61,7 @@ const createOrder = async (req, res, next) => {
     });
   if (!checkSql(createOrder)) {
     maria.rollback();
-    logger.warn("😵‍💫쿠폰갯수 SQL에러 또는 변화된것이 없어!");
+    logger.warn("😵‍💫createOrderQuery SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
@@ -75,7 +76,7 @@ const createOrder = async (req, res, next) => {
         .catch((err) => {
           maria.rollback();
           logger.error(
-            "😡 쿠폰갯수를 얻는 중 SQL오류가 났어! -> " + err.message
+            "😡 getUserCouponNumQuery 중 SQL오류가 났어! -> " + err.message
           );
           return { err: err };
         })
@@ -156,7 +157,7 @@ const createOrder = async (req, res, next) => {
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
     }
-    const createOrderProductQuery = `insert into t_users_order_product(t_users_order_uuid,t_product_num,coupon_users_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','45',${couponUsersNum},${couponDualUsersNum},'2','${productPriceList[productPriceListIndex]}')`;
+    const createOrderProductQuery = `insert into t_user_order_product(t_order_uuid,t_product_num,coupon_users_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','45',${couponUsersNum},${couponDualUsersNum},'2','${productPriceList[productPriceListIndex]}')`;
     const createOrderProduct = await awaitSql(createOrderProductQuery)
       .catch((err) => {
         maria.rollback();
@@ -178,10 +179,14 @@ const createOrder = async (req, res, next) => {
   maria.commit();
   return res.send("order");
 };
-// 주문서 작성내용 [주문 물품 들]
+//  토스 결제신청후  맞는지 확인
 
-// 주문물품들 해체 -> 주문물품의 가격을 산정
+//  결제 완료 리턴
+
+// 현금영수증 추가 등
+
+// 가상계좌 확인
 
 module.exports = {
-  createOrder,
+  createUserOrder,
 };
