@@ -210,15 +210,20 @@ function JoinBody() {
     const phone = submitValueCheck('phone', phoneRegex, '휴대폰 번호를 다시 입력해주세요');
     const age = submitValueCheck('age', ageRegex, '나이를 다시 입력해주세요');
     setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
-    if (id || password || name || email || phone || age || passwordConfirm) {
-    }
     if (
+      id ||
+      password ||
+      name ||
+      email ||
+      phone ||
+      age ||
+      passwordConfirm ||
       duplicateResult.id === true ||
       duplicateResult.email === true ||
       input.password !== input.passwordConfirm ||
       genderButton === '' ||
+      address.addressName === undefined ||
       input.fulladdress === '' ||
-      address === '' ||
       !passwordRegex.test(input.password)
     ) {
     } else {
@@ -241,11 +246,12 @@ function JoinBody() {
         },
       };
       console.log('디스패쳐');
-      // dispatch(asyncRegisterUser(body)).then((result) => {
-      //   if (result.payload.success) {
-      //     navigate('/signup/ok', { state: result.payload.success });
-      //   }
-      // });
+      console.log(body);
+      dispatch(asyncRegisterUser(body)).then((result) => {
+        if (result.payload.success) {
+          navigate('/signup/ok', { state: result.payload.success });
+        }
+      });
     }
   };
 
