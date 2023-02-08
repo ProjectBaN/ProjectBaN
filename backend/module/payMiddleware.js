@@ -22,6 +22,7 @@ const checkUserPayment = async (req, res, next) => {
     .then((result) => {
       return result;
     });
+
   if (!checkSql(checkOrder)) {
     logger.warn("😵‍💫 checkOrderQuery SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
