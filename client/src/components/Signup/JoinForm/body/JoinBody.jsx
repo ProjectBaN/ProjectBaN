@@ -241,21 +241,25 @@ function JoinBody() {
       };
       console.log('디스패쳐');
       console.log(body);
-      dispatch(asyncRegisterUser(body)).then((result) => {
-        if (result.payload.success) {
-          navigate('/signup/ok', { state: result.payload.success });
-        }
-      });
+      dispatch(asyncRegisterUser(body))
+        .then((result) => {
+          if (result.payload.success) {
+            navigate('/signup/ok', { state: result.payload.success });
+          }
+        })
+        .catch((err) => {
+          navigate('/signup/fail', { state: location.state });
+        });
     }
   };
-
+  console.log(location.state);
   return loading ? (
     <div>
       <Loading />
     </div>
   ) : (
     <main className="joinFormContainer ">
-      <h2 className="pl-MbSm font-bold text-xl">회원가입</h2>
+      <h2 className="pl-MbSm font-bold text-3xl text-center">회원가입</h2>
       <form className="w-full px-2" action="">
         <li className="joinListCommon">
           <p className="font-bold">아이디</p>

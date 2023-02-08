@@ -36,6 +36,7 @@ export const registerSlice = createSlice({
       .addCase(asyncRegisterUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.loading = false;
+        state.isId = '응 안돼';
       })
       .addCase(asyncRegisterUser.rejected, (state, action) => {
         state.status = 'failed';

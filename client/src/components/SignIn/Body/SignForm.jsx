@@ -21,8 +21,7 @@ function SignForm() {
         password: loginInput.password,
       },
     };
-    console.log(body);
-    // dispatch(asyncLoginUser(body));
+    dispatch(asyncLoginUser(body));
   };
   return (
     <div className="max-w-signInContainer flex flex-col  m-auto">

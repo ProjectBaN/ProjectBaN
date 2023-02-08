@@ -9,6 +9,7 @@ import JoinForm from './pages/Signup/JoinForm';
 import SignupOk from './pages/Signup/SignupOk';
 import ProductSearch from './pages/ProductSearch/ProductSearch';
 import SignIn from './pages/SignIn/SignIn';
+import SignupFailMain from './components/Signup/SignupFail/body/SignupFailMain';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/signup/joinform" element={<JoinForm />}></Route>
         <Route path="/signup/ok" element={<SignupOk />}></Route>
         <Route path="/login" element={<SignIn />}></Route>
+        <Route path="signup/fail" element={<SignupFailMain />}></Route>
       </Routes>
     </div>
   );
