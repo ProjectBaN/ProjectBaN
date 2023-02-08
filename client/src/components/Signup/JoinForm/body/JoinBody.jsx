@@ -210,7 +210,6 @@ function JoinBody() {
     const phone = submitValueCheck('phone', phoneRegex, '휴대폰 번호를 다시 입력해주세요');
     const age = submitValueCheck('age', ageRegex, '나이를 다시 입력해주세요');
     setSubmitMessage({ ...submitMessage, id, password, passwordConfirm, name, email, phone, age });
-
     if (id || password || name || email || phone || age || passwordConfirm) {
     }
     if (
@@ -273,8 +272,8 @@ function JoinBody() {
             }
           ></input>
           <div className="w-full text-base text-red-500 mt-PcSm">
-            {validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
-            {submitMessage.id && <p>{submitMessage.id}</p>}
+            {submitMessage.id === '' && validation.id && input.id.length > 0 && <p className="">{validation.id}</p>}
+            {!idRegex.test(input.id) && submitMessage.id && <p>{submitMessage.id}</p>}
           </div>
           {idRegex.test(input.id) && (
             <span
@@ -299,7 +298,9 @@ function JoinBody() {
               onChange={onChange}
             ></input>
             <div className="w-full  text-base text-red-500 mt-PcSm">
-              {validation.password && input.password.length > 0 && <p>{validation.password}</p>}
+              {submitMessage.password === '' && validation.password && input.password.length > 0 && (
+                <p>{validation.password}</p>
+              )}
               {submitMessage.password && <p>{submitMessage.password}</p>}
             </div>
           </div>
@@ -339,7 +340,7 @@ function JoinBody() {
             placeholder="성함을 입력하세요"
           ></input>
           <div className="w-full  text-base text-red-500 mt-PcSm ">
-            {validation.name && input.name.length > 0 ? <p>{validation.name}</p> : ''}
+            {submitMessage.name === '' && validation.name && input.name.length > 0 ? <p>{validation.name}</p> : ''}
             {submitMessage.name && <p>{submitMessage.name}</p>}
           </div>
         </li>
@@ -359,7 +360,7 @@ function JoinBody() {
           ></input>
 
           <div className="w-full text-base text-red-500 mt-PcSm">
-            {validation.email && input.email.length > 0 ? <p>{validation.email}</p> : ''}
+            {submitMessage.email === '' && validation.email && input.email.length > 0 ? <p>{validation.email}</p> : ''}
             {submitMessage.email && <p>{submitMessage.email}</p>}
           </div>
           {emailRegex.test(input.email) && (
@@ -383,7 +384,7 @@ function JoinBody() {
             placeholder="휴대전화 번호를 입력하세요"
           ></input>
           <div className="w-full  text-base text-red-500 mt-PcSm">
-            {validation.phone && input.phone.length > 0 ? <p>{validation.phone}</p> : ''}
+            {submitMessage.phone === '' && validation.phone && input.phone.length > 0 ? <p>{validation.phone}</p> : ''}
             {submitMessage.phone && <p>{submitMessage.phone}</p>}
           </div>
         </li>
@@ -423,12 +424,12 @@ function JoinBody() {
             type="text"
             name="age"
             onChange={onChange}
-            className={(validation.age && submitMessage.age) || input.age.length > 0 ? 'joinInputFail' : 'joinInput '}
+            className={(validation.age && input.age.length > 0) || submitMessage.age ? 'joinInputFail' : 'joinInput '}
             placeholder="나이를 입력하세요"
             maxLength={2}
           ></input>
           <div className="w-full text-base text-red-500 mt-PcSm">
-            {validation.age && input.age.length > 0 && <p> {validation.age}</p>}
+            {submitMessage.age === '' && validation.age && input.age.length > 0 && <p> {validation.age}</p>}
             {submitMessage.age && <p>{submitMessage.age}</p>}
           </div>
         </li>
