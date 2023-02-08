@@ -77,11 +77,6 @@ function JoinBody() {
   const dispatch = useDispatch();
 
   const loading = useSelector((state) => state.user.loading);
-
-  const status = useSelector((state) => state.user.status);
-
-  const duplicateMessage = useSelector((state) => state.user.duplicateMessage);
-
   useEffect(() => {
     if (!location.state) {
       // 약관동의 값이 없을 경우 가입으로 넘어 오지못하도록 설정
@@ -115,7 +110,6 @@ function JoinBody() {
   const idCheck = (e) => {
     const id = e.target.value;
 
-    // dispatch(asyncDuplciataUser(id));
     axios
       .get(`http://localhost:8000/auth/signup/idcheck?id=${id}`)
       .then((duplication) => {

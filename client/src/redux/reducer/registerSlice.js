@@ -18,7 +18,7 @@ const asyncRegisterUser = createAsyncThunk('user/asyncRegisterUser', async (body
 // });
 
 export const registerSlice = createSlice({
-  name: 'user',
+  name: 'register',
   initialState: {
     status: '',
     error: '',

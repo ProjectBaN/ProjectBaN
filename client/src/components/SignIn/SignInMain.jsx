@@ -4,10 +4,10 @@ import SignInHeader from './Header/SignInHeader';
 
 function SignInMain() {
   return (
-    <div>
+    <main className="mt-MbBase">
       <SignInHeader />
       <SignForm />
-    </div>
+    </main>
   );
 }
 
