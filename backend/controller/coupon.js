@@ -475,7 +475,6 @@ const useAbleCoupons = async (req, res, next) => {
     .then((result) => {
       return result;
     });
-  console.log(readCoupons);
   if (!checkSql(readCoupons)) {
     logger.warn("😵‍💫 SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));

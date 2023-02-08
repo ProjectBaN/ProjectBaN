@@ -152,13 +152,17 @@ const totalCouponPrice = async (req, res, next) => {
       logger.warn("😵‍💫 getProduct SQL에러 또는 변화된것이 없어!");
       return next(createError(403, "변화에 문제가 생겼습니다."));
     }
-
+    if (getProduct.length === 0) {
+      maria.rollback();
+      logger.warn("😵‍💫 getProduct 값이 없어!");
+      return next(createError(501, "프로덕트 값이 없습니다."));
+    }
     const productPrice = getProduct[0].t_product_price * product.count;
     let tempPrice = productPrice;
     if (product.nomalCoupon) {
       const nomalCouponNum = product.nomalCoupon.couponNum;
 
-      const getCouponQuery = `select * from coupon where coupon_num = '${nomalCouponNum}'`;
+      const getCouponQuery = `select * from coupon where coupon_num = '${nomalCouponNum}' and coupon_valied_end > now()`;
       const getCoupon = await awaitSql(getCouponQuery)
         .catch((err) => {
           maria.rollback();
@@ -196,7 +200,7 @@ const totalCouponPrice = async (req, res, next) => {
     if (product.dualCoupon) {
       const dualCoupon = product.dualCoupon.couponNum;
 
-      const getDualCouponQuery = `select * from coupon where coupon_num = '${dualCoupon}'`;
+      const getDualCouponQuery = `select * from coupon where coupon_num = '${dualCoupon} and coupon_valied_end > now()' `;
       const getDualCoupon = await awaitSql(getDualCouponQuery)
         .catch((err) => {
           maria.rollback();
@@ -242,9 +246,45 @@ const totalCouponPrice = async (req, res, next) => {
   req.body.productPriceList = productPriceList;
   return next();
 };
+/* 일반주문 금액 확인 */
+const orderPriceCheck = async (req, res, next) => {
+  if (!checkReqBodyData(req, "productList")) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+
+    return next(createError(401, "값이없습니다."));
+  }
+  const productList = req.body.data.productList;
+  const productPriceList = [];
+
+  for (const product of productList) {
+    const productNum = product.productNum;
+    const getProductQuery = `select * from t_product where t_product_num = '${productNum}'`;
+    const getProduct = await awaitSql(getProductQuery)
+      .catch((err) => {
+        logger.error("😡 getProduct 중 SQL오류가 났어! -> " + err.message);
+        return { err: err };
+      })
+      .then((result) => {
+        return result;
+      });
+    if (!checkSql(getProduct)) {
+      logger.warn("😵‍💫 getProduct SQL에러 또는 변화된것이 없어!");
+      return next(createError(403, "변화에 문제가 생겼습니다."));
+    }
+    if (getProduct.length === 0) {
+      logger.warn("😵‍💫 getProduct 값이 없어!");
+      return next(createError(501, "프로덕트 값이 없습니다."));
+    }
+    productPriceList.push(getProduct[0].t_product_price * product.count);
+  }
+
+  req.body.productPriceList = productPriceList;
+  return next();
+};
 
 module.exports = {
   orderCouponCheck,
   orderCouponCategoryCheck,
   totalCouponPrice,
+  orderPriceCheck,
 };
