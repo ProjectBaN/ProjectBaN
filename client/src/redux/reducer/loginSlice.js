@@ -20,16 +20,22 @@ export const loginSlice = createSlice({
     error: '',
     loading: false,
   },
-  reducers: {},
+  reducers: {
+    logout: (state, action) => {
+      state.isLogin = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(asyncLoginUser.pending, (state, action) => {
         state.status = 'loading';
         state.loading = true;
+        state.isLogin = false;
       })
       .addCase(asyncLoginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.loading = false;
+        state.isLogin = true;
       })
       .addCase(asyncLoginUser.rejected, (state, action) => {
         state.status = 'failed';
@@ -38,6 +44,6 @@ export const loginSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { loginUser } = loginSlice.actions;
+export const { login, logout } = loginSlice.actions;
 export { asyncLoginUser };
 export default loginSlice.reducer;

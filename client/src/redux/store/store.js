@@ -4,6 +4,6 @@ import loginReducer from '../reducer/loginSlice';
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    login: loginReducer,
+    user: loginReducer,
   },
 });

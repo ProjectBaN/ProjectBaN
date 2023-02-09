@@ -26,7 +26,7 @@ function Header() {
           <div className="block lg:w-PcSearchForm px-MbSm ">
             <HeaderSearchForm />
           </div>
-          <div className="hidden lg:block">
+          <div className="hidden w-72 lg:block">
             <HeaderSideMenu />
           </div>
         </div>

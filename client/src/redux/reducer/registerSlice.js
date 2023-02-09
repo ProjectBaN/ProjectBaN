@@ -23,7 +23,6 @@ export const registerSlice = createSlice({
     status: '',
     error: '',
     loading: false,
-    isId: '',
     duplicateMessage: '',
   },
   reducers: {},
