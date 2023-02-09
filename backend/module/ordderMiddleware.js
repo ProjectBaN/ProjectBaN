@@ -135,11 +135,14 @@ const totalCouponPrice = async (req, res, next) => {
   const productList = req.body.data.productList;
   const productPriceList = [];
   for (const product of productList) {
+    if (product.count <= 0) {
+      logger.warn("😵‍💫물품이 1보다 작아..");
+      return next(createError(403, "변화에 문제가 생겼습니다."));
+    }
     const getProductQuery = `select * from t_product where t_product_num = '${product.productNum}'`;
 
     const getProduct = await awaitSql(getProductQuery)
       .catch((err) => {
-        maria.rollback();
         logger.error("😡 getProduct 중 SQL오류가 났어! -> " + err.message);
         return { err: err };
       })
@@ -148,12 +151,10 @@ const totalCouponPrice = async (req, res, next) => {
       });
 
     if (!checkSql(getProduct)) {
-      maria.rollback();
       logger.warn("😵‍💫 getProduct SQL에러 또는 변화된것이 없어!");
       return next(createError(403, "변화에 문제가 생겼습니다."));
     }
     if (getProduct.length === 0) {
-      maria.rollback();
       logger.warn("😵‍💫 getProduct 값이 없어!");
       return next(createError(501, "프로덕트 값이 없습니다."));
     }
@@ -165,7 +166,6 @@ const totalCouponPrice = async (req, res, next) => {
       const getCouponQuery = `select * from coupon where coupon_num = '${nomalCouponNum}' and coupon_valied_end > now()`;
       const getCoupon = await awaitSql(getCouponQuery)
         .catch((err) => {
-          maria.rollback();
           logger.error("😡 getCoupon 중 SQL오류가 났어! -> " + err.message);
           return { err: err };
         })
@@ -174,13 +174,19 @@ const totalCouponPrice = async (req, res, next) => {
         });
 
       if (!checkSql(getCoupon)) {
-        maria.rollback();
         logger.warn("😵‍💫 getCoupon SQL에러 또는 변화된것이 없어!");
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
       if (getCoupon.length === 0) {
-        maria.rollback();
         logger.warn("😵‍💫 getUserCoupon 값이 없어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+
+      console.log("주문최소금액");
+      console.log(getCoupon[0].coupon_min_price);
+
+      if (productPrice < getCoupon[0].coupon_min_price) {
+        logger.warn("😵‍💫 주문 값이 쿠폰 최소 값을 도달하지 못했어!");
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
 
@@ -203,7 +209,6 @@ const totalCouponPrice = async (req, res, next) => {
       const getDualCouponQuery = `select * from coupon where coupon_num = '${dualCoupon} and coupon_valied_end > now()' `;
       const getDualCoupon = await awaitSql(getDualCouponQuery)
         .catch((err) => {
-          maria.rollback();
           logger.error("😡 getCoupon 중 SQL오류가 났어! -> " + err.message);
           return { err: err };
         })
@@ -211,21 +216,27 @@ const totalCouponPrice = async (req, res, next) => {
           return result;
         });
       if (!checkSql(getDualCoupon)) {
-        maria.rollback();
         logger.warn("😵‍💫 getCoupon SQL에러 또는 변화된것이 없어!");
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
       if (getDualCoupon.length === 0) {
-        maria.rollback();
         logger.warn("😵‍💫 getUserCoupon 값이 없어!");
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
       // 중복쿠폰인지 확인
       if (!getDualCoupon[0].coupon_type === "DUAL") {
-        maria.rollback();
         logger.error("😡 getDualCoupon 중복쿠폰이 아니야");
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
+      console.log("중복 최소금액");
+      console.log(getDualCoupon[0].coupon_min_price);
+      console.log("물품가격");
+      console.log(productPrice);
+      if (productPrice < getDualCoupon[0].coupon_min_price) {
+        logger.warn("😵‍💫 주문 값이 쿠폰 최소 값을 도달하지 못했어!");
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+
       // 중복쿠폰 계산
 
       if (getDualCoupon[0].coupon_discount_type === "RATE") {
@@ -257,6 +268,10 @@ const orderPriceCheck = async (req, res, next) => {
   const productPriceList = [];
 
   for (const product of productList) {
+    if (product.count <= 0) {
+      logger.warn("😵‍💫물품이 1보다 작아..");
+      return next(createError(403, "변화에 문제가 생겼습니다."));
+    }
     const productNum = product.productNum;
     const getProductQuery = `select * from t_product where t_product_num = '${productNum}'`;
     const getProduct = await awaitSql(getProductQuery)

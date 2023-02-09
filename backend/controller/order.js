@@ -225,6 +225,15 @@ const cancelUserOrder = async (req, res, next) => {
     );
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
+  if (
+    checkOrder[0].t_order_status === "배송완료" ||
+    checkOrder[0].t_order_status === "배송중" ||
+    checkOrder[0].t_order_status === "상품준비중"
+  ) {
+    logger.warn("😵‍💫 상품이 발송되었는데 주문을 취소할려고해!");
+    return next(createError(403, "상품 발송 되어서 환불을 하여야합니다!"));
+  }
+
   const paymentKey = checkOrder[0].t_order_paymentKey;
   // 주문상태에 따라 취소 불가
 
@@ -309,6 +318,16 @@ const cancelUserProduct = async (req, res, next) => {
     logger.warn("😵‍💫 토스 주문 키가 없습니다.");
     return next(createError(403, "잘못된 주문 물품입니다."));
   }
+
+  if (
+    getUserOrder[0].t_order_status === "배송완료" ||
+    getUserOrder[0].t_order_status === "배송중" ||
+    getUserOrder[0].t_order_status === "상품준비중"
+  ) {
+    logger.warn("😵‍💫 상품이 발송되었는데 주문을 취소할려고해!");
+    return next(createError(403, "상품 발송 되어서 환불을 하여야합니다!"));
+  }
+
   const paymentKey = getUserOrder[0].t_order_paymentKey;
   const totalPrice = getUserOrder[0].total_price;
 
@@ -505,6 +524,15 @@ const cancelOrder = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
 
+  if (
+    checkOrder[0].t_order_status === "배송완료" ||
+    checkOrder[0].t_order_status === "배송중" ||
+    checkOrder[0].t_order_status === "상품준비중"
+  ) {
+    logger.warn("😵‍💫 상품이 발송되었는데 주문을 취소할려고해!");
+    return next(createError(403, "상품 발송 되어서 환불을 하여야합니다!"));
+  }
+
   const paymentKey = checkOrder[0].t_order_paymentKey;
   console.log(paymentKey);
 
@@ -592,6 +620,15 @@ const cancelProduct = async (req, res, next) => {
   if (!getOrder[0].t_order_paymentKey) {
     logger.warn("😵‍💫 토스 주문 키가 없습니다.");
     return next(createError(403, "잘못된 주문 물품입니다."));
+  }
+
+  if (
+    getOrder[0].t_order_status === "배송완료" ||
+    getOrder[0].t_order_status === "배송중" ||
+    getOrder[0].t_order_status === "상품준비중"
+  ) {
+    logger.warn("😵‍💫 상품이 발송되었는데 주문을 취소할려고해!");
+    return next(createError(403, "상품 발송 되어서 환불을 하여야합니다!"));
   }
 
   const paymentKey = getOrder[0].t_order_paymentKey;
