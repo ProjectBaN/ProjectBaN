@@ -21,7 +21,7 @@ function SignForm() {
         password: loginInput.password,
       },
     };
-    dispatch(asyncLoginUser(body));
+    dispatch(asyncLoginUser(body)).then((result) => console.log(result));
   };
   return (
     <div className="max-w-signInContainer flex flex-col  m-auto">
@@ -32,8 +32,8 @@ function SignForm() {
       <button
         className={
           loginInput.id && loginInput.password
-            ? 'mt-MbMedium w-full h-14 bg-black text-white rounded-sm '
-            : 'mt-MbMedium w-full h-14 bg-gray-300 text-white rounded-sm'
+            ? 'mt-MbMedium w-full h-14 bg-black text-white rounded-sm px-MbSm'
+            : 'mt-MbMedium w-full h-14 bg-gray-300 text-white rounded-sm px-MbSm'
         }
         disabled={loginInput.id && loginInput.password ? false : true}
         onClick={onClick}

@@ -239,8 +239,6 @@ function JoinBody() {
           termAppPush: location.state.checkListItem.termAppPush,
         },
       };
-      console.log('디스패쳐');
-      console.log(body);
       dispatch(asyncRegisterUser(body))
         .then((result) => {
           if (result.payload.success) {
@@ -252,7 +250,6 @@ function JoinBody() {
         });
     }
   };
-  console.log(location.state);
   return loading ? (
     <div>
       <Loading />

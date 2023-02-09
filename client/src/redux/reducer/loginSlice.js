@@ -3,8 +3,10 @@ import axios from 'axios';
 
 const asyncLoginUser = createAsyncThunk('login/asyncLoginUser', async (body) => {
   try {
-    const response = await axios.post('http://localhost:8000/auth/signin', body).then((result) => result);
-    return response;
+    const response = await axios
+      .post('http://localhost:8000/auth/signin', body, { withCredentials: true })
+      .then((result) => result);
+    return response.data;
   } catch (err) {
     console.log(err);
   }
@@ -14,6 +16,7 @@ export const loginSlice = createSlice({
   name: 'login',
   initialState: {
     status: '',
+    isLogin: false,
     error: '',
     loading: false,
   },
