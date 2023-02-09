@@ -1,11 +1,12 @@
 const express = require("express");
+const router = express.Router();
 const {
   cardUserPaymentConfirm,
   canselPayment,
   cardPaymentConfirm,
 } = require("../controller/pay");
 const { checkUserPayment, checkPayment } = require("../module/payMiddleware");
-const router = express.Router();
+
 // 유저
 router.get("/checkusercardpayment", checkUserPayment, cardUserPaymentConfirm);
 // 비회원

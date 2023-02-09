@@ -13,6 +13,7 @@ const couponRouter = require("./routes/coupon");
 const cartRouter = require("./routes/cart");
 const payRouter = require("./routes/pay");
 const orderRouter = require("./routes/order");
+const reviewRouter = require("./routes/review");
 
 const { morganMiddleware } = require("./config/morgen");
 
@@ -31,6 +32,7 @@ app.use("/coupon", couponRouter);
 app.use("/cart", cartRouter);
 app.use("/pay", payRouter);
 app.use("/order", orderRouter);
+app.use("/review", reviewRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;

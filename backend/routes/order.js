@@ -5,6 +5,7 @@ const {
   createOrder,
   cancelOrder,
   cancelUserProduct,
+  cancelProduct,
 } = require("../controller/order");
 const {
   orderCouponCheck,
@@ -15,6 +16,8 @@ const {
 const { verifyAccessToken } = require("../module/verify");
 const router = express.Router();
 
+/* 회원 주문 */
+// 유저주문생성
 router.post(
   "/createuserorder",
   verifyAccessToken,
@@ -29,7 +32,11 @@ router.post("/canceluserproduct", verifyAccessToken, cancelUserProduct);
 // 전체 취소
 router.post("/canceluserorder", verifyAccessToken, cancelUserOrder);
 
+/* 비회원 주문 */
+// 주문생성
 router.post("/createorder", orderPriceCheck, createOrder);
+// 주문 전체취소
 router.post("/cancelorder", cancelOrder);
-
+// 주문 부분취소-> 기본
+router.post("/cancelproduct", cancelProduct);
 module.exports = router;

@@ -536,10 +536,108 @@ const cancelOrder = async (req, res, next) => {
 
   return res.send(successStatus({ massage: "주문 취소 성공" }));
 };
+const cancelProduct = async (req, res, next) => {
+  if (
+    !checkReqBodyData(req, "orderProductNum", "cancelReason", "name", "phone")
+  ) {
+    logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+    return next(createError(401, "들어온 값이 부족합니다."));
+  }
+
+  const orderProductNum = req.body.data.orderProductNum;
+  const name = req.body.data.name;
+  const phone = req.body.data.phone;
+  const cancelReason = req.body.data.cancelReason || "유저가 주문을 취소함";
+
+  // 이 물품의 주문서를 들고온다.
+  const getOrderQuery = `select * from t_order_product as op join t_order as o on op.t_order_uuid = o.t_order_uuid where op.t_order_product_num = '${orderProductNum}'`;
+  const getOrder = await awaitSql(getOrderQuery)
+    .catch((err) => {
+      logger.error("😡 checkOrderQuery 중 SQL오류가 났어! -> " + err.message);
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  if (!checkSql(getOrder)) {
+    logger.warn("😵‍💫 getOrderQuery SQL에러 또는 변화된것이 없어!");
+    return next(createError(501, "변화에 문제가 생겼습니다."));
+  }
+
+  if (getOrder.length === 0) {
+    logger.warn("😵‍💫 getOrderQuery 값이 없어!");
+    return next(createError(501, "취소할려는 물품이 없습니다."));
+  }
+
+  // 이 물품이 취소된 적있는가, 유저 물품이 맞는지 확인해본다.
+  if (
+    getOrder[0].t_order_name !== name ||
+    getOrder[0].t_order_phone !== phone
+  ) {
+    logger.warn(
+      "이름 : " +
+        getOrder[0].t_order_name +
+        " 번호 " +
+        getOrder[0].t_order_phone +
+        "가 " +
+        orderProductNum +
+        "번의 다른 사람 주문을 바꿀려고합니다."
+    );
+    return next(createError(403, "변화에 문제가 생겼습니다."));
+  }
+  if (getOrder[0].t_order_cancel === "T") {
+    logger.warn("😵‍💫 취소한 물품입니다!");
+    return next(createError(501, "이미 취소 한 물품입니다."));
+  }
+  if (!getOrder[0].t_order_paymentKey) {
+    logger.warn("😵‍💫 토스 주문 키가 없습니다.");
+    return next(createError(403, "잘못된 주문 물품입니다."));
+  }
+
+  const paymentKey = getOrder[0].t_order_paymentKey;
+  const totalPrice = getOrder[0].total_price;
+
+  // 부분 취소 진행
+  const tossResults = await tossCancelProduct(
+    paymentKey,
+    cancelReason,
+    totalPrice
+  );
+
+  if (tossResults.err) {
+    return next(createError(500, tossResults.err));
+  }
+
+  if (!tossResults.status === "PARTIAL_CANCELED") {
+    logger.error("😡 결제 취소되지 않았어!");
+    return next(createError(500, "결제취소가 되지 않으셨습니다"));
+  }
+  // 취소 변경 후 쿠폰 및 스테이트 변경
+  const updateOrderProductStateQuery = `update t_order_product set t_order_cancel = "T" where t_order_product_num =${orderProductNum} `;
+  const updateOrderProductState = await awaitSql(updateOrderProductStateQuery)
+    .catch((err) => {
+      logger.error(
+        "😡 updateOrderProductStateQuery 중 SQL오류가 났어! -> " + err.message
+      );
+      return { err: err };
+    })
+    .then((result) => {
+      return result;
+    });
+  if (!checkSql(updateOrderProductState)) {
+    logger.warn(
+      "😵‍💫 updateOrderProductStateQuery SQL에러 또는 변화된것이 없어!"
+    );
+    return next(createError(501, "변화에 문제가 생겼습니다."));
+  }
+
+  return res.send("캔슬프로덕트");
+};
 module.exports = {
   createUserOrder,
   cancelUserOrder,
   cancelUserProduct,
   createOrder,
   cancelOrder,
+  cancelProduct,
 };
