@@ -139,7 +139,9 @@ const signIn = async (req, res, next) => {
           .cookie("access_token", token, {
             httpOnly: true,
           })
-          .cookie("refresh_token", refreshToken, { httpOnly: true })
+          .cookie("refresh_token", refreshToken, {
+            httpOnly: true,
+          })
           .status(200)
           .json(successStatus({ message: "로그인 성공" }));
       } else {
