@@ -96,7 +96,7 @@ const createReview = async (req, res, next) => {
     }
 
     maria.commit();
-    return res.send("리뷰테스트");
+    return res.send(successStatus({ massage: "리뷰성공" }));
   });
 };
 

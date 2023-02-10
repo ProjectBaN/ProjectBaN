@@ -241,7 +241,7 @@ const createUserOrder = async (req, res, next) => {
       productPriceListIndex += 1;
     }
     maria.commit();
-    return res.send("order");
+    return res.send(successStatus({ massage: "주문 성공" }));
   });
 };
 // 현금영수증 추가 등
@@ -319,8 +319,7 @@ const cancelUserOrder = async (req, res, next) => {
     logger.warn("😵‍💫 updateCancelOrderQuery SQL에러 또는 변화된것이 없어!");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
-
-  return res.send("캔슬오더");
+  return res.send(successStatus({ massage: "취소" }));
 };
 
 // 현금영수증 추가 등
@@ -455,7 +454,7 @@ const cancelUserProduct = async (req, res, next) => {
       return next(createError(501, "변화에 문제가 생겼습니다."));
     }
   }
-  return res.send("취소되었습니다.");
+  return res.send(successStatus({ massage: "주문 취소 성공" }));
 };
 
 // 일반주문
