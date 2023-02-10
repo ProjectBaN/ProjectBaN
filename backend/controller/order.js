@@ -540,7 +540,7 @@ const createOrder = async (req, res, next) => {
     }
 
     maria.commit();
-    return res.send("일반주문");
+    return res.send(successStatus({ massage: "주문 성공" }));
   });
 };
 const cancelOrder = async (req, res, next) => {
@@ -723,7 +723,7 @@ const cancelProduct = async (req, res, next) => {
     return next(createError(501, "변화에 문제가 생겼습니다."));
   }
 
-  return res.send("캔슬프로덕트");
+  return res.send(successStatus({ massage: "주문 취소 성공" }));
 };
 module.exports = {
   createUserOrder,

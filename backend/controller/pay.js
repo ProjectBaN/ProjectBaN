@@ -7,6 +7,7 @@ const { awaitSql, checkSql } = require("../module/sqlPromise");
 const { successStatus } = require("../module/statuscode");
 const { tossCardConfirm } = require("../module/toss");
 
+// 폐기예정
 const cardUserPaymentConfirm = async (req, res, next) => {
   if (!req.query.paymentKey || !req.query.orderId || !req.query.amount) {
     logger.warn("😵‍💫 들어온 값이 부족해!");
