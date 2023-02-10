@@ -15,6 +15,7 @@ const createUserOrder = async (req, res, next) => {
       req,
       "productList",
       "uuid",
+      "paymentMethod",
       "name",
       "title",
       "phone",
@@ -35,9 +36,18 @@ const createUserOrder = async (req, res, next) => {
     logger.warn("😵‍💫 유저 데이터가 없어...");
     return next(createError(401, "유저데이터가 없습니다."));
   }
+  if (
+    req.body.data.paymentMethod !== "카드" &&
+    req.body.data.paymentMethod !== "가상계좌"
+  ) {
+    logger.warn("😵‍💫 잘못된 결제수단 데이터가 왔어...");
+    return next(createError(401, "잘못된 결제수단"));
+  }
+
   const productList = req.body.data.productList;
   const userId = req.body.user;
   const uuid = req.body.data.uuid;
+  const paymentMethod = req.body.data.paymentMethod;
   const name = req.body.data.name;
   const title = req.body.data.title;
   const phone = req.body.data.phone;
@@ -55,7 +65,8 @@ const createUserOrder = async (req, res, next) => {
       logger.error("😡  createOrder 트랜젝션중 오류가 났어!");
     }
 
-    const createOrderQuery = `insert into t_user_order(t_order_uuid,t_order_status,t_order_pay_status,t_users_id,t_order_name,t_order_title,t_order_phone,t_order_addr,t_order_request,t_order_total_price) values ('${uuid}','결제중','F','${userId}','${name}','${title}','${phone}','${addr}','${request}','${totalPrice}')`;
+    // 주문을 생성하고 추가적으로 유저정보를 다른테이블에 추가한다.
+    const createOrderQuery = `insert into t_order(t_order_uuid,t_order_status,t_order_payment_method,t_order_pay_status,t_order_name,t_order_title,t_order_phone,t_order_addr,t_order_request,t_order_total_price) values ('${uuid}','결제중','${paymentMethod}','F','${name}','${title}','${phone}','${addr}','${request}','${totalPrice}')`;
     const createOrder = await awaitSql(createOrderQuery)
       .catch((err) => {
         maria.rollback();
@@ -73,10 +84,29 @@ const createUserOrder = async (req, res, next) => {
       return next(createError(403, "변화에 문제가 생겼습니다."));
     }
 
+    const createOrderUserQuery = `insert into t_order_user(t_order_uuid,t_users_id) values('${uuid}','${userId}')`;
+    const createOrderUser = await awaitSql(createOrderUserQuery)
+      .catch((err) => {
+        maria.rollback();
+        logger.error(
+          "😡 createOrderUserQuery 중 SQL오류가 났어! -> " + err.message
+        );
+        return { err: err };
+      })
+      .then((result) => {
+        return result;
+      });
+    if (!checkSql(createOrderUser)) {
+      maria.rollback();
+      logger.warn("createOrderUserQuery SQL에러 또는 변화된것이 없어!");
+      return next(createError(403, "변화에 문제가 생겼습니다."));
+    }
+
     for (const product of productList) {
       // 유저 쿠폰 듀얼,기본 쿠폰을 들고 온다 -> 그 쿠폰번호로 업데이트 -> orderproduct 생성;
       let couponUsersNum = null;
       let couponDualUsersNum = null;
+
       if (product.nomalCoupon) {
         const getUserCouponNumQuery = `select * from coupon_users where coupon_num = '${product.nomalCoupon.couponNum}'`;
         const getUserCouponNum = await awaitSql(getUserCouponNumQuery)
@@ -119,6 +149,7 @@ const createUserOrder = async (req, res, next) => {
           logger.warn("updateCouponStatus SQL에러 또는 변화된것이 없어!");
           return next(createError(403, "변화에 문제가 생겼습니다."));
         }
+        couponUsersNum = `'${getUserCouponNum[0].coupon_users_num}'`;
       }
 
       if (product.dualCoupon) {
@@ -165,9 +196,10 @@ const createUserOrder = async (req, res, next) => {
           logger.warn("updateDualCouponStatus SQL에러 또는 변화된것이 없어!");
           return next(createError(403, "변화에 문제가 생겼습니다."));
         }
+        couponDualUsersNum = `'${getUserDualCouponNum[0].coupon_users_num}'`;
       }
 
-      const createOrderProductQuery = `insert into t_user_order_product(t_order_uuid,t_product_num, t_users_id, coupon_nomal_num,coupon_dual_num,t_product_count,total_price) values('${uuid}','${product.productNum}','${userId}',${couponUsersNum},${couponDualUsersNum},'${product.count}','${productPriceList[productPriceListIndex]}')`;
+      const createOrderProductQuery = `insert into t_order_product(t_order_uuid,t_product_num,t_product_count,total_price,t_order_name) values('${uuid}','${product.productNum}','${product.count}','${productPriceList[productPriceListIndex]}','${name}')`;
       const createOrderProduct = await awaitSql(createOrderProductQuery)
         .catch((err) => {
           maria.rollback();
@@ -184,6 +216,28 @@ const createUserOrder = async (req, res, next) => {
         logger.warn("😵‍💫createOrderProduct SQL에러 또는 변화된것이 없어!");
         return next(createError(403, "변화에 문제가 생겼습니다."));
       }
+
+      const createOrderProductUserQuery = `insert into t_order_product_user(t_users_id,coupon_nomal_num,coupon_dual_num,t_order_product_num) values('${userId}',${couponUsersNum},${couponDualUsersNum},'${createOrderProduct.insertId}')`;
+      const createOrderProductUser = await awaitSql(createOrderProductUserQuery)
+        .catch((err) => {
+          maria.rollback();
+          logger.error(
+            "😡 createOrderProductUserQuery 중 SQL오류가 났어! -> " +
+              err.message
+          );
+          return { err: err };
+        })
+        .then((result) => {
+          return result;
+        });
+      if (!checkSql(createOrderProductUser)) {
+        maria.rollback();
+        logger.warn(
+          "createOrderProductUserQuery SQL에러 또는 변화된것이 없어!"
+        );
+        return next(createError(403, "변화에 문제가 생겼습니다."));
+      }
+
       productPriceListIndex += 1;
     }
     maria.commit();
@@ -206,7 +260,7 @@ const cancelUserOrder = async (req, res, next) => {
   const uuid = req.body.data.uuid;
   const userId = req.body.user;
 
-  const checkOrderQuery = `select * from t_user_order where t_order_uuid = '${uuid}'`;
+  const checkOrderQuery = `select * from t_order as o join t_order_user as ou on o.t_order_uuid = ou.t_order_uuid  where o.t_order_uuid = '${uuid}'`;
   const checkOrder = await awaitSql(checkOrderQuery)
     .catch((err) => {
       logger.error("😡 checkOrderQuery 중 SQL오류가 났어! -> " + err.message);
@@ -234,20 +288,23 @@ const cancelUserOrder = async (req, res, next) => {
     return next(createError(403, "상품 발송 되어서 환불을 하여야합니다!"));
   }
 
-  const paymentKey = checkOrder[0].t_order_paymentKey;
-  // 주문상태에 따라 취소 불가
+  // 결제가 되었을때만 실행 -> 토스페이먼츠키가 있는가
+  if (checkOrder[0].t_order_paymentKey) {
+    const paymentKey = checkOrder[0].t_order_paymentKey;
+    // 주문상태에 따라 취소 불가
 
-  const tossResults = await tossCancelOrder(paymentKey);
-  if (tossResults.err) {
-    return next(createError(500, tossResults.err));
+    const tossResults = await tossCancelOrder(paymentKey);
+    if (tossResults.err) {
+      return next(createError(500, tossResults.err));
+    }
+
+    if (!tossResults.status === "PARTIAL_CANCELED") {
+      logger.error("😡 결제 취소되지 않았어!");
+      return next(createError(500, "결제취소가 되지 않으셨습니다"));
+    }
   }
 
-  if (!tossResults.status === "PARTIAL_CANCELED") {
-    logger.error("😡 결제 취소되지 않았어!");
-    return next(createError(500, "결제취소가 되지 않으셨습니다"));
-  }
-
-  const updateCancelOrderQuery = `update t_user_order set t_order_status = '취소됨' where t_order_paymentKey='${paymentKey}'`;
+  const updateCancelOrderQuery = `update t_order set t_order_status = '취소됨' where t_order_uuid='${uuid}'`;
   const updateCancelOrder = await awaitSql(updateCancelOrderQuery)
     .catch((err) => {
       logger.error(
@@ -268,7 +325,6 @@ const cancelUserOrder = async (req, res, next) => {
 
 // 현금영수증 추가 등
 // 가상계좌 확인
-
 // 부분 취소
 const cancelUserProduct = async (req, res, next) => {
   if (!checkReqBodyData(req, "orderProductNum", "cancelReason")) {
@@ -286,7 +342,7 @@ const cancelUserProduct = async (req, res, next) => {
   const cancelReason = req.body.data.cancelReason || "유저가 주문을 취소함";
 
   // 이 물품의 주문서를 들고온다.
-  const getUserOrderQuery = `select * from t_user_order_product as op join t_user_order as o on op.t_order_uuid = o.t_order_uuid where op.t_users_order_product_num = '${orderProductNum}'`;
+  const getUserOrderQuery = `select * from t_order_product as op join t_order_product_user as pu on op.t_order_product_num = pu.t_order_product_num join t_order as o on op.t_order_uuid = o.t_order_uuid join t_order_product_user as opu on op.t_order_product_num = opu.t_order_product_num where op.t_order_product_num = '${orderProductNum}'`;
   const getUserOrder = await awaitSql(getUserOrderQuery)
     .catch((err) => {
       logger.error("😡 checkOrderQuery 중 SQL오류가 났어! -> " + err.message);
@@ -310,13 +366,9 @@ const cancelUserProduct = async (req, res, next) => {
     logger.warn(userId + "유저가 다른 사람 주문을 바꿀려고합니다.");
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
-  if (getUserOrder[0].t_users_order_cancel === "T") {
+  if (getUserOrder[0].t_order_cancel === "T") {
     logger.warn("😵‍💫 취소한 물품입니다!");
     return next(createError(501, "이미 취소 한 물품입니다."));
-  }
-  if (!getUserOrder[0].t_order_paymentKey) {
-    logger.warn("😵‍💫 토스 주문 키가 없습니다.");
-    return next(createError(403, "잘못된 주문 물품입니다."));
   }
 
   if (
@@ -328,27 +380,30 @@ const cancelUserProduct = async (req, res, next) => {
     return next(createError(403, "상품 발송 되어서 환불을 하여야합니다!"));
   }
 
-  const paymentKey = getUserOrder[0].t_order_paymentKey;
-  const totalPrice = getUserOrder[0].total_price;
+  // 결제 수단에 따라 취소 신청 -> 가상계좌, 일반결제 체크
+  if (getUserOrder[0].t_order_paymentKey) {
+    const paymentKey = getUserOrder[0].t_order_paymentKey;
+    const totalPrice = getUserOrder[0].total_price;
 
-  // 부분 취소 진행
-  const tossResults = await tossCancelProduct(
-    paymentKey,
-    cancelReason,
-    totalPrice
-  );
+    // 부분 취소 진행
+    const tossResults = await tossCancelProduct(
+      paymentKey,
+      cancelReason,
+      totalPrice
+    );
 
-  if (tossResults.err) {
-    return next(createError(500, tossResults.err));
-  }
+    if (tossResults.err) {
+      return next(createError(500, tossResults.err));
+    }
 
-  if (!tossResults.status === "PARTIAL_CANCELED") {
-    logger.error("😡 결제 취소되지 않았어!");
-    return next(createError(500, "결제취소가 되지 않으셨습니다"));
+    if (!tossResults.status === "PARTIAL_CANCELED") {
+      logger.error("😡 결제 취소되지 않았어!");
+      return next(createError(500, "결제취소가 되지 않으셨습니다"));
+    }
   }
 
   // 취소 변경 후 쿠폰 및 스테이트 변경
-  const updateOrderProductStateQuery = `update t_user_order_product set t_users_order_cancel = "T" where t_users_order_product_num =${orderProductNum} `;
+  const updateOrderProductStateQuery = `update t_order_product set t_order_cancel = "T" where t_order_product_num =${orderProductNum} `;
   const updateOrderProductState = await awaitSql(updateOrderProductStateQuery)
     .catch((err) => {
       logger.error(
