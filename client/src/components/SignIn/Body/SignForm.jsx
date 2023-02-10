@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { asyncLoginUser, login, logout } from '../../../redux/reducer/loginSlice';
+import { asyncLoginUser, asyncLogoutUser } from '../../../redux/reducer/loginSlice';
 import { signInList } from './SignInList';
 import SignInputBox from './SignInputBox';
 import StaySign from './StaySign';
@@ -32,16 +32,6 @@ function SignForm() {
     });
   };
 
-  const logoutTest = (e) => {
-    e.preventDefault();
-    axios.post('http://localhost:8000/auth/signout', '', { withCredentials: true }).then((result) => {
-      if (result.payload.success) {
-        dispatch(logout());
-        navigate('/');
-      }
-      console.log(result);
-    });
-  };
   return (
     <div className="max-w-signInContainer flex flex-col  m-auto">
       {signInList.map((sign) => (
@@ -59,8 +49,6 @@ function SignForm() {
       >
         로그인
       </button>
-      {/* <button onClick={getInfo}>정보가져오기</button> */}
-      <button onClick={logoutTest}>로그아웃</button>
     </div>
   );
 }

@@ -5,13 +5,21 @@ import { Link } from 'react-router-dom';
 import Logout from '../logout/Logout';
 
 function HeaderSideMenu() {
-  const login = useSelector((state) => state.user.isLogin);
+  const loging = useSelector((state) => state.user.isLogin);
 
   return (
     <div className="md:flex md:flew-row md:gap-MbMedium md:items-center text-sm font-contents text-gray-500 ">
-      <Link to="/login">로그인</Link>
-      <Link to="/signup">회원가입</Link>
-      <Link to="/">마이페이지</Link>
+      {loging ? (
+        <div className="flex gap-MbMedium">
+          <Logout />
+          <Link to="/">마이페이지</Link>
+        </div>
+      ) : (
+        <div className="flex gap-MbMedium ">
+          <Link to="/login">로그인</Link>
+          <Link to="/signup">회원가입</Link>
+        </div>
+      )}
     </div>
   );
 }

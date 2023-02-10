@@ -12,6 +12,17 @@ const asyncLoginUser = createAsyncThunk('login/asyncLoginUser', async (body) => 
   }
 });
 
+const asyncLogoutUser = createAsyncThunk('login/asyncLogoutUser', async () => {
+  try {
+    const response = await axios
+      .post('http://localhost:8000/auth/signout', '', { withCredentials: true })
+      .then((result) => result);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export const loginSlice = createSlice({
   name: 'login',
   initialState: {
@@ -20,11 +31,7 @@ export const loginSlice = createSlice({
     error: '',
     loading: false,
   },
-  reducers: {
-    logout: (state, action) => {
-      state.isLogin = false;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(asyncLoginUser.pending, (state, action) => {
@@ -37,13 +44,21 @@ export const loginSlice = createSlice({
         state.loading = false;
         state.isLogin = true;
       })
-      .addCase(asyncLoginUser.rejected, (state, action) => {
-        state.status = 'failed';
+
+      .addCase(asyncLogoutUser.pending, (state, action) => {
+        state.status = 'loading';
+        state.loading = true;
+        state.isLogin = true;
+      })
+      .addCase(asyncLogoutUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.loading = false;
+        state.isLogin = false;
       });
   },
 });
 
 // Action creators are generated for each case reducer function
 export const { login, logout } = loginSlice.actions;
-export { asyncLoginUser };
+export { asyncLoginUser, asyncLogoutUser };
 export default loginSlice.reducer;

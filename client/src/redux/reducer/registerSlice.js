@@ -18,7 +18,7 @@ const asyncRegisterUser = createAsyncThunk('user/asyncRegisterUser', async (body
 // });
 
 export const registerSlice = createSlice({
-  name: 'register',
+  name: 'registers',
   initialState: {
     status: '',
     error: '',
@@ -60,4 +60,4 @@ export const registerSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { registerUser } = registerSlice.actions;
 export { asyncRegisterUser };
-export default registerSlice.reducer;
+export default registerSlice;
