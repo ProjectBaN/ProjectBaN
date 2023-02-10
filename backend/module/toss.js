@@ -86,4 +86,49 @@ const tossCancelProduct = async (paymentKey, reason, amount) => {
     });
   return tossResults;
 };
-module.exports = { tossCardConfirm, tossCancelOrder, tossCancelProduct };
+
+const tossCancelProductVirtualAccount = async (
+  paymentKey,
+  reason,
+  amount,
+  bank,
+  accountNumber,
+  holderName
+) => {
+  const options = {
+    method: "POST",
+    url: `https://api.tosspayments.com/v1/payments/${paymentKey}/cancel`,
+    headers: {
+      Authorization: process.env.TOSSPAYMENTS_SECRIT_KEY,
+      "Content-Type": "application/json",
+    },
+    data: {
+      cancelReason: reason,
+      cancelAmount: amount,
+      refundReceiveAccount: {
+        bank: bank,
+        accountNumber: accountNumber,
+        holderName: holderName,
+      },
+    },
+  };
+
+  const tossResults = await axios
+    .request(options)
+    .then(function (response) {
+      return response.data;
+    })
+    .catch(function (error) {
+      logger.error("😡 토스 결제 취소가 실패했어! \n" + error);
+      return {
+        err: "취소 실패 입니다.",
+      };
+    });
+  return tossResults;
+};
+module.exports = {
+  tossCardConfirm,
+  tossCancelOrder,
+  tossCancelProduct,
+  tossCancelProductVirtualAccount,
+};

@@ -7,7 +7,11 @@ const { createError } = require("../module/error");
 const { awaitSql, checkSql } = require("../module/sqlPromise");
 const maria = require("../database/maria");
 const { successStatus } = require("../module/statuscode");
-const { tossCancelOrder, tossCancelProduct } = require("../module/toss");
+const {
+  tossCancelOrder,
+  tossCancelProduct,
+  tossCancelProductVirtualAccount,
+} = require("../module/toss");
 
 const createUserOrder = async (req, res, next) => {
   if (
@@ -380,10 +384,12 @@ const cancelUserProduct = async (req, res, next) => {
   }
 
   // 결제 수단에 따라 취소 신청 -> 가상계좌, 일반결제 체크
-  if (getUserOrder[0].t_order_paymentKey) {
-    const paymentKey = getUserOrder[0].t_order_paymentKey;
-    const totalPrice = getUserOrder[0].total_price;
-
+  const paymentKey = getUserOrder[0].t_order_paymentKey;
+  const totalPrice = getUserOrder[0].total_price;
+  if (
+    getUserOrder[0].t_order_paymentKey &&
+    getUserOrder[0].t_order_payment_method === "카드"
+  ) {
     // 부분 취소 진행
     const tossResults = await tossCancelProduct(
       paymentKey,
@@ -391,6 +397,35 @@ const cancelUserProduct = async (req, res, next) => {
       totalPrice
     );
 
+    if (tossResults.err) {
+      return next(createError(500, tossResults.err));
+    }
+
+    if (!tossResults.status === "PARTIAL_CANCELED") {
+      logger.error("😡 결제 취소되지 않았어!");
+      return next(createError(500, "결제취소가 되지 않으셨습니다"));
+    }
+  }
+
+  if (
+    getUserOrder[0].t_order_paymentKey &&
+    getUserOrder[0].t_order_payment_method === "가상계좌"
+  ) {
+    if (!checkReqBodyData(req, "bank", "accountNumber", "holderName")) {
+      logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+      return next(createError(401, "들어온 값이 부족합니다."));
+    }
+    const bank = req.body.data.bank;
+    const accountNumber = req.body.data.accountNumber;
+    const holderName = req.body.data.holderName;
+    const tossResults = await tossCancelProductVirtualAccount(
+      paymentKey,
+      cancelReason,
+      totalPrice,
+      bank,
+      accountNumber,
+      holderName
+    );
     if (tossResults.err) {
       return next(createError(500, tossResults.err));
     }
@@ -463,6 +498,7 @@ const createOrder = async (req, res, next) => {
     !checkReqBodyData(
       req,
       "productList",
+      "paymentMethod",
       "uuid",
       "name",
       "title",
@@ -481,6 +517,7 @@ const createOrder = async (req, res, next) => {
   }
 
   const productList = req.body.data.productList;
+  const paymentMethod = req.body.data.paymentMethod;
   const uuid = req.body.data.uuid;
   const name = req.body.data.name;
   const title = req.body.data.title;
@@ -499,7 +536,7 @@ const createOrder = async (req, res, next) => {
       logger.error("😡  createOrder 트랜젝션중 오류가 났어!");
     }
 
-    const createOrderQuery = `insert into t_order(t_order_uuid,t_order_status,t_order_pay_status,t_order_name,t_order_title,t_order_phone,t_order_addr,t_order_request,t_order_total_price) values ('${uuid}','결제중','F','${name}','${title}','${phone}','${addr}','${request}','${totalPrice}')`;
+    const createOrderQuery = `insert into t_order(t_order_uuid,t_order_status, t_order_payment_method,t_order_pay_status,t_order_name,t_order_title,t_order_phone,t_order_addr,t_order_request,t_order_total_price) values ('${uuid}','결제중','${paymentMethod}','F','${name}','${title}','${phone}','${addr}','${request}','${totalPrice}')`;
     const createOrder = await awaitSql(createOrderQuery)
       .catch((err) => {
         maria.rollback();
@@ -689,19 +726,54 @@ const cancelProduct = async (req, res, next) => {
   const totalPrice = getOrder[0].total_price;
 
   // 부분 취소 진행
-  const tossResults = await tossCancelProduct(
-    paymentKey,
-    cancelReason,
-    totalPrice
-  );
+  if (
+    getOrder[0].t_order_paymentKey &&
+    getOrder[0].t_order_payment_method === "카드"
+  ) {
+    // 부분 취소 진행
+    const tossResults = await tossCancelProduct(
+      paymentKey,
+      cancelReason,
+      totalPrice
+    );
 
-  if (tossResults.err) {
-    return next(createError(500, tossResults.err));
+    if (tossResults.err) {
+      return next(createError(500, tossResults.err));
+    }
+
+    if (!tossResults.status === "PARTIAL_CANCELED") {
+      logger.error("😡 결제 취소되지 않았어!");
+      return next(createError(500, "결제취소가 되지 않으셨습니다"));
+    }
   }
 
-  if (!tossResults.status === "PARTIAL_CANCELED") {
-    logger.error("😡 결제 취소되지 않았어!");
-    return next(createError(500, "결제취소가 되지 않으셨습니다"));
+  if (
+    getOrder[0].t_order_paymentKey &&
+    getOrder[0].t_order_payment_method === "가상계좌"
+  ) {
+    if (!checkReqBodyData(req, "bank", "accountNumber", "holderName")) {
+      logger.warn("😵‍💫 들어온 데이터 값이 부족해...");
+      return next(createError(401, "들어온 값이 부족합니다."));
+    }
+    const bank = req.body.data.bank;
+    const accountNumber = req.body.data.accountNumber;
+    const holderName = req.body.data.holderName;
+    const tossResults = await tossCancelProductVirtualAccount(
+      paymentKey,
+      cancelReason,
+      totalPrice,
+      bank,
+      accountNumber,
+      holderName
+    );
+    if (tossResults.err) {
+      return next(createError(500, tossResults.err));
+    }
+
+    if (!tossResults.status === "PARTIAL_CANCELED") {
+      logger.error("😡 결제 취소되지 않았어!");
+      return next(createError(500, "결제취소가 되지 않으셨습니다"));
+    }
   }
   // 취소 변경 후 쿠폰 및 스테이트 변경
   const updateOrderProductStateQuery = `update t_order_product set t_order_cancel = "T" where t_order_product_num =${orderProductNum} `;
