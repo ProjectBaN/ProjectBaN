@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { PURGE } from 'redux-persist';
 
 const asyncLoginUser = createAsyncThunk('login/asyncLoginUser', async (body) => {
   try {
@@ -8,7 +9,7 @@ const asyncLoginUser = createAsyncThunk('login/asyncLoginUser', async (body) => 
       .then((result) => result);
     return response.data;
   } catch (err) {
-    console.log(err);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -19,18 +20,13 @@ const asyncLogoutUser = createAsyncThunk('login/asyncLogoutUser', async () => {
       .then((result) => result);
     return response.data;
   } catch (err) {
-    console.log(err);
+    return err.payload;
   }
 });
-
+const initialState = { status: '', isLogin: false, error: '', loading: false };
 export const loginSlice = createSlice({
   name: 'login',
-  initialState: {
-    status: '',
-    isLogin: false,
-    error: '',
-    loading: false,
-  },
+  initialState: { initialState },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -44,6 +40,11 @@ export const loginSlice = createSlice({
         state.loading = false;
         state.isLogin = true;
       })
+      .addCase(asyncLoginUser.rejected, (state, action) => {
+        state.status = 'fail';
+        state.loading = false;
+        state.isLogin = false;
+      })
 
       .addCase(asyncLogoutUser.pending, (state, action) => {
         state.status = 'loading';
@@ -54,7 +55,8 @@ export const loginSlice = createSlice({
         state.status = 'succeeded';
         state.loading = false;
         state.isLogin = false;
-      });
+      })
+      .addCase(PURGE, () => '');
   },
 });
 

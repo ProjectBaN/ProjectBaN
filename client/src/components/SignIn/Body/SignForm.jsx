@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { asyncLoginUser, asyncLogoutUser } from '../../../redux/reducer/loginSlice';
 import { signInList } from './SignInList';
@@ -11,9 +11,12 @@ function SignForm() {
   const [loginInput, setLoginInput] = useState({ id: '', password: '' });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const status = useSelector((state) => state.user.status);
+
   const OnChange = (e) => {
     e.preventDefault();
     setLoginInput({ ...loginInput, [e.target.name]: e.target.value });
+    status = '';
   };
 
   const onClick = (e) => {
@@ -25,9 +28,9 @@ function SignForm() {
       },
     };
     dispatch(asyncLoginUser(body)).then((result) => {
-      if (result.payload.success) {
-        console.log(result);
+      if (result.payload) {
         navigate('/');
+      } else {
       }
     });
   };
@@ -38,6 +41,7 @@ function SignForm() {
         <SignInputBox sign={sign} key={sign.id} OnChange={OnChange} />
       ))}
       <StaySign />
+      {status === 'fail' && <p className="text-red-500 text-sm">아이디 및 비밀번호가 존재하지않습니다.</p>}
       <button
         className={
           loginInput.id && loginInput.password
