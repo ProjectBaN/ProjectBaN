@@ -33,7 +33,7 @@ const cartDuplicateCheck = async (req, res, next) => {
     return next(createError(403, "변화에 문제가 생겼습니다."));
   }
   if (getCart.length > 0) {
-    return res.send(createError(403, "이미 장바구니에 있는 물품 입니다!"));
+    return next(createError(403, "이미 장바구니에 있는 물품 입니다!"));
   } else {
     return next();
   }

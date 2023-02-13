@@ -14,7 +14,6 @@ const {
 /* 유저 */
 // 카드 **제거예정
 router.get("/checkusercardpayment", checkCardPayment, cardUserPaymentConfirm);
-
 // 카드
 router.get("/checkcardpayment", checkCardPayment, cardPaymentConfirm);
 // 가상계좌

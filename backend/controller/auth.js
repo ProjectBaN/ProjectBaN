@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const emailSend = require("../module/sendEmail");
-const { createError, createSqlError } = require("../module/error");
+const { createError } = require("../module/error");
 const { checkReqBodyData } = require("../module/check");
 const { successStatus } = require("../module/statuscode");
 const {
@@ -270,10 +270,7 @@ const forgetPasswordAuthEmail = (req, res, next) => {
       if (results.length === 0) {
         logger.warn(`😵‍💫 ${id}의 검색결과 아이디가 없어..`);
 
-        return res.send({
-          idCheck: false,
-          message: "아이디가 존해하지 않습니다.",
-        });
+        return next(createError(500, "아이디가 존재하지 않습니다."));
       }
       if (results[0].users_leave_at) {
         logger.warn(`😮 ${id}는 탈퇴유저였어!`);

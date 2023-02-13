@@ -29,7 +29,7 @@ const createReview = async (req, res, next) => {
 
   // 주문상품의 정보를 가져온다.
 
-  const getOrderProductInfoQuery = `select * from t_user_order_product as op join t_product as p on op.t_product_num = p.t_product_num where op.t_users_order_product_num='${orderProductNum}'`;
+  const getOrderProductInfoQuery = `select * from t_order_product as op join t_product as p on op.t_product_num = p.t_product_num where op.t_order_product_num='${orderProductNum}'`;
   const getOrderProductInfo = await awaitSql(getOrderProductInfoQuery)
     .catch((err) => {
       logger.error(
