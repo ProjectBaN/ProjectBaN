@@ -105,7 +105,7 @@ const signIn = async (req, res, next) => {
       }
       if (!results || results.length === 0) {
         logger.warn(`😵‍💫 ${id}의 검색결과 아이디가 없어..`);
-        return res.send("아이디가 없습니다.");
+        return res.send(CreateError(500, "아이디가 없습니다."));
       }
       if (results[0].users_leave_at) {
         logger.warn(`😮 ${id}는 탈퇴유저였어!`);
