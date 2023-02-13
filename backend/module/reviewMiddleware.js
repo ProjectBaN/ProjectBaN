@@ -24,7 +24,7 @@ const checkAbleReview = async (req, res, next) => {
   const user = req.body.user;
 
   // 상품이 배송완료 인지 체크
-  const getUserOrderQuery = `select * from t_user_order_product as op join t_user_order as o on op.t_order_uuid = o.t_order_uuid where t_users_order_product_num='${orderProductNum}'`;
+  const getUserOrderQuery = `select * from t_order_product as op join t_order as o on op.t_order_uuid = o.t_order_uuid join t_order_product_user as opu on op.t_order_product_num = opu.t_order_product_num  where op.t_order_product_num='${orderProductNum}'`;
   const getUserOrder = await awaitSql(getUserOrderQuery)
     .catch((err) => {
       logger.error("😡 getUserOrderQuery 중 SQL오류가 났어! -> " + err.message);
