@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { asyncLoginUser, asyncLogoutUser } from '../../../redux/reducer/loginSlice';
@@ -16,7 +16,6 @@ function SignForm() {
   const OnChange = (e) => {
     e.preventDefault();
     setLoginInput({ ...loginInput, [e.target.name]: e.target.value });
-    status = '';
   };
 
   const onClick = (e) => {

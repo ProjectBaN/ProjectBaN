@@ -35,25 +35,10 @@ export const registerSlice = createSlice({
       .addCase(asyncRegisterUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.loading = false;
-        state.isId = '응 안돼';
       })
       .addCase(asyncRegisterUser.rejected, (state, action) => {
         state.status = 'failed';
       });
-    // .addCase(asyncDuplciataUser.pending, (state, action) => {
-    //   state.status = 'loading';
-    //   state.loading = true;
-    // })
-    // .addCase(asyncDuplciataUser.fulfilled, (state, action) => {
-    //   state.status = 'sucess';
-    //   if ((state.isId = action.payload === false)) {
-    //     state.duplicateMessage = '사용가능 아이디입니다.';
-    //   }
-    //   state.loading = false;
-    // })
-    // .addCase(asyncDuplciataUser.rejected, (state, action) => {
-    //   state.status = '중복된 이메일 입니다.';
-    // });
   },
 });
 

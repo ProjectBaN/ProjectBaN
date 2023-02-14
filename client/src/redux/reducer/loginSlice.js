@@ -13,6 +13,17 @@ const asyncLoginUser = createAsyncThunk('login/asyncLoginUser', async (body) => 
   }
 });
 
+const asycGetUser = createAsyncThunk('login/asycGetUser', async () => {
+  try {
+    const response = await axios
+      .post('http://localhost:8000/user/getuserinfo', '', { withCredentials: true })
+      .then((result) => console.log(result));
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
+
 const asyncLogoutUser = createAsyncThunk('login/asyncLogoutUser', async () => {
   try {
     const response = await axios
@@ -45,6 +56,21 @@ export const loginSlice = createSlice({
         state.loading = false;
         state.isLogin = false;
       })
+      .addCase(asycGetUser.pending, (state, action) => {
+        state.status = 'loading';
+        state.loading = true;
+        state.isUser = false;
+      })
+      .addCase(asycGetUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.loading = false;
+        state.isUser = true;
+      })
+      .addCase(asycGetUser.rejected, (state, action) => {
+        state.status = 'fail';
+        state.loading = false;
+        state.isUser = false;
+      })
 
       .addCase(asyncLogoutUser.pending, (state, action) => {
         state.status = 'loading';
@@ -56,11 +82,11 @@ export const loginSlice = createSlice({
         state.loading = false;
         state.isLogin = false;
       })
-      .addCase(PURGE, () => '');
+      .addCase(PURGE, () => initialState);
   },
 });
 
 // Action creators are generated for each case reducer function
 export const { login, logout } = loginSlice.actions;
-export { asyncLoginUser, asyncLogoutUser };
+export { asyncLoginUser, asyncLogoutUser, asycGetUser };
 export default loginSlice.reducer;
