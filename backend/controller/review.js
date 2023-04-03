@@ -76,6 +76,7 @@ const createReview = async (req, res, next) => {
       return next(createError(501, "변화에 문제가 생겼습니다."));
     }
     // 리뷰 이미지 업로드
+    console.log();
     if (req.body.data.reviewImg) {
       const createReviewImgQuery = `insert into t_product_review_img(t_product_review_num,t_product_review_img_url) values ('${createReview.insertId}', '${req.body.data.reviewImg}')`;
       const sreateReviewImg = await awaitSql(createReviewImgQuery)

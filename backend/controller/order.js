@@ -11,7 +11,6 @@ const {
   tossCancelOrder,
   tossCancelProduct,
   tossCancelProductVirtualAccount,
-  tossCancelCashReceipt,
 } = require("../module/toss");
 
 const createUserOrder = async (req, res, next) => {
@@ -436,20 +435,6 @@ const cancelUserProduct = async (req, res, next) => {
       return next(createError(500, "결제취소가 되지 않으셨습니다"));
     }
   }
-  if (!getUserOrder[0].t_order_receipt_key) {
-    const tossCancelCashReceiptResults = tossCancelCashReceipt(
-      "namerse",
-      totalPrice
-    );
-    if (tossCancelCashReceiptResults.err) {
-      return next(createError(500, tossResults.err));
-    }
-
-    if (!tossCancelCashReceiptResults.status === "PARTIAL_CANCELED") {
-      logger.error("😡 결제 취소되지 않았어!");
-      return next(createError(500, "결제취소가 되지 않으셨습니다"));
-    }
-  }
 
   // 취소 변경 후 쿠폰 및 스테이트 변경
   const updateOrderProductStateQuery = `update t_order_product set t_order_cancel = "T" where t_order_product_num =${orderProductNum} `;
@@ -790,22 +775,6 @@ const cancelProduct = async (req, res, next) => {
       return next(createError(500, "결제취소가 되지 않으셨습니다"));
     }
   }
-
-  if (!getOrder[0].t_order_receipt_key) {
-    const tossCancelCashReceiptResults = tossCancelCashReceipt(
-      "namerse",
-      totalPrice
-    );
-    if (tossCancelCashReceiptResults.err) {
-      return next(createError(500, tossResults.err));
-    }
-
-    if (!tossCancelCashReceiptResults.status === "PARTIAL_CANCELED") {
-      logger.error("😡 결제 취소되지 않았어!");
-      return next(createError(500, "결제취소가 되지 않으셨습니다"));
-    }
-  }
-
   // 취소 변경 후 쿠폰 및 스테이트 변경
   const updateOrderProductStateQuery = `update t_order_product set t_order_cancel = "T" where t_order_product_num =${orderProductNum} `;
   const updateOrderProductState = await awaitSql(updateOrderProductStateQuery)

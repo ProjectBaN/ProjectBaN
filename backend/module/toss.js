@@ -126,49 +126,9 @@ const tossCancelProductVirtualAccount = async (
     });
   return tossResults;
 };
-
-const tossCancelCashReceipt = async (receiptKey, amount) => {
-  const options = amount
-    ? {
-        method: "POST",
-        url: `https://api.tosspayments.com/v1/cash-receipts/${receiptKey}/cancel`,
-        headers: {
-          Authorization: process.env.TOSSPAYMENTS_SECRIT_KEY,
-          "Content-Type": "application/json",
-        },
-        data: {
-          amount: amount,
-        },
-      }
-    : {
-        method: "POST",
-        url: `https://api.tosspayments.com/v1/cash-receipts/${receiptKey}/cancel`,
-        headers: {
-          Authorization: process.env.TOSSPAYMENTS_SECRIT_KEY,
-        },
-      };
-
-  const tossResults = await axios
-    .request(options)
-    .then(function (response) {
-      return response.data;
-    })
-    .catch(function (error) {
-      logger.error(
-        receiptKey +
-          " <-레시피키 😡 토스 현금영수증 취소가 실패했어! \n" +
-          error
-      );
-      return {
-        err: "취소 실패 입니다.",
-      };
-    });
-  return tossResults;
-};
 module.exports = {
   tossCardConfirm,
   tossCancelOrder,
   tossCancelProduct,
   tossCancelProductVirtualAccount,
-  tossCancelCashReceipt,
 };
